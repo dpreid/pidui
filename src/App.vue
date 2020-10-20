@@ -1,9 +1,14 @@
 <template>
   <div id="app" class='container-fluid-sm m-0'>
-
+    <navigation-bar />
     <div class='row'>
       <div class='col-sm-6'> <control-panel /> </div>
-      <div class='col-sm-6'> <graph-output type="graph" id="0" /> </div>
+      <div class='col-sm-6' v-if='isGraphOn'> <graph-output type="graph" id="0" /> </div>
+    </div>
+
+
+    <div v-if="isWorkspaceOn">
+      <workspace />
     </div>
   </div>
   
@@ -13,12 +18,14 @@
 import GraphOutput from "./components/GraphOutput.vue";
 //import TableOutput from "./components/TableOutput.vue";
 //import Stopwatch from "./components/Stopwatch.vue";
-//import Workspace from "./components/Workspace.vue";
+import Workspace from "./components/Workspace.vue";
 //import WebcamStream from "./components/WebcamStream.vue";
 import ControlPanel from "./components/ControlPanel.vue";
 //import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
+import NavigationBar from "./components/NavigationBar.vue"; 
 
+import { eventBus } from "./main.js";
 
 export default {
   name: 'App',
@@ -26,12 +33,39 @@ export default {
     GraphOutput,
     //TableOutput,
     //Stopwatch,
-    //Workspace,
+    Workspace,
     //WebcamStream,
     ControlPanel,
     //DataRecorder,
     //AutoCommand,
+    NavigationBar
   },
+  data() {
+    return {
+      isTableOn: false,
+      isGraphOn: false,
+      isStopwatchOn: false,
+      isWorkspaceOn: false,
+      isAutoCommandOn: false,
+    }
+  },
+  created(){
+    eventBus.$on('togglegraph', this.toggleGraph);
+    eventBus.$on('clearworkspace', this.clearWorkspace);
+    eventBus.$on('toggleworkspace', this.addWorkspace);
+  },
+  methods: {
+    addWorkspace(){
+      this.isWorkspaceOn = true;
+    },
+    toggleGraph(){
+      this.isGraphOn = !this.isGraphOn;
+    },
+    clearWorkspace(){
+      console.log("clearing");
+      this.isWorkspaceOn = false;
+    }
+  }
 }
 
 

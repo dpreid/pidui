@@ -9,7 +9,7 @@
 
 <script>
 //import * as pendulum from "../pendulum";
-// import { eventBus } from "../main";
+import { eventBus } from "../main";
 // import { store } from "../store.js";
 
 var canvas;
@@ -44,6 +44,10 @@ export default {
             workspace_canvas_clickable: true,
         }
     },
+    created(){
+        eventBus.$on('addprotractor', this.addProtractor);
+        eventBus.$on('addruler', this.addRuler);
+    },
     mounted(){
         shapes = [];        //ensure when mounted again that the shapes are not redrawn
 
@@ -55,8 +59,7 @@ export default {
         ctx = canvas.getContext("2d");
        
         //setInterval(() => {this.draw()}, 10);         //not constantly animating, but instead call draw when click and mouse move
-        this.addImages();
-
+        //this.addImages();
         //the rectangle shape added to shapes array
         //shapes.push({x:rect_top_left_x, y:rect_top_left_y, width:rect_width, height:rect_height, image:null, angle:0});
 
@@ -68,7 +71,6 @@ export default {
     },
     methods:{
         draw() {
-            
             ctx.clearRect(0,0,screen.width, screen.height);
 
             for(let i=0; i< shapes.length;i++){
@@ -95,12 +97,9 @@ export default {
                 ctx.restore();
             }
 
-
-            
-
         },
-        addImages(){
-             protractor.onload = function() {
+        addProtractor(){
+            protractor.onload = function() {
                 let x = 100;
                 let y= 100;
                 let w=400;
@@ -108,29 +107,21 @@ export default {
                 shapes.push( {x:x, y:y, width:w, height:h, image:protractor, angle:0} );
                 ctx.drawImage(protractor, x, y, w, h);
                 
+                
             };
             protractor.src = document.getElementById("protractor").src;
-
+        },
+        addRuler(){
             ruler.onload = function() {
                 let x = 100;
                 let y= 300;
                 let w=800;
                 let h=80;
-                ctx.drawImage(ruler, x, y, w, h);
                 shapes.push( {x:x, y:y, width:w, height:h, image:ruler, angle:0} );
+                ctx.drawImage(ruler, x, y, w, h);
+                
             };
             ruler.src = document.getElementById("ruler").src;
-
-            // caliper.onload = function() {
-            //     let x = 100;
-            //     let y= 400;
-            //     let w=100;
-            //     let h=100;
-            //     ctx.drawImage(caliper, x, y, w, h);
-            //     shapes.push( {x:x, y:y, width:w, height:h, image:caliper, angle:0} );
-            // };
-            // caliper.src = document.getElementById("caliper").src;
-            
         },
         updateMode(event){
             if(event.repeat){
