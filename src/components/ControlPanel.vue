@@ -1,3 +1,12 @@
+//This component includes the standard controls for manipulating the hardware.
+//This component does the connection to the data being sent from the hardware. It includes the reconnecting websocket
+//All data transfer between hardware and UI is through this script. Data is added to the store.js file from which other components access it.
+
+//TODO:
+// Need to add tooltips to all components
+//Need to include a function when receiving messages from the hardware - when stopped received, UI enters stopped mode so that other modes can be selected.
+
+
 <template>
 <div class='container-sm m-2 bg-white border rounded'>
 	<div class='row align-content-center m-1'>
@@ -13,7 +22,7 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button id="setmode" class="btn btn-default btn-lg" v-if="isStopped" @click="changingMode = true">Set Mode</button>
+				<button id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" v-if="isStopped" @click="changingMode = true">Set Mode</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 			</div>
 		</div>
@@ -29,13 +38,51 @@
 
 	</div>
 
-<article>
-
-<h2> Parameters </h2>
-
-
-</article>
-
+	<div class='row justify-content-center m-2'>
+		<div class='col-12'><h2> Parameters </h2></div>
+	</div>
+	<div v-if='currentMode == "pid_position"' class="row justify-content-center m-2 align-items-center">
+		<div v-if='angleMode == "degrees"' class="col-3 sliderlabel"> Angle ({{angleParam}}deg)</div>
+		<div v-else class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
+		<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
+		<div v-else class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
+		<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+	</div>
+	<div v-if='currentMode == "pid_speed" || currentMode == "dc_motor"' class="row justify-content-center m-1 align-items-center">
+		<div v-if='currentMode == "pid_speed"' class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
+		<div v-else class="col-3  sliderlabel"> Speed ({{speedParam}})</div>
+		<div v-if='currentMode == "pid_speed"' class="col-7"><input type="range" min="0" max="2000" v-model="speedParam" class="slider" id="brakeSlider"></div>
+		<div v-else class="col-7"><input type="range" min="0" max="255" v-model="speedParam" class="slider" id="brakeSlider"></div>
+		<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
+	</div>
+	<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
+		<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>
+		<div class="col-7"><input type="range" min="0" max="100" v-model="heightParam" class="slider" id="heightSlider"></div>
+		<button id="set" class="btn btn-default btn-lg col-2" @click="setHeight">Set</button>
+	</div>
+	<div class="row justify-content-center m-1 align-items-center">
+		<div class='form-group col-2'>
+			<label for="kp">Kp:</label>
+			<input type='text' class='form-control' id="kp" :value="kpParam">
+        </div>
+		<div class='form-group col-2'>
+			<label for="ki">Ki:</label>
+			<input type='text' class='form-control' id="ki" :value="kiParam">
+        </div>
+		<div class='form-group col-2'>
+			<label for="kd">Kd:</label>
+			<input type='text' class='form-control' id="kd" :value="kdParam">
+        </div>
+		<div class='form-group col-2'>
+			<label for="dt">dt:</label>
+			<input type='text' class='form-control' id="dt" :value="dtParam">
+        </div>
+		<div class='form-group col-2'>
+			<label for="Nerrors">N_errors:</label>
+			<input type='text' class='form-control' id="Nerrors" :value="N_errorsParam">
+        </div>
+		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
+	</div>
 
 
 </div>
@@ -56,7 +103,7 @@ export default {
     data(){
         return{
 			dataSocket: null,
-			angleParam: 0,
+			angleParam: 0,			//always stores degrees, even in rad mode
 			speedParam: 0,
 			heightParam: 0,
 			kpParam: 0,
@@ -64,6 +111,7 @@ export default {
 			kdParam: 0,
 			dtParam: 0,
 			N_errorsParam: 10,
+			angleMode: 'degrees',		// 'radians'
 			isStopped: true,
 			changingMode: false,
 			currentMode: "stopped",		//"pid_position", "pid_speed", "dc_motor", "calibrate", "configure"
@@ -295,7 +343,7 @@ export default {
 			this.clearMessages();
 			if(this.currentMode == 'pid_position'){
 				console.log("Set position");
-				let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder
+				let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
 				this.dataSocket.send(JSON.stringify({
 				cmd: "set_position",
 				param: pos
@@ -430,4 +478,9 @@ export default {
 
 #configure         {background-color: rgb(220, 38, 236);}
 #configure:hover   {background-color: rgb(76, 19, 82);}
+
+#set         {background-color: rgb(30, 250, 1);}
+#set:hover   {background-color: rgb(30, 172, 2);}
+
+
 </style>

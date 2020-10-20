@@ -1,38 +1,28 @@
 <template>
-<div class="container-fluid">
-    <div class="row mb-5 justify-content-center" id="chart-canvas">
-        <div class="col">
+<div class='container-sm m-2 bg-white border rounded'>
+    <div class="row m-0 justify-content-center" id="chart-canvas">
+        <div class="col-12">
             <canvas :id="id" @mousedown="startLine" @mouseup="endDrag" @mousemove="endLine"></canvas>
         </div>
     </div>
 
-    <div class="row mb-5 justify-content-center" id="chart-functions">
-        <div class="col">
-            <div class="row justify-content-center">
-                <label for="graphSelect">Graph:</label>
-            </div>
-
-            <select name="graphSelect" id="graphSelect" v-model="currentDataParameter" @change="getData">
+    <div class="row mb-2 justify-content-center align-items-center" id="chart-functions">
+        <div class='form-group col-3'>
+            <label class='m-2' for="graphSelect">Graph:</label>
+            <select class='col-sm' name="graphSelect" id="graphSelect" v-model="currentDataParameter" @change="getData">
                 <option value="theta">Angle</option>
                 <option value="omega">Angular Velocity</option>
-                
             </select> 
-            
         </div>
-
-        <div class="col">
-            <div class="row justify-content-center">
-                <label for="gradient">Gradient</label>
-            </div>
-            <div class="row justify-content-center">
-                <input id="gradient" :value="gradient" readonly size="3"> 
-            </div>
+        <div class='form-group col-3'>
+            <label class='m-2' for="gradient">Gradient:</label>
+            <input class='col-sm' id="gradient" :value="gradient" readonly> 
         </div>
+       
         
-        <div class="col">
-            <label for="graph">Plot function:</label>
-
-            <select name="function" id="function" v-model="currentFunction">
+        <div class='form-group col-6'>
+            <label class='m-2' for="graph">Plot function: </label>
+            <select class='col-sm-4' name="function" id="function" v-model="currentFunction">
                 <option value="linear">Linear</option>
                 <option value="quadratic">Quadratic</option>
                 <option value="trigonometric">Trigonometric</option>
@@ -40,47 +30,47 @@
             </select> 
 
             <div v-if="currentFunction === 'linear'">
-                <label for="func_a">y=</label>
+                <label class='m-2' for="func_a">y=</label>
                 <input id="func_a" v-model="func_a" size="3">
-                <label for="func_b">x + </label>
+                <label class='m-2' for="func_b">x + </label>
                 <input id="func_b" v-model="func_b" size="3"> 
-                <div class="row justify-content-center">
-                    <button id="plotFunctionButton" @click="plotFunc(linear)">Plot</button>
-                    <button id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                <div class="row-sm justify-content-center">
+                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(linear)">Plot</button>
+                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
                 <div v-else-if="currentFunction === 'quadratic'">
-                <label for="func_a">y=</label>
+                <label class='m-2' for="func_a">y=</label>
                 <input id="func_a" v-model="func_a" size="3">
-                <label for="func_b">x<sup>2</sup> + </label>
+                <label class='m-2' for="func_b">x<sup>2</sup> + </label>
                 <input id="func_b" v-model="func_b" size="3"> 
-                <div class="row justify-content-center">
-                    <button id="plotFunctionButton" @click="plotFunc(quadratic)">Plot</button>
-                    <button id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                <div class="row-sm justify-content-center">
+                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(quadratic)">Plot</button>
+                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
             <div v-else-if="currentFunction === 'trigonometric'">
-                <label for="func_a">y=</label>
+                <label class='m-2' for="func_a">y=</label>
                 <input id="func_a" v-model="func_a" size="2">
-                <label for="func_b">sin(</label>
+                <label class='m-2' for="func_b">sin(</label>
                 <input id="func_b" v-model="func_b" size="2"> 
-                <label for="func_c"> t + </label>
+                <label class='m-2' for="func_c"> t + </label>
                 <input id="func_c" v-model="func_c" size="2"> 
-                <label> ) </label>
-                <div class="row justify-content-center">
-                    <button id="plotFunctionButton" @click="plotFunc(trigonometric)">Plot</button>
-                    <button id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                <label class='m-2'> ) </label>
+                <div class="row-sm justify-content-center">
+                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(trigonometric)">Plot</button>
+                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
             <div v-else-if="currentFunction === 'exponential'">
-                <label for="func_a">y=</label>
+                <label class='m-2' for="func_a">y=</label>
                 <input id="func_a" v-model="func_a" size="3">
-                <label for="func_b">exp(</label>
+                <label class='m-2' for="func_b">exp(</label>
                 <input id="func_b" v-model="func_b" size="3"> 
-                <label for="func_b"> t)</label>
-                <div class="row justify-content-center">
-                    <button id="plotFunctionButton" @click="plotFunc(exponential)">Plot</button>
-                    <button id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                <label class='m-2' for="func_b"> t)</label>
+                <div class="row-sm justify-content-center">
+                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(exponential)">Plot</button>
+                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
         </div>
@@ -292,37 +282,6 @@ export default {
                     let canvas_width = canvas.clientWidth;
                     let canvas_ratio = canvas_height/canvas_width;      //canvas ratio
                     
-                    
-                    // let min_x = Infinity;
-                    // let min_y = Infinity;
-                    // let max_x = -Infinity;
-                    // let max_y = -Infinity;
-                    // this.chartData.forEach(element => {
-                    //     if(element.x < min_x){
-                    //         min_x = element.x;
-                    //     }
-                    //     if(element.x > max_x){
-                    //         max_x = element.x;
-                    //     }
-
-                    //     if(element.y < min_y){
-                    //         min_y = element.y;
-                    //     }
-                    //     if(element.y > max_y){
-                    //         max_y = element.y;
-                    //     }
-
-                    // });
-
-                    // if(min_x > 0){       //if two data points set then limits are set to min and max dataset points
-                    //     min_x = 0;
-                    // }
-                    // if(min_y > 0){
-                    //     min_y = 0;
-                    // }
-
-                    // let y_diff = max_y - min_y;
-                    // let x_diff = max_x - min_x;
                     let y_diff = this.YAxisMax - this.YAxisMin;
                     let x_diff = this.XAxisMax - this.XAxisMin;
                     let axis_ratio = y_diff/x_diff;         //axis ratio
@@ -433,33 +392,13 @@ export default {
 
 
 <style scoped>
-button {
-	padding: 10px, 10px;
-	font-size: 24px;
-	text-align: center;
-	cursor: pointer;
-	outline: none;
-	color: rgb(255, 255, 255);
-
-	border: none;
-	border-radius: 15px;
-	box-shadow: 0 9px #999;
-}
-
-/*	background-color: #4CAF50;
- .button:hover {background-color: #3e8e41}*/
-
-button:active {
-	background-color: #3e8e41;
-	box-shadow: 0 5px #666;
-	transform: translateY(4px);
-}
 
 
-#plotFunctionButton       {background-color: #4CAF50FF;}
+
+#plotFunctionButton       {background-color: #4CAF50FF; color: rgb(255, 255, 255)}
 #plotFunctionButton:hover {background-color: #3e8e41} 
 
-#clearFunctionButton        {background-color: #e13131ff;}
+#clearFunctionButton        {background-color: #e13131ff; color: rgb(255, 255, 255)}
 #clearFunctionButton:hover {background-color: #cc1e1eff;}
 
 #clearButton  {background-color: #e17a31ff;}

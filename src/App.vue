@@ -6,6 +6,7 @@
       <div class='col-sm-6'> <graph-output type="graph" id="0" /> </div>
     </div>
   </div>
+  
 </template>
 
 <script>
@@ -18,6 +19,7 @@ import ControlPanel from "./components/ControlPanel.vue";
 //import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
 
+
 export default {
   name: 'App',
   components: {
@@ -29,8 +31,10 @@ export default {
     ControlPanel,
     //DataRecorder,
     //AutoCommand,
-  }
+  },
 }
+
+
 </script>
 
 <style>
@@ -45,7 +49,7 @@ export default {
 }
 
 .border{
-  box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.356);
+  box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.637);
 }
 
 </style>
