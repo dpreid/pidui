@@ -15,6 +15,9 @@
       <b-navbar-nav>
         <b-nav-item-dropdown text="Menu" right>
             <b-dropdown-item @click='toggleComponent("graph")'>Graph</b-dropdown-item>
+            <b-dropdown-item @click='toggleComponent("datarecorder")'>Data Recorder</b-dropdown-item>
+            <b-dropdown-item @click='toggleComponent("stopwatch")'>Stopwatch</b-dropdown-item>
+            <b-dropdown-item @click='toggleComponent("table")'>Table</b-dropdown-item>
         </b-nav-item-dropdown>
 
         <b-nav-item-dropdown text="Tools" right>

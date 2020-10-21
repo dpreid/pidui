@@ -1,6 +1,6 @@
 <template>
-<div class="container">
-    <div class="row mb-5 justify-content-center">
+<div class="m-2 bg-white border rounded">
+    <div class="row justify-content-center">
     <!-- <input type="text" id="search" v-on:keyup="search" v-model="search_field" placeholder="Search the table..."> -->
 
     <table class="table">

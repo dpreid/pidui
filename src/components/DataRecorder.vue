@@ -1,17 +1,17 @@
 <template>
-    <div class="p-3">
-    <!-- <div class="row mb-5"> -->
-        <button v-if="!isRecording" id="recordButton" @click="record">Record</button>
-        <button v-if="isRecording" id="stopButton" @click="stopRecording">Stop</button>
-        <button v-if="hasPlotted" id="clearButton" @click="clearGraph">Reset</button>
-        <label for="time_interval">Every</label>
-        <input id="time_interval" v-model="time_interval" size="3"> 
-        <label for="time_interval">s</label>
-
-        <button v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
-    <!-- </div> -->
-  
-  </div>
+<div class='m-2 p-2 bg-white border rounded'>
+    <div class="row m-2 justify-content-center align-items-center">
+        <button class="btn btn-default btn-xs" v-if="!isRecording" id="recordButton" @click="record">Record</button>
+        <button class="btn btn-default btn-xs" v-if="isRecording" id="stopButton" @click="stopRecording">Stop</button>
+        <button class="btn btn-default btn-xs" v-if="hasPlotted" id="clearButton" @click="clearGraph">Reset</button>
+        <button class="btn btn-default btn-xs" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
+    </div>
+   <div class="form-group row justify-content-center pb-2">
+        <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
+        <div class='col-sm-4'><input type='text' class='form-control' id="time_interval" v-model="time_interval"></div>
+        <label class="col-sm-2 col-form-label" for="time_interval">seconds</label>
+    </div>
+</div>
 </template>
 
 <script>
@@ -108,30 +108,8 @@ export default {
 </script>
 
 <style scoped>
-button {
-	padding: 15px 25px;
-	font-size: 24px;
-	text-align: center;
-	cursor: pointer;
-	outline: none;
-	color: rgb(255, 255, 255);
 
-	border: none;
-	border-radius: 15px;
-	box-shadow: 0 9px #999;
-}
-
-/*	background-color: #4CAF50;
- .button:hover {background-color: #3e8e41}*/
-
-button:active {
-	background-color: #3e8e41;
-	box-shadow: 0 5px #666;
-	transform: translateY(4px);
-}
-
-
-#recordButton       {background-color: #4CAF50FF;}
+#recordButton       {background-color: rgb(0, 255, 8);}
 #recordButton:hover {background-color: #3e8e41} 
 
 #stopButton       {background-color: #e13131ff;}
@@ -142,16 +120,5 @@ button:active {
 
 #outputButton        {background-color: #e1b131ff;}
 #outputButton:hover  {background-color: #cc9d1eff;}
-
-label {
-    font-size:20px;
-    color: #0501f7;
-    font-weight: bold;
-    display: inline-block;
-    vertical-align: middle;
-    width: 60px;
-    padding-top: 20px;
-    /* float: left; */
-}
 
 </style>

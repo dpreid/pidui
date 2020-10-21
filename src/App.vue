@@ -1,9 +1,23 @@
 <template>
   <div id="app" class='container-fluid-sm m-0'>
     <navigation-bar />
+
     <div class='row'>
-      <div class='col-sm-6'> <control-panel /> </div>
-      <div class='col-sm-6' v-if='isGraphOn'> <graph-output type="graph" id="0" /> </div>
+      <!-- LEFT HAND COLUMN -->
+      <div class='col-sm-6'> 
+        <control-panel /> 
+        <div class='col-sm-12' v-if='isTableOn'><table-output /></div>
+      </div>
+
+      <!-- RIGHT HAND COLUMN -->
+      <div class='col-sm-6' > 
+        <div class='row'>
+            <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder /></div> 
+            <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
+        </div>
+         
+        <div v-if='isGraphOn'><graph-output type="graph" id="0" /></div> 
+      </div>
     </div>
 
 
@@ -16,12 +30,12 @@
 
 <script>
 import GraphOutput from "./components/GraphOutput.vue";
-//import TableOutput from "./components/TableOutput.vue";
-//import Stopwatch from "./components/Stopwatch.vue";
+import TableOutput from "./components/TableOutput.vue";
+import Stopwatch from "./components/Stopwatch.vue";
 import Workspace from "./components/Workspace.vue";
 //import WebcamStream from "./components/WebcamStream.vue";
 import ControlPanel from "./components/ControlPanel.vue";
-//import DataRecorder from "./components/DataRecorder.vue";
+import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
 
@@ -31,12 +45,12 @@ export default {
   name: 'App',
   components: {
     GraphOutput,
-    //TableOutput,
-    //Stopwatch,
+    TableOutput,
+    Stopwatch,
     Workspace,
     //WebcamStream,
     ControlPanel,
-    //DataRecorder,
+    DataRecorder,
     //AutoCommand,
     NavigationBar
   },
@@ -47,12 +61,16 @@ export default {
       isStopwatchOn: false,
       isWorkspaceOn: false,
       isAutoCommandOn: false,
+      isDataRecorderOn: false,
     }
   },
   created(){
     eventBus.$on('togglegraph', this.toggleGraph);
     eventBus.$on('clearworkspace', this.clearWorkspace);
     eventBus.$on('toggleworkspace', this.addWorkspace);
+    eventBus.$on('toggledatarecorder', this.toggleDataRecorder);
+    eventBus.$on('togglestopwatch', this.toggleStopwatch);
+    eventBus.$on('toggletable', this.toggleTable);
   },
   methods: {
     addWorkspace(){
@@ -62,8 +80,17 @@ export default {
       this.isGraphOn = !this.isGraphOn;
     },
     clearWorkspace(){
-      console.log("clearing");
       this.isWorkspaceOn = false;
+    },
+    toggleDataRecorder(){
+      console.log('toggling data recorder');
+      this.isDataRecorderOn = !this.isDataRecorderOn;
+    },
+    toggleStopwatch(){
+      this.isStopwatchOn = !this.isStopwatchOn;
+    },
+    toggleTable(){
+      this.isTableOn = !this.isTableOn;
     }
   }
 }
