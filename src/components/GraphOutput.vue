@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { store } from "../store.js";
+//import { store } from "../store.js";
 import { Chart } from 'chart.js';
 import { eventBus } from "../main.js";
 
@@ -94,7 +94,6 @@ export default {
             chart: null,
             currentDataParameter: 'theta',
             chartData: [],
-            total_num_charts: store.state.num_graphs,
             gradient_start_point: {x:0, y:0},
             gradient_end_point: {x:0, y:0},
             gradient: 0,
@@ -212,15 +211,16 @@ export default {
                 console.log("getting ALL DATA");
                 this.clearData();
                 
-                for(let i=0; i<store.state.data.length;i++){
+                for(let i=0; i<this.$store.getters.getNumData;i++){
+                    let data = this.$store.getters.getData[i];
                     let y_data;
-                    let x_data = store.state.data[i].t;
+                    let x_data = data.t;
                     switch(this.currentDataParameter){
                         case 'theta':
-                            y_data = store.state.data[i].theta;
+                            y_data = data.theta;
                             break;
                         case 'omega':
-                            y_data = store.state.data[i].omega;
+                            y_data = data.omega;
 
                     }
                     this.addDataToChart({x: x_data, y: y_data});
@@ -230,18 +230,19 @@ export default {
             },
             getLatestData(){
                 console.log("getting LATEST DATA");
-                let index = store.getNumData() - 1;
+                let index = this.$store.getters.getNumData - 1;
                 let y_data;
                 if(index >= 0){
-                    let x_data = store.state.data[index].t;
+                    let data = this.$store.getters.getData[index];
+                    let x_data = data.t;
                     switch(this.currentDataParameter){
                             case 'theta':
-                                y_data = store.state.data[index].theta;
+                                y_data = data.theta;
                                 break;
                             case 'omega':
                                 //data for omega is calculated after the next timestep, so latest is 1 index position behind
                                 if(index > 0){
-                                    y_data = store.state.data[index - 1].omega;
+                                    y_data = this.$store.getters.getData[index - 1].omega;
                                 }
                                 break;
 
@@ -251,9 +252,6 @@ export default {
                         console.log("no data");
                     }
                 
-            },
-            chartAdded(){
-                this.total_num_charts = store.state.num_graphs;
             },
             removeChart(){
                 this.chart.destroy();
@@ -364,15 +362,7 @@ export default {
 
       },
       computed:{
-            getClass(){
-                if(this.total_num_charts == 1){
-                    return {"col-12": true, "col-6": false, "col-4": false}
-                } else if(this.total_num_charts==2){
-                    return {"col-12": false, "col-6": true, "col-4": false};
-                } else {
-                    return {"col-12": false, "col-6": false, "col-4": true};
-                }
-            },
+            
       },
       mounted() {
         this.createChart();

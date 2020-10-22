@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { store } from "../store.js";
+//import { store } from "../store.js";
 import { eventBus } from "../main";
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { SmoothieChart } from 'smoothie';
@@ -118,8 +118,6 @@ export default {
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
 			canvas: null,
-			tooltip_width: "50px",
-			tooltip_height: "40px",
 
         }
     },
@@ -215,20 +213,20 @@ export default {
 				//https://stackoverflow.com/questions/4633177/c-how-to-wrap-a-float-to-the-interval-pi-pi
 				if (wrapEncoder){ //wrap and convert to degrees
 				enc = Math.atan2(Math.sin(obj.enc / (encoderPPR/2) * Math.PI), Math.cos(obj.enc / (encoderPPR/2) * Math.PI)) / Math.PI * 180
-				enc = Math.min(3.14, enc)
-				enc = Math.max(-3.14, enc)
-				store.state.current_angle = enc * Math.PI / 180;		//for output graph, convert to radians
+				enc = Math.min(180, enc)
+				enc = Math.max(-180, enc)
+				this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
 				}
 				else{ //convert to radians only
 					enc = enc * 2* Math.PI / encoderPPR;
-					store.state.current_angle = enc;		//for data storage, radians
+					this.$store.dispatch('setCurrentAngle', enc);		//for data storage, radians
 				}
 
 				thisTime = msgTime + delay
 				
 				if (!isNaN(thisTime) && !isNaN(enc)){
 					series.append(msgTime + delay, enc)
-					store.state.current_time = msgTime + delay;			//for output graph
+					this.$store.dispatch('setCurrentTime', msgTime + delay);			//for output graph
 
 					if(debug) {
 						console.log(delay,thisDelay,msgTime, enc)
@@ -247,7 +245,7 @@ export default {
 			}
 		}
 
-		store.state.start_time = new Date().getTime();
+		this.$store.dispatch('setStartTime', new Date().getTime());
 		window.addEventListener('keydown', this.hotkey, false);
 		
 	},

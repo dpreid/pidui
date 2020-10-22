@@ -24,24 +24,24 @@
 </template>
 
 <script>
-import { store } from "../store.js";
+//import { store } from "../store.js";
 import { eventBus } from "../main.js";
 
 export default {
     name: 'TableOutput',
     data(){
         return{
-            tableData: store.state.data,
+            tableData: this.$store.getters.getData,     //will update table data whenever store data updates
             searchData:[],
             search_field:"",
             selected_row_id: "0",
         }
     },
     methods: {
-        addData(){
-            this.tableData = store.state.data;
-            //this.searchData = data;
-        },
+        // addData(){
+        //     this.tableData = this.$store.getters.getData;
+        //     //this.searchData = data;
+        // },
         search(){
             if(this.search_field == ""){
                 this.searchData = Array.from(this.tableData);
@@ -78,7 +78,7 @@ export default {
         
       },
       created(){
-          eventBus.$on('updatetable', this.addData);
+          //eventBus.$on('updatetable', this.addData);                  //no longer required since Vuex store getter updates automatically
             eventBus.$on('newselectedobject', this.changeSelected)
       }
 }

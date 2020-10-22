@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { store } from "../store.js";
+//import { store } from "../store.js";
 import { eventBus } from "../main.js";
 
 export default {
@@ -23,7 +23,7 @@ export default {
   name: 'DataRecorder',
   data () {
     return {
-        store: store,
+        //store: this.$store,
         isRecording: false,
         time_interval: 0.5,
         interval_id: 0,
@@ -36,12 +36,12 @@ export default {
   },
   computed:{
       hasData(){
-          return this.store.getNumData() !== 0;
+          return this.$store.getters.getNumData !== 0;
       }
   },
   methods: {
       record(){
-          store.state.start_time = new Date().getTime();
+          this.$store.dispatch('setStartTime', new Date().getTime());
           this.data_points_count = 0;
           this.isRecording = true;
           console.log("record");
@@ -56,20 +56,20 @@ export default {
       },
       plot(){
           this.data_points_count++;
-          let angle = store.state.current_angle;
-          let time = store.getTime();
-          let ang_vel = store.calculateAngularVelocity();
+          let angle = this.$store.getters.getCurrentAngle;
+          let time = this.$store.getters.getTime;
+          let ang_vel = this.$store.getters.calculateAngularVelocity;
           
-          let index = store.getNumData() - 1;
+          let index = this.$store.getters.getNumData - 1;
           //should the ang_vel calculated this loop be placed in the previous data point? Or this one?!!!!!!!!!!!!!!!
           if(index >= 0){
               console.log("index = " + index);
               console.log("ang vel = " + ang_vel);
-              store.state.data[index].omega = ang_vel;  //update previous ang_vel
+              this.$store.dispatch('updateAngularVelocity', index, ang_vel);  //update previous ang_vel
           }
           
-          let data_object = {id: store.state.data.length, t: parseFloat(time), theta: parseFloat(angle), omega: NaN};   //omega will be updated in next cycle
-          store.addData(data_object);
+          let data_object = {id: this.$store.getters.getNumData, t: parseFloat(time), theta: parseFloat(angle), omega: NaN};   //omega will be updated in next cycle
+          this.$store.dispatch('addData', data_object);
           eventBus.$emit('updateGraph');
           eventBus.$emit('updatetable');
           this.hasPlotted = true;
@@ -80,13 +80,13 @@ export default {
     //       eventBus.$emit('updateGraph');
     //   },
       clearGraph(){
-          store.clearAllData();
+          this.$store.dispatch('clearAllData');
           eventBus.$emit('clearalldata');
           this.hasPlotted = false;
       },
       outputToCSV(){
           let csv = 'Time/s,Angle/rad,AngVel/rad/s\n';
-          let data = store.state.data;
+          let data = this.$store.getters.getData;
           data.forEach(function(d){
               csv += d.t.toString();
               csv += ",";
