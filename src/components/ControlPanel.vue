@@ -63,23 +63,23 @@
 	<div class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
-			<input type='text' class='form-control' id="kp" :value="kpParam">
+			<input type='text' class='form-control' id="kp" v-model="kpParam">
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
-			<input type='text' class='form-control' id="ki" :value="kiParam">
+			<input type='text' class='form-control' id="ki" v-model="kiParam">
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
-			<input type='text' class='form-control' id="kd" :value="kdParam">
+			<input type='text' class='form-control' id="kd" v-model="kdParam">
         </div>
 		<div class='form-group col-2'>
 			<label for="dt">dt:</label>
-			<input type='text' class='form-control' id="dt" :value="dtParam">
+			<input type='text' class='form-control' id="dt" v-model="dtParam">
         </div>
 		<div class='form-group col-2'>
 			<label for="Nerrors">N_errors:</label>
-			<input type='text' class='form-control' id="Nerrors" :value="N_errorsParam">
+			<input type='text' class='form-control' id="Nerrors" v-model="N_errorsParam">
         </div>
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
 	</div>
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-//import { store } from "../store.js";
+import { store } from "../simplestore.js";
 import { eventBus } from "../main";
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { SmoothieChart } from 'smoothie';
@@ -123,12 +123,13 @@ export default {
     },
     created(){
 		eventBus.$on('stop', this.stop);
-		
+
+			
 	},
         
     mounted(){
         //dataUrl =  scheme + host + ':' + port + '/' + data;
-		let dataUrl = '';		//NEED THE DATA URL
+		let dataUrl = 'wss://video.practable.io:443/bi/dpr/pendulum0';
 
 		//console.log(dataUrl)
 
@@ -140,7 +141,7 @@ export default {
 		}
 
 		this.dataSocket = new ReconnectingWebSocket(dataUrl, null,wsOptions);
-		//console.log(this.dataSocket);
+		console.log(this.dataSocket);
 
 		//let dataOpen = false;
 		var delay = 0
@@ -168,10 +169,10 @@ export default {
 			console.log("dataSocket open" + event);
 			//dataOpen = true; 
 			
-			this.dataSocket.send(JSON.stringify({
-				cmd: "set_mode",
-				param: "CALIBRATE"
-			}));
+			// this.dataSocket.send(JSON.stringify({
+			// 	cmd: "set_mode",
+			// 	param: "CALIBRATE"
+			// }));
 			
 			//DO I WANT TO SEND DEFAULT PARAMETERS HERE?
 
@@ -192,7 +193,7 @@ export default {
 				// }
 
 				var enc = obj.enc
-
+	
 				if (messageCount == 0){
 					delay = thisDelay
 				}
@@ -215,19 +216,22 @@ export default {
 				enc = Math.atan2(Math.sin(obj.enc / (encoderPPR/2) * Math.PI), Math.cos(obj.enc / (encoderPPR/2) * Math.PI)) / Math.PI * 180
 				enc = Math.min(180, enc)
 				enc = Math.max(-180, enc)
-				this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
+				//this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
+				store.state.current_angle = enc * Math.PI / 180;
 				}
 				else{ //convert to radians only
 					enc = enc * 2* Math.PI / encoderPPR;
-					this.$store.dispatch('setCurrentAngle', enc);		//for data storage, radians
+					//console.log(enc);
+					//this.$store.dispatch('setCurrentAngle', enc);		//for data storage, radians
+					store.state.current_angle = enc;
 				}
 
 				thisTime = msgTime + delay
 				
 				if (!isNaN(thisTime) && !isNaN(enc)){
 					series.append(msgTime + delay, enc)
-					this.$store.dispatch('setCurrentTime', msgTime + delay);			//for output graph
-
+					//this.$store.dispatch('setCurrentTime', msgTime + delay);			//for output graph
+					store.state.current_time = msgTime + delay;
 					if(debug) {
 						console.log(delay,thisDelay,msgTime, enc)
 					}
@@ -245,12 +249,13 @@ export default {
 			}
 		}
 
-		this.$store.dispatch('setStartTime', new Date().getTime());
+		//this.$store.dispatch('setStartTime', new Date().getTime());
+		//this.$store.dispatch('setCurrentAngle', 25);
+		store.state.start_time = new Date().getTime();
 		window.addEventListener('keydown', this.hotkey, false);
 		
 	},
 	methods:{
-		//
 		stop(){
 			this.clearMessages();
 			console.log("STOP");

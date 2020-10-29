@@ -44,9 +44,11 @@ export default new Vuex.Store({
               context.commit('DELETE_DATA', dataID);
            },
            setStartTime(context, time){
+              console.log('start time set');
               context.commit('SET_START_TIME', time);
            },
            setCurrentAngle(context, angle){
+              console.log('setting angle data');
               context.commit('SET_CURRENT_ANGLE', angle);
            },
            setCurrentTime(context, time){

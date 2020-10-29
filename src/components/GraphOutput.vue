@@ -81,7 +81,7 @@
 </template>
 
 <script>
-//import { store } from "../store.js";
+import { store } from "../simplestore.js";
 import { Chart } from 'chart.js';
 import { eventBus } from "../main.js";
 
@@ -211,16 +211,20 @@ export default {
                 console.log("getting ALL DATA");
                 this.clearData();
                 
-                for(let i=0; i<this.$store.getters.getNumData;i++){
-                    let data = this.$store.getters.getData[i];
+                //for(let i=0; i<this.$store.getters.getNumData;i++){
+                for(let i=0; i<store.state.data.length;i++){
+                    //let data = this.$store.getters.getData[i];
+                    let x_data = store.state.data[i].t;
                     let y_data;
-                    let x_data = data.t;
+                    //let x_data = data.t;
                     switch(this.currentDataParameter){
                         case 'theta':
-                            y_data = data.theta;
+                            //y_data = data.theta;
+                            y_data = store.state.data[i].theta;
                             break;
                         case 'omega':
-                            y_data = data.omega;
+                            //y_data = data.omega;
+                            y_data = store.state.data[i].omega;
 
                     }
                     this.addDataToChart({x: x_data, y: y_data});
@@ -230,19 +234,23 @@ export default {
             },
             getLatestData(){
                 console.log("getting LATEST DATA");
-                let index = this.$store.getters.getNumData - 1;
+                //let index = this.$store.getters.getNumData - 1;
+                let index = store.getNumData() - 1;
                 let y_data;
                 if(index >= 0){
-                    let data = this.$store.getters.getData[index];
-                    let x_data = data.t;
+                    //let data = this.$store.getters.getData[index];
+                    let x_data = store.state.data[index].t;
+                    //let x_data = data.t;
                     switch(this.currentDataParameter){
                             case 'theta':
-                                y_data = data.theta;
+                                y_data = store.state.data[index].theta;
+                                //y_data = data.theta;
                                 break;
                             case 'omega':
                                 //data for omega is calculated after the next timestep, so latest is 1 index position behind
                                 if(index > 0){
-                                    y_data = this.$store.getters.getData[index - 1].omega;
+                                    y_data = store.state.data[index - 1].omega;
+                                    //y_data = this.$store.getters.getData[index - 1].omega;
                                 }
                                 break;
 

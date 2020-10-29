@@ -5,6 +5,7 @@
     <div class='row'>
       <!-- LEFT HAND COLUMN -->
       <div class='col-sm-6'> 
+        <webcam-stream />
         <control-panel /> 
         <div class='col-sm-12' v-if='isTableOn'><table-output /></div>
       </div>
@@ -33,7 +34,7 @@ import GraphOutput from "./components/GraphOutput.vue";
 import TableOutput from "./components/TableOutput.vue";
 import Stopwatch from "./components/Stopwatch.vue";
 import Workspace from "./components/Workspace.vue";
-//import WebcamStream from "./components/WebcamStream.vue";
+import WebcamStream from "./components/WebcamStream.vue";
 import ControlPanel from "./components/ControlPanel.vue";
 import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
@@ -48,7 +49,7 @@ export default {
     TableOutput,
     Stopwatch,
     Workspace,
-    //WebcamStream,
+    WebcamStream,
     ControlPanel,
     DataRecorder,
     //AutoCommand,
