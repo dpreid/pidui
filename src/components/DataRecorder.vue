@@ -63,18 +63,19 @@ export default {
           //let time = this.$store.getters.getTime;
           let time = store.getTime();
           //let ang_vel = this.$store.getters.calculateAngularVelocity;
-          let ang_vel = store.calculateAngularVelocity();
+          //let ang_vel = store.calculateAngularVelocity();
+          let ang_vel = store.state.current_ang_vel;
           //let index = this.$store.getters.getNumData - 1;
-          let index = store.getNumData() -1;
+          //let index = store.getNumData() -1;
           //should the ang_vel calculated this loop be placed in the previous data point? Or this one?!!!!!!!!!!!!!!!
-          if(index >= 0){
-              console.log("index = " + index);
-              console.log("ang vel = " + ang_vel);
-              //this.$store.dispatch('updateAngularVelocity', index, ang_vel);  //update previous ang_vel
-              store.state.data[index].omega = ang_vel;  //update previous ang_vel
-          }
+        //   if(index >= 0){
+        //       console.log("index = " + index);
+        //       console.log("ang vel = " + ang_vel);
+        //       //this.$store.dispatch('updateAngularVelocity', index, ang_vel);  //update previous ang_vel
+        //       store.state.data[index].omega = ang_vel;  //update previous ang_vel
+        //   }
           
-          let data_object = {id: this.$store.getters.getNumData, t: parseFloat(time), theta: parseFloat(angle), omega: NaN};   //omega will be updated in next cycle
+          let data_object = {id: store.getNumData(), t: parseFloat(time), theta: parseFloat(angle), omega: parseFloat(ang_vel)};
           //this.$store.dispatch('addData', data_object);
           store.addData(data_object);
           eventBus.$emit('updateGraph');

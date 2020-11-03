@@ -247,7 +247,7 @@ export default {
                                 //y_data = data.theta;
                                 break;
                             case 'omega':
-                                //data for omega is calculated after the next timestep, so latest is 1 index position behind
+                                //data for omega is calculated after the next timestep, so latest is 1 index position behind CHECK!!!!!
                                 if(index > 0){
                                     y_data = store.state.data[index - 1].omega;
                                     //y_data = this.$store.getters.getData[index - 1].omega;

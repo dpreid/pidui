@@ -3,6 +3,7 @@
 export const store = {
     state: {
         current_angle: 0,
+        current_ang_vel: 0,
         current_time: 0,
         start_time: 0,
         data: [],
