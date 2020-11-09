@@ -62,9 +62,12 @@
 		<div v-else class="col-7"><input type="range" min="-100" max="100" v-model="speedParam" class="slider" id="brakeSlider"></div>
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
 	</div>
+	<div >
+		<DCMotorPanel v-if='currentMode == "dc_motor"' v-bind:dataSocket="getDataSocket" />
+	</div>
 	<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
 		<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>
-		<div class="col-7"><input type="range" min="0" max="10" v-model="heightParam" v-on:change="setHeight" class="slider" id="heightSlider"></div>
+		<div class="col-7"><input type="range" min="0" max="30" v-model="heightParam" v-on:change="setHeight" class="slider" id="heightSlider"></div>
 		<button id="set" class="btn btn-default btn-lg col-2" @click="configure">Set</button>
 	</div>
 	<div class="row justify-content-center m-1 align-items-center">
@@ -101,11 +104,16 @@ import { eventBus } from "../main";
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { SmoothieChart } from 'smoothie';
 import { TimeSeries } from 'smoothie';
+import DCMotorPanel from './DCMotorPanel.vue';
+//import StepCommand from './StepCommand.vue';
+//import RampCommand from './RampCommand.vue';
 
 export default {
 	name: "ControlPanel",
 	components:{
-		
+		DCMotorPanel,
+		//StepCommand,
+		//RampCommand,
 	},
     data(){
         return{
@@ -141,6 +149,11 @@ export default {
     mounted(){
         this.connect();
 		
+	},
+	computed: {
+		getDataSocket(){
+			return this.dataSocket;
+		},
 	},
 	methods:{
 		stop(){
@@ -372,6 +385,7 @@ export default {
 				// }
 
 				var enc = obj.enc
+				store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
 				var enc_ang_vel = obj.enc_ang_vel;			//encoder reports angular velocity in specific modes
 
 				if (messageCount == 0){
@@ -393,19 +407,26 @@ export default {
 
 				//https://stackoverflow.com/questions/4633177/c-how-to-wrap-a-float-to-the-interval-pi-pi
 				if (wrapEncoder){ //wrap and convert to degrees
-				enc = Math.atan2(Math.sin(obj.enc / (encoderPPR/2) * Math.PI), Math.cos(obj.enc / (encoderPPR/2) * Math.PI)) / Math.PI * 180
-				enc = Math.min(180, enc)
-				enc = Math.max(-180, enc)
-				//this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
-				store.state.current_angle = enc * Math.PI / 180;
-				store.state.current_ang_vel = enc_ang_vel;
+					enc = Math.atan2(Math.sin(obj.enc / (encoderPPR/2) * Math.PI), Math.cos(obj.enc / (encoderPPR/2) * Math.PI)) / Math.PI * 180
+					enc = Math.min(180, enc)
+					enc = Math.max(-180, enc)
+					//this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
+					//only save values to the data store if within the min/max range
+					store.state.current_angle = enc * Math.PI / 180;
+					store.state.current_ang_vel = enc_ang_vel;
+
 				}
 				else{ //convert to radians only
 					enc = enc * 2* Math.PI / encoderPPR;
-					//console.log(enc);
 					//this.$store.dispatch('setCurrentAngle', enc);		//for data storage, radians
-					store.state.current_angle = enc;
-					store.state.current_ang_vel = enc_ang_vel;
+					//only save values to the data store if within the min/max range
+					if(enc >= -Math.PI && enc <= Math.PI){
+						store.state.current_angle = enc;
+					}
+					if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
+						store.state.current_ang_vel = enc_ang_vel;
+					}
+			
 				}
 
 				thisTime = msgTime + delay

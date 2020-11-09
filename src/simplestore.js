@@ -2,8 +2,9 @@
 
 export const store = {
     state: {
-        current_angle: 0,
-        current_ang_vel: 0,
+       current_enc_pos: 0,
+        current_angle: 0,     //in rad
+        current_ang_vel: 0,   //in rpm
         current_time: 0,
         start_time: 0,
         data: [],

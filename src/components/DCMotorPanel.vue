@@ -1,0 +1,76 @@
+<template>
+<div class='m-2 p-2 bg-white border rounded'>
+   <div class="form-group row justify-content-center pb-2">
+        <label class="col-sm-2 col-form-label" for="voltage">Input voltage ({{voltage}}V)</label>
+        <div class="col-4"><input type="range" min="0" max="6" step="0.5" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
+            <datalist id="tickmarks">
+                <option value="0"></option>
+                <option value="0.5"></option>
+                <option value="1.0"></option>
+                <option value="1.5"></option>
+                <option value="2.0"></option>
+                <option value="2.5"></option>
+                <option value="3.0"></option>
+                <option value="3.5"></option>
+                <option value="4.0"></option>
+                <option value="4.5"></option>
+                <option value="5.0"></option>
+                <option value="5.5"></option>
+                <option value="6.0"></option>
+            </datalist>
+        <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rad/s)</label>
+        <div class='col-sm-4'><input type='text' class='form-control' id="ang_vel" :value='angVel'></div>
+    </div>
+</div>
+
+</template>
+
+<script>
+import { store } from "../simplestore.js";
+//import { eventBus } from "../main.js";
+import ReconnectingWebSocket from 'reconnecting-websocket';
+
+export default {
+
+  name: 'DCMotorPanel',
+  props: {
+      dataSocket: ReconnectingWebSocket,
+  },
+  data () {
+    return {
+        voltage: 0,
+        motor_max_voltage: 12.0,
+    }
+  },
+  beforeMount(){
+
+  },
+  mounted(){
+
+  },
+  components: {
+    
+  },
+  computed:{
+      angVel(){
+          return store.state.current_ang_vel;
+      },
+  },
+  methods: {
+      setVoltage(){
+          let signal = (this.voltage/this.motor_max_voltage) * 255;
+          this.dataSocket.send(JSON.stringify({
+				cmd: "set_speed",
+				param: signal
+			}));
+      }
+      
+  }
+}
+</script>
+
+<style scoped>
+
+
+
+</style>
