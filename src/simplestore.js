@@ -15,8 +15,10 @@ export const store = {
         },
         ramp:{
            ramp_start: 0,
-         ramp_magnitude: 1,
-         ramp_time: 0,
+         ramp_gradient: 1,
+         ramp_start_time: 0,
+         max_voltage: 6,
+         max_rpm: 1000,
         },
        },
        calculateAngularVelocity(){

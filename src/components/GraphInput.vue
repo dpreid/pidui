@@ -219,6 +219,33 @@ export default {
             
             this.addNewDataSet('rgba(255, 0, 0, 0.5)', new_data);
             },
+        ramp(step_type, max_value){
+            this.deleteFunctionDataset();       //remove previous plot if any
+            this.chart.options.scales.yAxes[0].scaleLabel.labelString = step_type;
+            let min_time = 0;
+            let max_time = parseFloat((max_value - store.state.ramp.ramp_start) / store.state.ramp.ramp_gradient) + parseFloat(store.state.ramp.ramp_start_time);
+            let t_delta = max_time-min_time;
+            let num_plots = t_delta/this.funcTimeStep;
+            let new_data = [];
+            let new_t;
+            let new_y;
+            for(let i=0; i<num_plots;i++){
+                new_t = min_time + i*this.funcTimeStep;
+                if(new_t >= store.state.ramp.ramp_start_time){
+                    new_y = store.state.ramp.ramp_start + store.state.ramp.ramp_gradient*(new_t - store.state.ramp.ramp_start_time);
+                } else{
+                    new_y = store.state.ramp.ramp_start;
+                }
+    
+                let data = {
+                    x: new_t,
+                    y: new_y
+                };
+                new_data.push(data);
+            }
+            
+            this.addNewDataSet('rgba(255, 0, 0, 0.5)', new_data);
+        },
         addNewDataSet(colour, data){
             this.chart.data.datasets.push({
                 label:"plotted function",
@@ -240,6 +267,7 @@ export default {
       mounted() {
         this.createChart();
         eventBus.$on('addstepfunction', this.step);
+        eventBus.$on('addrampfunction', this.ramp);
       },
       created(){
         //eventBus.$on('updateGraph', this.getData );

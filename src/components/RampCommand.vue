@@ -5,14 +5,14 @@
         </div>
         <div class="row justify-content-center">    
 
-            <label v-if='mode == "dc_motor"' for="step_size">Ramp magnitude (V)</label>
-            <label v-else-if='mode == "pid_position"' for="step_size">Ramp magnitude (degrees)</label>
-            <label v-else-if='mode == "pid_speed"' for="step_size">Ramp magnitude (rpm)</label>
+            <label v-if='mode == "dc_motor"' for="step_size">Ramp gradient (V/s)</label>
+            <label v-else-if='mode == "pid_position"' for="step_size">Ramp gradient (degree/s)</label>
+            <label v-else-if='mode == "pid_speed"' for="step_size">Ramp gradient (rpm/s)</label>
 
-            <input id="ramp_size" v-model.number="ramp_magnitude" size="3">
+            <input id="ramp_size" v-model.number="ramp_gradient" size="3">
 
             <label for="time_interval">After</label>
-            <input id="time_interval" v-model="time_to_ramp" size="3">
+            <input id="time_interval" v-model="time_until_ramp" size="3">
             <label for="time_interval">seconds</label>
 
             <button v-show="mode == 'dc_motor' || mode == 'pid_speed'" id="run" @click="runCommand">Run</button>
@@ -37,14 +37,14 @@ export default {
   },
   data () {
     return {
-        time_to_ramp: 0,
-        ramp_magnitude: null,            //only positive ramps
+        time_until_ramp: 0,
+        ramp_gradient: 1,            //only positive ramps
         motor_max_voltage: 12,
         encoder_max: 1000,
         time: 0,
         time_interval: 0.01,          //seconds
-        max_value: 6,                   //volts or 1000 rpm
         interval_id: null,
+        max_value: 6,
     }
   },
   components: {
@@ -58,36 +58,46 @@ export default {
   },
   methods: {
      async runCommand(){
-         this.ramp_magnitude = Math.abs(this.ramp_magnitude);     //only positive steps
+         this.ramp_gradient = Math.abs(this.ramp_gradient);     //only positive gradients
          //set store state for access by graph input component
-         store.state.ramp.ramp_time = this.time_to_ramp;
+         store.state.ramp.ramp_start_time = this.time_until_ramp;
          store.state.ramp.ramp_start = 0;
-         store.state.ramp.ramp_size = this.ramp_size;
+         store.state.ramp.ramp_gradient = this.ramp_gradient;
          
          if(this.mode == 'pid_speed'){
-             eventBus.$emit('addrampfunction', 'rpm');
-         } else{
-             eventBus.$emit('addrampfunction', 'voltage(V)');
+             this.max_value = store.state.ramp.max_rpm
+             eventBus.$emit('addrampfunction', 'rpm', this.max_value);
+         } else if(this.mode == 'dc_motor'){
+             this.max_value = store.state.ramp.max_voltage;
+             eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
          }
          
-        this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
+         await new Promise((resolve) => {
+             setTimeout(() => resolve(this.startInterval()), parseFloat(this.time_until_step)*1000);
+        });
+        
+        
 
              
      },
+     startInterval(){
+         this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
+     },
      sendCommand(){
          this.time += this.time_interval;        //in seconds
-         if(this.time >= this.max_value){
+         let ramp_value = this.ramp_gradient * this.time;
+         if(ramp_value >= this.max_value){
              this.stopCommand();
          }
 
          if(this.mode == 'dc_motor'){
-             let signal = (this.time/this.motor_max_voltage) * 255;
+             let signal = (ramp_value/this.motor_max_voltage) * 255;
              this.dataSocket.send(JSON.stringify({
 				cmd: "set_speed",
 				param: signal
 			}));
          } else if(this.mode == 'pid_speed'){
-             let rpm = this.time;         
+             let rpm = ramp_value;         
              this.dataSocket.send(JSON.stringify({
 				cmd: "set_speed",
 				param: rpm
