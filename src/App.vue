@@ -17,6 +17,7 @@
             <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
         </div>
          
+         <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
         <div v-if='isGraphOn'><graph-output type="graph" id="0" /></div> 
       </div>
     </div>
@@ -39,6 +40,7 @@ import ControlPanel from "./components/ControlPanel.vue";
 import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
+import GraphInput from "./components/GraphInput.vue";
 
 import { eventBus } from "./main.js";
 
@@ -53,7 +55,8 @@ export default {
     ControlPanel,
     DataRecorder,
     //AutoCommand,
-    NavigationBar
+    NavigationBar,
+    GraphInput,
   },
   data() {
     return {
@@ -63,6 +66,7 @@ export default {
       isWorkspaceOn: false,
       isAutoCommandOn: false,
       isDataRecorderOn: false,
+      isInputGraphOn: false,
     }
   },
   created(){
@@ -72,6 +76,7 @@ export default {
     eventBus.$on('toggledatarecorder', this.toggleDataRecorder);
     eventBus.$on('togglestopwatch', this.toggleStopwatch);
     eventBus.$on('toggletable', this.toggleTable);
+    eventBus.$on('togglegraphinput', this.toggleInputGraph);
   },
   methods: {
     addWorkspace(){
@@ -92,6 +97,9 @@ export default {
     },
     toggleTable(){
       this.isTableOn = !this.isTableOn;
+    },
+    toggleInputGraph(){
+      this.isInputGraphOn = !this.isInputGraphOn;
     }
   }
 }

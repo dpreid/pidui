@@ -24,24 +24,27 @@
 </template>
 
 <script>
-//import { store } from "../store.js";
+import { store } from "../simplestore.js";
 import { eventBus } from "../main.js";
 
 export default {
     name: 'TableOutput',
     data(){
         return{
-            tableData: this.$store.getters.getData,     //will update table data whenever store data updates
+            //tableData: this.$store.getters.getData,     //will update table data whenever store data updates
+            tableData: store.state.data,
             searchData:[],
             search_field:"",
             selected_row_id: "0",
         }
     },
     methods: {
-        // addData(){
-        //     this.tableData = this.$store.getters.getData;
-        //     //this.searchData = data;
-        // },
+        getData(){
+            //this.tableData = this.$store.getters.getData;
+            //this.searchData = data;
+            this.tableData = store.state.data;
+        },
+        
         search(){
             if(this.search_field == ""){
                 this.searchData = Array.from(this.tableData);
@@ -71,15 +74,16 @@ export default {
         }
       },
       computed:{
-            
+    
       },
       mounted() {
         
         
       },
       created(){
-          //eventBus.$on('updatetable', this.addData);                  //no longer required since Vuex store getter updates automatically
+          eventBus.$on('updatetable', this.getData);                  //no longer required since Vuex store getter updates automatically
             eventBus.$on('newselectedobject', this.changeSelected)
+            eventBus.$on('clearalldata', this.getData);
       }
 }
 </script>

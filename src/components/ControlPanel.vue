@@ -31,6 +31,13 @@
 			<div class='col-sm'>
 				<button id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" v-if="isStopped" @click="changingMode = true">Set Mode</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
+
+				<label class='m-2' for="graphSelect">Input type:</label>
+				<select name="inputSelect" id="inputSelect" v-model="inputMode">
+					<option value="free">Free</option>
+					<option value="step">Step</option>
+					<option value="ramp">Ramp</option>
+				</select> 
 			</div>
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
@@ -45,31 +52,52 @@
 
 	</div>
 
-	<div class='row justify-content-center m-2'>
-		<div class='col-12'><h2> Parameters </h2></div>
+
+	<div v-if='inputMode == "free"'>
+		<div v-if="currentMode != 'stopped' && currentMode != 'calibrate'" class='row justify-content-center m-2'>
+		<div v-if="currentMode != 'stopped' && currentMode != 'calibrate'" class='row justify-content-center m-2'>
+			<div class='col-12'><h2> Parameters </h2></div>
+		</div>
+
+		<div v-if='currentMode == "pid_position"' class="row justify-content-center m-2 align-items-center">
+			<div v-if='angleMode == "degrees"' class="col-3 sliderlabel"> Angle ({{angleParam}}deg)</div>
+			<div v-else class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
+			<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
+			<div v-else class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
+			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+		</div>
+		<div v-if='currentMode == "pid_speed" || currentMode == "dc_motor"' class="row justify-content-center m-1 align-items-center">
+			<div v-if='currentMode == "pid_speed"' class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
+			<div v-else class="col-3  sliderlabel"> Speed ({{speedParam}})</div>
+			<div v-if='currentMode == "pid_speed"' class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
+			<div v-else class="col-7"><input type="range" min="-100" max="100" v-model="speedParam" class="slider" id="brakeSlider"></div>
+			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
+		</div>
+		
+		<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
+			<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>
+			<div class="col-7"><input type="range" min="0" max="30" v-model="heightParam" v-on:change="setHeight" class="slider" id="heightSlider"></div>
+			<button id="set" class="btn btn-default btn-lg col-2" @click="configure">Set</button>
+		</div>
+
+		<div v-if='currentMode == "dc_motor"'>
+			<!-- Currently this appears for DC Motor, but the original free slider will also appear-->
+			<DCMotorPanel v-bind:dataSocket="getDataSocket" />
+		</div>
+		</div>
 	</div>
-	<div v-if='currentMode == "pid_position"' class="row justify-content-center m-2 align-items-center">
-		<div v-if='angleMode == "degrees"' class="col-3 sliderlabel"> Angle ({{angleParam}}deg)</div>
-		<div v-else class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
-		<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
-		<div v-else class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
-		<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+
+	<div v-else-if="inputMode == 'step'">
+		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
 	</div>
-	<div v-if='currentMode == "pid_speed" || currentMode == "dc_motor"' class="row justify-content-center m-1 align-items-center">
-		<div v-if='currentMode == "pid_speed"' class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
-		<div v-else class="col-3  sliderlabel"> Speed ({{speedParam}})</div>
-		<div v-if='currentMode == "pid_speed"' class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
-		<div v-else class="col-7"><input type="range" min="-100" max="100" v-model="speedParam" class="slider" id="brakeSlider"></div>
-		<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
+
+	<div v-else-if="inputMode == 'ramp'">
+		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
+		<!-- <h2> RAMP MODE </h2> -->
 	</div>
-	<div >
-		<DCMotorPanel v-if='currentMode == "dc_motor"' v-bind:dataSocket="getDataSocket" />
-	</div>
-	<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
-		<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>
-		<div class="col-7"><input type="range" min="0" max="30" v-model="heightParam" v-on:change="setHeight" class="slider" id="heightSlider"></div>
-		<button id="set" class="btn btn-default btn-lg col-2" @click="configure">Set</button>
-	</div>
+
+	
+
 	<div class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
@@ -105,15 +133,15 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { SmoothieChart } from 'smoothie';
 import { TimeSeries } from 'smoothie';
 import DCMotorPanel from './DCMotorPanel.vue';
-//import StepCommand from './StepCommand.vue';
-//import RampCommand from './RampCommand.vue';
+import StepCommand from './StepCommand.vue';
+import RampCommand from './RampCommand.vue';
 
 export default {
 	name: "ControlPanel",
 	components:{
 		DCMotorPanel,
-		//StepCommand,
-		//RampCommand,
+		StepCommand,
+		RampCommand,
 	},
     data(){
         return{
@@ -130,6 +158,7 @@ export default {
 			isStopped: true,
 			changingMode: false,
 			currentMode: "stopped",		//"pid_position", "pid_speed", "dc_motor", "calibrate", "configure"
+			inputMode: 'free',		//'step', 'ramp'
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
 			canvas: null,

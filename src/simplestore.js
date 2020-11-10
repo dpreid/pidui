@@ -8,6 +8,16 @@ export const store = {
         current_time: 0,
         start_time: 0,
         data: [],
+        step:{
+           step_time: 0,      //seconds
+           step_start: 0,
+           step_size: 0
+        },
+        ramp:{
+           ramp_start: 0,
+         ramp_magnitude: 1,
+         ramp_time: 0,
+        },
        },
        calculateAngularVelocity(){
           let current_index = this.state.data.length - 1;
