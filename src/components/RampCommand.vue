@@ -11,9 +11,6 @@
 
             <input id="ramp_size" v-model.number="ramp_gradient" size="3">
 
-            <label for="time_interval">After</label>
-            <input id="time_interval" v-model="time_until_ramp" size="3">
-            <label for="time_interval">seconds</label>
 
             <button v-show="mode == 'dc_motor' || mode == 'pid_speed'" id="run" @click="runCommand">Run</button>
 
@@ -53,11 +50,15 @@ export default {
   computed:{
 
   },
+  created(){
+		eventBus.$on('runrecord', this.runCommand);
+	},
   mounted(){
 
   },
   methods: {
      async runCommand(){
+         this.time = 0;
          this.ramp_gradient = Math.abs(this.ramp_gradient);     //only positive gradients
          //set store state for access by graph input component
          store.state.ramp.ramp_start_time = this.time_until_ramp;
@@ -72,16 +73,11 @@ export default {
              eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
          }
          
-         await new Promise((resolve) => {
-             setTimeout(() => resolve(this.startInterval()), parseFloat(this.time_until_step)*1000);
-        });
+         this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
         
         
 
              
-     },
-     startInterval(){
-         this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
      },
      sendCommand(){
          this.time += this.time_interval;        //in seconds

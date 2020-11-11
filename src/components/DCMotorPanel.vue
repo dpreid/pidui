@@ -18,8 +18,8 @@
                 <option value="5.5"></option>
                 <option value="6.0"></option>
             </datalist>
-        <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rad/s)</label>
-        <div class='col-sm-4'><input type='text' class='form-control' id="ang_vel" :value='angVel'></div>
+        <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rpm)</label>
+        <div class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='angVel'></div>
     </div>
 </div>
 
@@ -38,6 +38,7 @@ export default {
   },
   data () {
     return {
+        data_store: store,
         voltage: 0,
         motor_max_voltage: 12.0,
     }
@@ -53,7 +54,8 @@ export default {
   },
   computed:{
       angVel(){
-          return store.state.current_ang_vel;
+          let data = this.data_store.state.current_ang_vel;
+          return data;
       },
   },
   methods: {

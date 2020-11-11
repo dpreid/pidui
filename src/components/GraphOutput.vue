@@ -27,6 +27,8 @@
                 <option value="quadratic">Quadratic</option>
                 <option value="trigonometric">Trigonometric</option>
                 <option value="exponential">Exponential</option>
+                <option value="step">Step</option>
+                <option value="ramp">Ramp</option>
             </select> 
 
             <div v-if="currentFunction === 'linear'">
@@ -70,6 +72,28 @@
                 <label class='m-2' for="func_b"> t)</label>
                 <div class="row-sm justify-content-center">
                     <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(exponential)">Plot</button>
+                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                </div>
+            </div>
+            <div v-else-if="currentFunction === 'step'">
+                <label class='m-2' for="func_a">Y(s)=</label>
+                <input id="func_a" v-model="func_a" size="3">
+                <label class='m-2' for="func_b">/s(</label>
+                <input id="func_b" v-model="func_b" size="3"> 
+                <label class='m-2' for="func_b"> s+1)</label>
+                <div class="row-sm justify-content-center">
+                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
+                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                </div>
+            </div>
+            <div v-else-if="currentFunction === 'ramp'">
+                <label class='m-2' for="func_a">Y(s)=</label>
+                <input id="func_a" v-model="func_a" size="3">
+                <label class='m-2' for="func_b">/s^2(</label>
+                <input id="func_b" v-model="func_b" size="3"> 
+                <label class='m-2' for="func_b"> s+1)</label>
+                <div class="row-sm justify-content-center">
+                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(ramp)">Plot</button>
                     <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
@@ -352,6 +376,23 @@ export default {
             },
             exponential(t){
                 return parseFloat(this.func_a)*Math.exp(parseFloat(this.func_b)*t);
+            },
+            step(t){
+                let A = parseFloat(store.state.step.step_size);
+                let t0 = parseFloat(store.state.step.step_time);
+                //let w0 = -parseFloat(this.func_a)*A*(1-Math.exp(t0/parseFloat(this.func_b)));
+                //let t0 = 0;
+                let expterm = 1 - Math.exp(-(t-t0)/parseFloat(this.func_b));
+
+                if(t < t0){
+                    return 0;
+                } else{
+                    return parseFloat(this.func_a)*A*expterm; 
+                }
+                
+            },
+            ramp(){
+
             },
             addNewDataSet(colour, data){
                 this.chart.data.datasets.push({

@@ -34,6 +34,9 @@ export default {
   components: {
     
   },
+  created(){
+		eventBus.$on('runrecord', this.record);
+	},
   computed:{
       hasData(){
           //return this.$store.getters.getNumData !== 0;

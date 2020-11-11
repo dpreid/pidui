@@ -9,10 +9,10 @@
             <label v-else-if='mode == "pid_position"' for="step_size">Step size (degrees)</label>
             <label v-else-if='mode == "pid_speed"' for="step_size">Step size (rpm)</label>
 
-            <input id="step_size" v-model="step_size" size="3">
+            <input id="step_size" v-model="step_size" size="3" @change='updateStore'>
 
             <label for="time_interval">After</label>
-            <input id="time_interval" v-model="time_to_step" size="3">
+            <input id="time_interval" v-model="time_to_step" size="3" @change='updateStore'>
             <label for="time_interval">seconds</label>
 
             <button v-show="mode == 'dc_motor' || mode == 'pid_position' || mode == 'pid_speed'" id="run" @click="runCommand">Run</button>
@@ -49,6 +49,9 @@ export default {
   computed:{
 
   },
+  created(){
+		eventBus.$on('runrecord', this.runCommand);
+	},
   mounted(){
 
   },
@@ -56,14 +59,14 @@ export default {
      async runCommand(){
          this.step_size = Math.abs(this.step_size);     //only positive steps
          //set store state for access by graph input component
-         store.state.step.step_time = this.time_to_step;
-         if(this.mode == "pid_position"){
-             //store.state.step.step_start = store.state.current_angle * 180 / Math.PI;
-            store.state.step.step_start = 0;
-         } else{
-             store.state.step.step_start = 0;
-         }
-         store.state.step.step_size = this.step_size;
+        //  store.state.step.step_time = this.time_to_step;
+        //  if(this.mode == "pid_position"){
+        //      //store.state.step.step_start = store.state.current_angle * 180 / Math.PI;
+        //     store.state.step.step_start = 0;
+        //  } else{
+        //      store.state.step.step_start = 0;
+        //  }
+        //  store.state.step.step_size = this.step_size;
          
          if(this.mode == 'pid_position'){
              eventBus.$emit('addstepfunction', 'angle');
@@ -112,6 +115,17 @@ export default {
 			}));
          }
          
+     },
+     updateStore(){
+         store.state.step.step_time = this.time_to_step;
+
+         if(this.mode == "pid_position"){
+             //store.state.step.step_start = store.state.current_angle * 180 / Math.PI;
+            store.state.step.step_start = 0;
+         } else{
+             store.state.step.step_start = 0;
+         }
+         store.state.step.step_size = this.step_size;
      }
   }
 }

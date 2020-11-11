@@ -329,7 +329,9 @@ export default {
 		hotkey(event){
 			if(event.key == "s"){
 				this.stop();
-            } 
+            } else if(event.key == 'r'){
+				eventBus.$emit('runrecord');
+			}
 		},
 		clearMessages(){
 			this.message = '';
