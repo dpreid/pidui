@@ -7,6 +7,8 @@ export const store = {
         current_ang_vel: 0,   //in rpm
         current_time: 0,
         start_time: 0,
+        currentMode: '',
+        inputMode: '',
         data: [],
         step:{
            step_time: 0,      //seconds
@@ -19,6 +21,13 @@ export const store = {
          ramp_start_time: 0,
          max_voltage: 6,
          max_rpm: 1000,
+        },
+        pid_parameters:{
+         Kp: 1,
+         Ki:0,
+         Kd:0,
+         dt:3,
+         N_errors: 10
         },
        },
        calculateAngularVelocity(){
@@ -51,7 +60,6 @@ export const store = {
           this.state.data.splice(dataId, 1);
         },
         getTime(){
-           console.log("start time = " + this.state.start_time);
            return (this.state.current_time - this.state.start_time)/1000;    //in seconds
         },
         getMaxTime(){

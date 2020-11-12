@@ -33,7 +33,7 @@
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 
 				<label class='m-2' for="graphSelect">Input type:</label>
-				<select name="inputSelect" id="inputSelect" v-model="inputMode">
+				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
 					<option value="free">Free</option>
 					<option value="step">Step</option>
 					<option value="ramp">Ramp</option>
@@ -54,7 +54,7 @@
 
 
 	<div v-if='inputMode == "free"'>
-		<div v-if="currentMode != 'stopped' && currentMode != 'calibrate'" class='row justify-content-center m-2'>
+		
 		<div v-if="currentMode != 'stopped' && currentMode != 'calibrate'" class='row justify-content-center m-2'>
 			<div class='col-12'><h2> Parameters </h2></div>
 		</div>
@@ -66,25 +66,16 @@
 			<div v-else class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
 		</div>
-		<div v-if='currentMode == "pid_speed" || currentMode == "dc_motor"' class="row justify-content-center m-1 align-items-center">
-			<div v-if='currentMode == "pid_speed"' class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
-			<div v-else class="col-3  sliderlabel"> Speed ({{speedParam}})</div>
-			<div v-if='currentMode == "pid_speed"' class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
-			<div v-else class="col-7"><input type="range" min="-100" max="100" v-model="speedParam" class="slider" id="brakeSlider"></div>
+		<div v-if='currentMode == "pid_speed"' class="row justify-content-center m-1 align-items-center">
+			<div class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
+			<div class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
-		</div>
-		
-		<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
-			<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>
-			<div class="col-7"><input type="range" min="0" max="30" v-model="heightParam" v-on:change="setHeight" class="slider" id="heightSlider"></div>
-			<button id="set" class="btn btn-default btn-lg col-2" @click="configure">Set</button>
 		</div>
 
 		<div v-if='currentMode == "dc_motor"'>
-			<!-- Currently this appears for DC Motor, but the original free slider will also appear-->
 			<DCMotorPanel v-bind:dataSocket="getDataSocket" />
 		</div>
-		</div>
+	
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
@@ -96,9 +87,15 @@
 		<!-- <h2> RAMP MODE </h2> -->
 	</div>
 
+	<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
+			<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>
+			<div class="col-7"><input type="range" min="0" max="30" v-model="heightParam" v-on:change="setHeight" class="slider" id="heightSlider"></div>
+			<button id="set" class="btn btn-default btn-lg col-2" @click="configure">Set</button>
+		</div>
+
 	
 
-	<div class="row justify-content-center m-1 align-items-center">
+	<div v-if='currentMode == "pid_position" || currentMode == "pid_speed"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
 			<input type='text' class='form-control' id="kp" v-model="kpParam">
@@ -195,6 +192,7 @@ export default {
 				param: "STOP"
 			}));
 			this.changingMode = false;
+			this.updateStore();
 		},
 		calibrate(){
 			this.clearMessages();
@@ -210,6 +208,7 @@ export default {
 			}
 
 			this.changingMode = false;
+			this.updateStore();
 			
 		},
 		//sets configuration mode but does not run configuration - this is done with setHeight
@@ -227,6 +226,7 @@ export default {
 			}
 			
 			this.changingMode = false;
+			this.updateStore();
 		},
 		positionMode(){
 			this.clearMessages();
@@ -242,6 +242,7 @@ export default {
 			}
 			
 			this.changingMode = false;
+			this.updateStore();
 		},
 		speedMode(){
 			this.clearMessages();
@@ -257,6 +258,7 @@ export default {
 			}
 
 			this.changingMode = false;
+			this.updateStore();
 		},
 		DCMotorMode(){
 			this.clearMessages();
@@ -272,6 +274,7 @@ export default {
 			}
 
 			this.changingMode = false;
+			this.updateStore();
 		},
 		setPosition(){
 			this.clearMessages();
@@ -324,6 +327,7 @@ export default {
 				dt: this.dtParam,
 				N_errors: this.N_errorsParam
 			}));
+			this.updateStore();
 		},
 
 		hotkey(event){
@@ -336,6 +340,15 @@ export default {
 		clearMessages(){
 			this.message = '';
 			this.error = '';
+		},
+		updateStore(){
+			store.state.pid_parameters.Kp = this.kpParam;
+			store.state.pid_parameters.Ki = this.kiParam;
+			store.state.pid_parameters.Kd = this.kdParam;
+			store.state.pid_parameters.dt = this.dtParam
+			store.state.pid_parameters.N_errors = this.N_errorsParam;
+			store.state.currentMode = this.currentMode;
+			store.state.inputMode = this.inputMode;
 		},
 		connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;

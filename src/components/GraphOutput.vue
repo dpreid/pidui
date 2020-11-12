@@ -27,8 +27,8 @@
                 <option value="quadratic">Quadratic</option>
                 <option value="trigonometric">Trigonometric</option>
                 <option value="exponential">Exponential</option>
-                <option value="step">Step</option>
-                <option value="ramp">Ramp</option>
+                <option v-if='getCurrentMode == "dc_motor" || getCurrentMode == "stopped"' value="step">Step</option>
+                <option v-if='getCurrentMode == "dc_motor" || getCurrentMode == "stopped"' value="ramp">Ramp</option>
             </select> 
 
             <div v-if="currentFunction === 'linear'">
@@ -81,6 +81,8 @@
                 <label class='m-2' for="func_b">/s(</label>
                 <input id="func_b" v-model="func_b" size="3"> 
                 <label class='m-2' for="func_b"> s+1)</label>
+                <label class='m-2' for='func_c'> t0 = </label>
+                <input id="func_c" v-model="func_c" size="3"> 
                 <div class="row-sm justify-content-center">
                     <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
                     <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
@@ -92,6 +94,10 @@
                 <label class='m-2' for="func_b">/s^2(</label>
                 <input id="func_b" v-model="func_b" size="3"> 
                 <label class='m-2' for="func_b"> s+1)</label>
+                <label class='m-2' for='func_c'> t0 = </label>
+                <input id="func_c" v-model="func_c" size="3"> 
+                <label class='m-2' for='func_d'> w0 = </label>
+                <input id="func_d" v-model="func_d" size="3"> 
                 <div class="row-sm justify-content-center">
                     <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(ramp)">Plot</button>
                     <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
@@ -115,6 +121,7 @@ export default {
     props: ['type', 'id'],
     data(){
         return{
+            dataStore: store,
             chart: null,
             currentDataParameter: 'theta',
             chartData: [],
@@ -126,6 +133,7 @@ export default {
             func_a: 0,
             func_b: 0,
             func_c: 0,
+            func_d:0,
             funcTimeStep: 0.01,
             YAxisMax: 0,
             YAxisMin: 0,
@@ -232,7 +240,6 @@ export default {
             this.chart.update();
         },
         getData(){
-                console.log("getting ALL DATA");
                 this.clearData();
                 
                 //for(let i=0; i<this.$store.getters.getNumData;i++){
@@ -257,7 +264,6 @@ export default {
                 
             },
             getLatestData(){
-                console.log("getting LATEST DATA");
                 //let index = this.$store.getters.getNumData - 1;
                 let index = store.getNumData() - 1;
                 let y_data;
@@ -379,7 +385,7 @@ export default {
             },
             step(t){
                 let A = parseFloat(store.state.step.step_size);
-                let t0 = parseFloat(store.state.step.step_time);
+                let t0 = parseFloat(this.func_c);
                 //let w0 = -parseFloat(this.func_a)*A*(1-Math.exp(t0/parseFloat(this.func_b)));
                 //let t0 = 0;
                 let expterm = 1 - Math.exp(-(t-t0)/parseFloat(this.func_b));
@@ -391,8 +397,19 @@ export default {
                 }
                 
             },
-            ramp(){
-
+            ramp(t){
+                let A = parseFloat(store.state.ramp.ramp_gradient);
+                let tau = parseFloat(this.func_b);
+                let K = parseFloat(this.func_a);
+                let t0 = parseFloat(this.func_c);
+                let w0 = parseFloat(this.func_d);
+                
+                if(t < t0){
+                    return w0;
+                } else{
+                    return K*A*((t-t0) - tau + tau*Math.exp(-(t-t0)/tau)) + w0;
+                }
+                
             },
             addNewDataSet(colour, data){
                 this.chart.data.datasets.push({
@@ -410,7 +427,11 @@ export default {
 
       },
       computed:{
-            
+            getCurrentMode(){
+                console.log(this.dataStore.state.currentMode);
+                let data = this.dataStore.state.currentMode;
+                return data;
+            }
       },
       mounted() {
         this.createChart();

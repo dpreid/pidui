@@ -3,16 +3,23 @@
         <div class="row justify-content-center">
             <h2 for="addCommand">Ramp Input</h2>
         </div>
+
+        <div class="row justify-content-center">  
+            <label class='m-2' v-if='mode == "dc_motor"' for="ramp_start">Start V</label>
+            <input v-if='mode == "dc_motor"' id="ramp_start" v-model="ramp_start" size="3">
+
+            <button v-show="mode == 'dc_motor'" id="set" @click="setStart">Set</button>
+        </div>
         <div class="row justify-content-center">    
 
-            <label v-if='mode == "dc_motor"' for="step_size">Ramp gradient (V/s)</label>
-            <label v-else-if='mode == "pid_position"' for="step_size">Ramp gradient (degree/s)</label>
-            <label v-else-if='mode == "pid_speed"' for="step_size">Ramp gradient (rpm/s)</label>
+            <label v-if='mode == "dc_motor"' for="ramp_gradient">Ramp gradient (V/s)</label>
+            <label v-else-if='mode == "pid_position"' for="ramp_gradient">Ramp gradient (degree/s)</label>
+            <label v-else-if='mode == "pid_speed"' for="ramp_gradient">Ramp gradient (rpm/s)</label>
 
-            <input id="ramp_size" v-model.number="ramp_gradient" size="3">
+            <input id="ramp_gradient" v-model="ramp_gradient" size="3">
 
-
-            <button v-show="mode == 'dc_motor' || mode == 'pid_speed'" id="run" @click="runCommand">Run</button>
+            
+            <button v-show="mode == 'dc_motor'" id="run" @click="runCommand">Run</button>
 
         </div>
 
@@ -36,6 +43,7 @@ export default {
     return {
         time_until_ramp: 0,
         ramp_gradient: 1,            //only positive ramps
+        ramp_start: 1,
         motor_max_voltage: 12,
         encoder_max: 1000,
         time: 0,
@@ -59,7 +67,8 @@ export default {
   methods: {
      async runCommand(){
          this.time = 0;
-         this.ramp_gradient = Math.abs(this.ramp_gradient);     //only positive gradients
+         this.time_interval = parseFloat(this.time_interval);
+         this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
          //set store state for access by graph input component
          store.state.ramp.ramp_start_time = this.time_until_ramp;
          store.state.ramp.ramp_start = 0;
@@ -72,12 +81,11 @@ export default {
              this.max_value = store.state.ramp.max_voltage;
              eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
          }
+
          
          this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
         
-        
-
-             
+       
      },
      sendCommand(){
          this.time += this.time_interval;        //in seconds
@@ -87,7 +95,8 @@ export default {
          }
 
          if(this.mode == 'dc_motor'){
-             let signal = (ramp_value/this.motor_max_voltage) * 255;
+             let signal = ((ramp_value + parseFloat(this.ramp_start))/this.motor_max_voltage) * 255;
+             console.log('signal = ' + signal);
              this.dataSocket.send(JSON.stringify({
 				cmd: "set_speed",
 				param: signal
@@ -103,6 +112,13 @@ export default {
      },
      stopCommand(){
          clearInterval(this.interval_id);
+     },
+     setStart(){
+         let signal = 255*parseFloat(this.ramp_start)/this.motor_max_voltage;
+         this.dataSocket.send(JSON.stringify({
+				cmd: "set_speed",
+				param: signal
+            }));
      }
   }
 }

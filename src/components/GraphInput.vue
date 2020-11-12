@@ -6,14 +6,6 @@
         </div>
     </div>
 
-    <div class="row mb-2 justify-content-center align-items-center" id="chart-functions">
-        <div class='form-group col-3'>
-            <label class='m-2' for="gradient">Gradient:</label>
-            <input class='col-sm' id="gradient" :value="gradient" readonly> 
-        </div>
-       
-
-    </div>
 </div>
 
 </template>

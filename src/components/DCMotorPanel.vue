@@ -2,7 +2,7 @@
 <div class='m-2 p-2 bg-white border rounded'>
    <div class="form-group row justify-content-center pb-2">
         <label class="col-sm-2 col-form-label" for="voltage">Input voltage ({{voltage}}V)</label>
-        <div class="col-4"><input type="range" min="0" max="6" step="0.5" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
+        <div class="col-4"><input type="range" min="-6" max="6" step="0.5" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
             <datalist id="tickmarks">
                 <option value="0"></option>
                 <option value="0.5"></option>

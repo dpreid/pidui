@@ -78,10 +78,10 @@ export default {
          
         
          
-         await new Promise((resolve) => {
-             setTimeout(() => resolve(this.sendCommand()), parseFloat(this.time_to_step)*1000);
-        });
-
+        //  await new Promise((resolve) => {
+        //      setTimeout(() => resolve(this.sendCommand()), parseFloat(this.time_to_step)*1000);
+        // });
+        setTimeout(() => this.sendCommand(), parseFloat(this.time_to_step)*1000);
              
      },
      sendCommand(){

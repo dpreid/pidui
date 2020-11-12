@@ -46,7 +46,8 @@ export default {
   methods: {
       record(){
           //this.$store.dispatch('setStartTime', new Date().getTime());
-          store.state.start_time = new Date().getTime();
+          //store.state.start_time = new Date().getTime();
+          store.state.start_time = store.state.current_time;
           this.data_points_count = 0;
           this.isRecording = true;
           console.log("record");
