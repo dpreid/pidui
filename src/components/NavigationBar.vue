@@ -40,8 +40,8 @@
           <template #button-content>
             <em>User</em>
           </template>
-          <b-dropdown-item href="#">Profile</b-dropdown-item>
-          <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+          <b-dropdown-item>{{ getUserEmail }}</b-dropdown-item>
+          <b-dropdown-item @click='logout'>Sign Out</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
@@ -52,6 +52,7 @@
 <script>
 //import { store } from "../store.js";
 import { eventBus } from "../main.js";
+import userData from '../userDataStore';
 
 export default {
 
@@ -65,7 +66,9 @@ export default {
     
   },
   computed:{
-      
+      getUserEmail(){
+        return userData.getters.getUserEmail;
+      }
   },
   methods: {
       addTool(tool){
@@ -79,6 +82,9 @@ export default {
       },
       clearWorkspace(){
           eventBus.$emit('clearworkspace');
+      },
+      logout(){
+        userData.dispatch('logout');
       }
   }
 }

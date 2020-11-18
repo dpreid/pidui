@@ -509,7 +509,11 @@ export default {
 		//this.$store.dispatch('setCurrentAngle', 25);
 		store.state.start_time = new Date().getTime();
 		window.addEventListener('keydown', this.hotkey, false);
+		window.addEventListener('pagehide', this.stop);				//closing window
+		window.addEventListener('beforeunload', this.stop);			//refreshing page, changing URL
 		}
+
+		
 
 	},
 }

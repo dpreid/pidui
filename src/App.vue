@@ -2,32 +2,36 @@
   <div id="app" class='container-fluid-sm m-0'>
     <navigation-bar />
 
-    <div class='row'>
-      <!-- LEFT HAND COLUMN -->
-      <div class='col-sm-6'> 
-        <webcam-stream />
-        <control-panel /> 
-        <div class='col-sm-12' v-if='isTableOn'><table-output /></div>
-      </div>
-
-      <!-- RIGHT HAND COLUMN -->
-      <div class='col-sm-6' > 
+    <div v-if='!getLoggedIn'>
+        <login  />
+    </div>
+    <div v-else>
         <div class='row'>
-            <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder /></div> 
-            <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
+          <!-- LEFT HAND COLUMN -->
+          <div class='col-sm-6'> 
+            <webcam-stream />
+            <control-panel /> 
+            <div class='col-sm-12' v-if='isTableOn'><table-output /></div>
+          </div>
+
+          <!-- RIGHT HAND COLUMN -->
+          <div class='col-sm-6' > 
+            <div class='row'>
+                <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder /></div> 
+                <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
+            </div>
+            
+            <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
+            <div v-if='isGraphOn'><graph-output type="graph" id="0" /></div> 
+          </div>
         </div>
-         
-         <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
-        <div v-if='isGraphOn'><graph-output type="graph" id="0" /></div> 
+
+
+        <div v-if="isWorkspaceOn">
+          <workspace />
+        </div>
       </div>
-    </div>
-
-
-    <div v-if="isWorkspaceOn">
-      <workspace />
-    </div>
   </div>
-  
 </template>
 
 <script>
@@ -41,8 +45,10 @@ import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
 import GraphInput from "./components/GraphInput.vue";
+import Login from "./components/Login.vue";
 
 import { eventBus } from "./main.js";
+import userData from './userDataStore';
 
 export default {
   name: 'App',
@@ -57,6 +63,7 @@ export default {
     //AutoCommand,
     NavigationBar,
     GraphInput,
+    Login,
   },
   data() {
     return {
@@ -67,6 +74,9 @@ export default {
       isAutoCommandOn: false,
       isDataRecorderOn: false,
       isInputGraphOn: false,
+      interface_parameters:{
+      //isLoggedIn: false,
+      }
     }
   },
   created(){
@@ -77,6 +87,7 @@ export default {
     eventBus.$on('togglestopwatch', this.toggleStopwatch);
     eventBus.$on('toggletable', this.toggleTable);
     eventBus.$on('togglegraphinput', this.toggleInputGraph);
+
   },
   methods: {
     addWorkspace(){
@@ -101,6 +112,12 @@ export default {
     toggleInputGraph(){
       this.isInputGraphOn = !this.isInputGraphOn;
     }
+  },
+  computed: {
+    getLoggedIn(){
+      return userData.getters.isLoggedIn;
+    }
+    
   }
 }
 
