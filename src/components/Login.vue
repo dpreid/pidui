@@ -31,7 +31,7 @@ export default {
   },
   created(){
       //window.indexedDB.deleteDatabase('db');      //for testing, to delete database
-      userStore.dispatch('checkForLogin');
+      userStore.dispatch('autoLogin');
   },
   methods: {
       login() {

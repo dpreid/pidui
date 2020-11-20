@@ -18,65 +18,55 @@ export default new Vuex.Store({
             console.log("Why didn't you allow my web app to use IndexedDB?!");
          };
          request.onsuccess = function(event) {
+            console.log("db opened for login");
             state.db = event.target.result;
             let transaction = state.db.transaction("user", "readwrite");
             let transaction2 = state.db.transaction('lastuser', 'readwrite');
             // get an object store to operate on it
             let user = transaction.objectStore("user");
-            let prev_user = transaction2.objectStore('lastuser');
+            let last_user = transaction2.objectStore('lastuser');
             
-            let userdata = {
-               email: state.email,
-               created: new Date(),
-               logins: []
-            };
-            user.add(userdata);
-            user.onsuccess = function(){
-               console.log('user added');
- 
-            };
-            prev_user.add(userdata);
-            prev_user.onsuccess = function(){
-            };
-            
-         };
-        },
-        CHECK_FOR_LOGIN(state){
-         var request = window.indexedDB.open("db", 1);
-         //if successful then the db exists, so no need to login
-         request.onsuccess = function(event) {
-            state.db = event.target.result;
-            //var user = state.db.transaction("user", "readwrite");
-            let transaction = state.db.transaction('lastuser', 'readwrite');
-            let prev_user = transaction.objectStore('lastuser');
-            prev_user.onerror = function(){
-               state.isLoggedIn = false;
-            };
-            prev_user.openCursor().onsuccess = function(event){
+            let previousLogin = false;    //has this user previously logged in
+
+            //if a user is already on the list of users then add them as prev user and update logins
+            user.openCursor().onsuccess = function(event){
+               console.log("checking for previous use");
                var cursor = event.target.result;
-               if (cursor) {
-                  state.email = cursor.value.email;
-                  state.isLoggedIn = true;
-
-
-
-                  //cursor.continue();    only 1 previous user
+               if(cursor){
+                  //if already on the list
+                  if(data.email == cursor.value.email){
+                     previousLogin = true;
+                     cursor.value.logins.push(new Date());
+                     let req = cursor.update(cursor.value);
+                     req.onsuccess = function(){
+                        console.log("user updated = " + cursor.value.logins);
+                     }
+                  }
+                  cursor.continue();
+               } else{
+                  if(!previousLogin){
+                     console.log('user has not logged in before');
+                     let userdata = {
+                        email: data.email,
+                        created: new Date(),
+                        logins: []
+                     };
+                     let request = user.add(userdata);
+                     request.onsuccess = function(){
+                        console.log('new user added');
+                     };
+                  }
+                  
                }
-               else {
-                  console.log("no previous user");
-               }
-               
-               
-            };
             
          };
-         //if no database already exists then will need to login
-         request.onupgradeneeded = function(event) { 
-            var db = event.target.result;
-            db.createObjectStore("user", { keyPath: "email" });      //for storing this user's data
-            db.createObjectStore('lastuser', { keyPath: "email" });                        //for identifying the previously logged on user
-            state.isLoggedIn = false;
-          };
+         last_user.clear();
+         let last_request = last_user.add(data);
+         last_request.onsuccess = function(){
+            console.log('last user updated');
+         }
+            
+         };
         },
         LOGOUT(state){
          var request = window.indexedDB.open("db", 1);
@@ -93,44 +83,77 @@ export default new Vuex.Store({
             console.log('No database to log out from');
          };
         },
-      //   UPDATE_USER_RECORD(state, data){
-      //    var objectStore = db.transaction(["user"], "readwrite").objectStore("user");
-      //    var request = objectStore.get(state.email);
-      //    request.onerror = function(event) {
-      //      // Handle errors!
-      //    };
-      //    request.onsuccess = function(event) {
-      //      // Get the old value that we want to update
-      //      var data = event.target.result;
-           
-      //      // update the value(s) in the object that you want to change
-      //      data.age = 42;
-         
-      //      // Put this updated object back into the database.
-      //      var requestUpdate = objectStore.put(data);
-      //       requestUpdate.onerror = function(event) {
-      //         // Do something with the error
-      //       };
-      //       requestUpdate.onsuccess = function(event) {
-      //         // Success - the data is updated!
-      //       };
-      //    };
-      //   },
-        
       },
       actions:{
            login(context,data){
+              if(data != null){
+               console.log('prev user = ' + data.email);
                context.commit('LOGIN', data);
+              } else{
+                 console.log('no login data');
+              }
+               
            },
-           checkForLogin(context){
-               context.commit('CHECK_FOR_LOGIN');
-           },
-           updateUserRecord(context, data){
-            context.commit('UPDATE_USER_RECORD', data);
+           async autoLogin({ dispatch }){
+              let data = await dispatch('getPrevUser');
+              dispatch('login', data);
            },
            logout(context){
               context.commit('LOGOUT');
-           }
+           },
+           async getPrevUser(){
+            return new Promise((resolve) => {
+
+            var request = window.indexedDB.open("db", 1);
+            
+            request.onsuccess = function(event) {
+               console.log("success opening db");
+               let db = event.target.result;
+               //var user = state.db.transaction("user", "readwrite");
+               let transaction = db.transaction('lastuser', 'readwrite');
+               let prev_user = transaction.objectStore('lastuser');
+   
+               prev_user.onerror = function(){
+                  resolve(null);
+               };
+               prev_user.openCursor().onsuccess = function(event){
+                  console.log("in cursor");
+                  var cursor = event.target.result;
+                  if (cursor) {
+                     if(cursor.value.email != null){
+                        let data = {email: cursor.value.email};
+                        resolve(data);
+   
+                     } else{
+                        resolve(null);
+                     }
+                     //cursor.continue();    only 1 previous user
+                  }
+                  else {
+                     console.log("no previous user");
+                     resolve(null);
+                  }
+                  
+                  
+               };
+               
+            };
+            request.onupgradeneeded = function(event) { 
+               console.log("upgrade needed");
+               var db = event.target.result;
+               db.createObjectStore("user", { keyPath: "email" });      //for storing this user's data
+               db.createObjectStore('lastuser', { keyPath: "email" });                        //for identifying the previously logged on user
+               resolve(null);
+             };
+   
+             request.onerror = function(event){
+               console.log("error opening database");
+               console.log(event);
+               resolve(null);
+             }
+
+            });
+           },
            
         },
       getters:{
@@ -142,5 +165,5 @@ export default new Vuex.Store({
          }
         
  
-      }
+      },
  })
