@@ -169,7 +169,10 @@ export default {
     created(){
 		eventBus.$on('stop', this.stop);
 
-			
+		if(localStorage.key('governor_height') != null){
+			this.getSavedParameters();
+		}
+		
 	},
         
     mounted(){
@@ -206,7 +209,7 @@ export default {
 			} else{
 				this.error = 'Must STOP before CALIBRATION';
 			}
-
+			this.heightParam = 0;				//calibrating brings the governor back to 0 height
 			this.changingMode = false;
 			this.updateStore();
 			
@@ -227,6 +230,7 @@ export default {
 			
 			this.changingMode = false;
 			this.updateStore();
+			localStorage.setItem('governor_height', this.heightParam);
 		},
 		positionMode(){
 			this.clearMessages();
@@ -349,6 +353,10 @@ export default {
 			store.state.pid_parameters.N_errors = this.N_errorsParam;
 			store.state.currentMode = this.currentMode;
 			store.state.inputMode = this.inputMode;
+		},
+		//only saving and checking for governor height for now, but could add PID parameters etc.
+		getSavedParameters(){
+			this.heightParam = localStorage.getItem('governor_height');
 		},
 		connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
