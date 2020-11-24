@@ -82,13 +82,13 @@ export default {
              this.max_value = store.state.ramp.max_voltage;
              eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
          } else if(this.mode == 'pid_position'){
-             this.max_value = 4*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
+             this.max_value = 6*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
              eventBus.$emit('addrampfunction', 'theta', this.max_value);
 
          }
 
          
-         this.interval_id = setInterval(() => {this.sendCommand()}, this.time_interval*1000);
+         this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
         
        
      },
