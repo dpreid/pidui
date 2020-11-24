@@ -29,7 +29,7 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" v-if="isStopped" @click="changingMode = true">Set Mode</button>
+				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" @click="changingMode = true">Set Mode</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 
 				<label class='m-2' for="graphSelect">Input type:</label>
@@ -168,16 +168,30 @@ export default {
     },
     created(){
 		eventBus.$on('stop', this.stop);
+		eventBus.$on('setfreeinput', this.setFreeMode);
+		eventBus.$on('setstepinput', this.setStepMode);
+		eventBus.$on('setrampinput', this.setRampMode);
+		eventBus.$on('setdcmotormode', this.DCMotorMode);
+		eventBus.$on('setpidpositionmode', this.positionMode);	
+		eventBus.$on('setpidspeedmode', this.speedMode);		
 
-		if(localStorage.key('governor_height') != null){
-			this.getSavedParameters();
-		}
+		// if(localStorage.key('governor_height') != null){
+		// 	this.getSavedParameters();
+		// }
 		
 	},
         
-    mounted(){
-        this.connect();
+    async mounted(){
+		await this.connect();
+		console.log('connection complete');
+		this.setParameters();			//resets the parameters to default settings on UI
+		console.log('params set');
+		await new Promise((resolve)=>{
+			setTimeout(() => {resolve(console.log('waiting to calibrate'))}, 1000);		//give the system time to send and change parameters before attempting calibration
+			});
 		
+		this.calibrate();				//resets the governor to its zero position on startup.
+		console.log('calibrated');
 	},
 	computed: {
 		getDataSocket(){
@@ -353,14 +367,25 @@ export default {
 			store.state.pid_parameters.N_errors = this.N_errorsParam;
 			store.state.currentMode = this.currentMode;
 			store.state.inputMode = this.inputMode;
+			console.log('store updated');
 		},
 		//only saving and checking for governor height for now, but could add PID parameters etc.
 		getSavedParameters(){
 			this.heightParam = localStorage.getItem('governor_height');
 		},
-		connect(){
+		setFreeMode(){
+			this.inputMode = 'free';
+		},
+		setStepMode(){
+			this.inputMode = 'step';
+		},
+		setRampMode(){
+			this.inputMode = 'ramp';
+		},
+		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
-		let dataUrl = 'wss://video.practable.io:443/bi/dpr/pendulum0';
+			return new Promise((resolve) => {
+				let dataUrl = 'wss://video.practable.io:443/bi/dpr/pendulum0';
 
 		//console.log(dataUrl)
 
@@ -372,7 +397,7 @@ export default {
 		}
 
 		this.dataSocket = new ReconnectingWebSocket(dataUrl, null,wsOptions);
-		console.log(this.dataSocket);
+		//console.log(this.dataSocket);
 
 		//let dataOpen = false;
 		var delay = 0
@@ -403,20 +428,21 @@ export default {
 
 		this.dataSocket.onopen = function (event) {
 			console.log("dataSocket open" + event);
+			resolve(console.log('opened'));
 			//dataOpen = true; 
 			
 			// this.dataSocket.send(JSON.stringify({
 			// 	cmd: "set_mode",
 			// 	param: "CALIBRATE"
 			// }));
-			this.dataSocket.send(JSON.stringify({
-				cmd: "set_parameters",
-				Kp: this.kpParam,
-				Ki: this.kiParam,
-				Kd: this.kdParam,
-				dt: this.dtParam,
-				N_errors: this.N_errors
-			}));
+			// this.dataSocket.send(JSON.stringify({
+			// 	cmd: "set_parameters",
+			// 	Kp: this.kpParam,
+			// 	Ki: this.kiParam,
+			// 	Kd: this.kdParam,
+			// 	dt: this.dtParam,
+			// 	N_errors: this.N_errors
+			// }));
 			
 			//DO I WANT TO SEND DEFAULT PARAMETERS HERE?
 
@@ -519,6 +545,8 @@ export default {
 		window.addEventListener('keydown', this.hotkey, false);
 		window.addEventListener('pagehide', this.stop);				//closing window
 		window.addEventListener('beforeunload', this.stop);			//refreshing page, changing URL
+			})
+		
 		}
 
 		

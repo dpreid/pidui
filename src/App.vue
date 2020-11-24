@@ -74,9 +74,6 @@ export default {
       isAutoCommandOn: false,
       isDataRecorderOn: false,
       isInputGraphOn: false,
-      interface_parameters:{
-      //isLoggedIn: false,
-      }
     }
   },
   created(){
@@ -87,6 +84,10 @@ export default {
     eventBus.$on('togglestopwatch', this.toggleStopwatch);
     eventBus.$on('toggletable', this.toggleTable);
     eventBus.$on('togglegraphinput', this.toggleInputGraph);
+
+    eventBus.$on('setexercise1', this.setExercise1Interface);
+    eventBus.$on('setexercise2', this.setExercise2Interface);
+    eventBus.$on('setexercise3', this.setExercise3Interface);
 
   },
   methods: {
@@ -111,7 +112,44 @@ export default {
     },
     toggleInputGraph(){
       this.isInputGraphOn = !this.isInputGraphOn;
-    }
+    },
+    setExercise1Interface(){
+      this.isGraphOn = false;
+      this.isDataRecorderOn = false;
+      this.isTableOn = false;
+      this.isInputGraphOn = false;
+      this.isAutoCommandOn = false;
+      this.isWorkspaceOn = false;
+      
+      eventBus.$emit('stop');
+      eventBus.$emit('setdcmotormode');
+      eventBus.$emit('setfreeinput');
+
+    },
+    setExercise2Interface(){
+      this.isGraphOn = true;
+      this.isDataRecorderOn = true;
+      this.isTableOn = false;
+      this.isInputGraphOn = true;
+      this.isAutoCommandOn = false;
+      this.isWorkspaceOn = false;
+      
+      eventBus.$emit('stop');
+      eventBus.$emit('setdcmotormode');
+      eventBus.$emit('setstepinput');
+    },
+    setExercise3Interface(){
+      this.isGraphOn = true;
+      this.isDataRecorderOn = true;
+      this.isTableOn = false;
+      this.isInputGraphOn = true;
+      this.isAutoCommandOn = false;
+      this.isWorkspaceOn = false;
+      
+      eventBus.$emit('stop');
+      eventBus.$emit('setpidpositionmode');
+      eventBus.$emit('setstepinput');
+    },
   },
   computed: {
     getLoggedIn(){

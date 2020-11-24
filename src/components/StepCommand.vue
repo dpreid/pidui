@@ -94,8 +94,9 @@ export default {
 			}));
          } else if(this.mode == 'pid_position'){
              let new_ang_rad = store.state.current_angle + this.step_size*Math.PI / 180.0;
-             let current_enc_pos = store.state.current_enc_pos;
-             let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
+             //let current_enc_pos = store.state.current_enc_pos;
+            //  let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
+            let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
 
              if(new_enc_pos > 1000){
                  new_enc_pos = -(1000 - (new_enc_pos - 1000));

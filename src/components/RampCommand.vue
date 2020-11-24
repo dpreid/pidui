@@ -13,13 +13,13 @@
         <div class="row justify-content-center">    
 
             <label v-if='mode == "dc_motor"' for="ramp_gradient">Ramp gradient (V/s)</label>
-            <label v-else-if='mode == "pid_position"' for="ramp_gradient">Ramp gradient (degree/s)</label>
+            <label v-else-if='mode == "pid_position"' for="ramp_gradient">Ramp gradient (rad/s)</label>
             <label v-else-if='mode == "pid_speed"' for="ramp_gradient">Ramp gradient (rpm/s)</label>
 
             <input id="ramp_gradient" v-model="ramp_gradient" size="3">
 
             
-            <button v-show="mode == 'dc_motor'" id="run" @click="runCommand">Run</button>
+            <button id="run" @click="runCommand">Run</button>
 
         </div>
 
@@ -66,6 +66,7 @@ export default {
   },
   methods: {
      async runCommand(){
+         console.log('RUN');
          this.time = 0;
          this.time_interval = parseFloat(this.time_interval);
          this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
@@ -80,17 +81,23 @@ export default {
          } else if(this.mode == 'dc_motor'){
              this.max_value = store.state.ramp.max_voltage;
              eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
+         } else if(this.mode == 'pid_position'){
+             this.max_value = 4*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
+             eventBus.$emit('addrampfunction', 'theta', this.max_value);
+
          }
 
          
-         this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
+         this.interval_id = setInterval(() => {this.sendCommand()}, this.time_interval*1000);
         
        
      },
      sendCommand(){
          this.time += this.time_interval;        //in seconds
+         console.log('SEND COMMAND = ' + this.time);
          let ramp_value = this.ramp_gradient * this.time;
          if(ramp_value >= this.max_value){
+             console.log('stopped sending ramp command');
              this.stopCommand();
          }
 
@@ -107,6 +114,26 @@ export default {
 				cmd: "set_speed",
 				param: rpm
 			}));
+         } else if(this.mode == 'pid_position'){
+             //console.log('sending ramp command = ' + ramp_value);
+             //let new_ang_rad = store.state.current_angle + ramp_value;
+             let new_ang_rad = ramp_value;
+             //let current_enc_pos = store.state.current_enc_pos;
+             //let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
+             let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
+            console.log('new enc pos = ' + new_enc_pos);
+
+             if(new_enc_pos > 1000){
+                 new_enc_pos = -(1000 - (new_enc_pos - 1000));
+             } else if(new_enc_pos < -1000){
+                 new_enc_pos = 1000 - (Math.abs(new_enc_pos) - 1000);
+             }
+             this.dataSocket.send(JSON.stringify({
+				cmd: "set_position",
+				param: new_enc_pos
+			}));
+         } else{
+             this.stopCommand();
          }
          
      },

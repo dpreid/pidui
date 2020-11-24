@@ -25,6 +25,12 @@
           <b-dropdown-item @click='addTool("ruler")'>Ruler</b-dropdown-item>
           <b-dropdown-item @click='addTool("protractor")'>Protractor</b-dropdown-item>
         </b-nav-item-dropdown>
+
+        <b-nav-item-dropdown text="Tasks" right>
+          <b-dropdown-item @click='setExercise1'>Exercise 1</b-dropdown-item>
+          <b-dropdown-item @click='setExercise2'>Exercise 2</b-dropdown-item>
+          <b-dropdown-item @click='setExercise3'>Exercise 3</b-dropdown-item>
+        </b-nav-item-dropdown>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
@@ -85,6 +91,15 @@ export default {
       },
       logout(){
         userData.dispatch('logout');
+      },
+      setExercise1(){
+        eventBus.$emit('setexercise1');
+      },
+      setExercise2(){
+        eventBus.$emit('setexercise2');
+      },
+      setExercise3(){
+        eventBus.$emit('setexercise3');
       }
   }
 }
