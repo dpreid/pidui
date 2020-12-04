@@ -9,8 +9,11 @@
         <div class='row'>
           <!-- LEFT HAND COLUMN -->
           <div class='col-sm-6'> 
-            <webcam-stream />
-            <control-panel /> 
+            <div><webcam-stream /></div>
+            <div v-if="remoteLabVersion == 'variable_governor'"><control-panel-variable-governor /></div>
+            <div v-else-if="remoteLabVersion == 'spinning_disk'"><control-panel-spinning-disk /></div>
+            <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm /></div>
+             
             <div class='col-sm-12' v-if='isTableOn'><table-output /></div>
           </div>
 
@@ -40,7 +43,9 @@ import TableOutput from "./components/TableOutput.vue";
 import Stopwatch from "./components/Stopwatch.vue";
 import Workspace from "./components/Workspace.vue";
 import WebcamStream from "./components/WebcamStream.vue";
-import ControlPanel from "./components/ControlPanel.vue";
+import ControlPanelVariableGovernor from "./components/ControlPanelVariableGovernor.vue";
+import ControlPanelRobotArm from './components/ControlPanelRobotArm.vue';
+import ControlPanelSpinningDisk from './components/ControlPanelSpinningDisk.vue';
 import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
@@ -50,6 +55,7 @@ import Login from "./components/Login.vue";
 import { eventBus } from "./main.js";
 import userData from './userDataStore';
 
+
 export default {
   name: 'App',
   components: {
@@ -58,7 +64,9 @@ export default {
     Stopwatch,
     Workspace,
     WebcamStream,
-    ControlPanel,
+    ControlPanelVariableGovernor,
+    ControlPanelSpinningDisk,
+    ControlPanelRobotArm,
     DataRecorder,
     //AutoCommand,
     NavigationBar,
@@ -67,6 +75,7 @@ export default {
   },
   data() {
     return {
+      remoteLabVersion: 'variable_governor',    //'spinning_disk', 'robot_arm'
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,

@@ -4,7 +4,6 @@
 
 //TODO:
 // Need to add tooltips to all components
-//Need to include a function when receiving messages from the hardware - when stopped received, UI enters stopped mode so that other modes can be selected.
 
 
 <template>
@@ -31,6 +30,7 @@
 			<div class='col-sm'>
 				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" @click="changingMode = true">Set Mode</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
+				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
 				<label class='m-2' for="graphSelect">Input type:</label>
 				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
@@ -46,7 +46,7 @@
 				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedMode">PID Speed</button>
 				<button id="dcmotor" class="btn btn-default btn-lg" @click="DCMotorMode">DC Motor</button>
 				<button id="calibrate" class="btn btn-default btn-lg" @click="calibrate">Calibrate</button>
-				<button id="configure" class="btn btn-default btn-lg" @click="currentMode = 'configure'">Configure</button>
+				<button id="configure" class="btn btn-default btn-lg" @click="configure">Configure</button>
 			</div>
 		</div>
 
@@ -90,7 +90,6 @@
 	<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
 			<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>
 			<div class="col-7"><input type="range" min="0" max="30" v-model="heightParam" v-on:change="setHeight" class="slider" id="heightSlider"></div>
-			<button id="set" class="btn btn-default btn-lg col-2" @click="configure">Set</button>
 		</div>
 
 	
@@ -382,6 +381,12 @@ export default {
 		setRampMode(){
 			this.inputMode = 'ramp';
 		},
+		resetParameters(){
+			this.kpParam = 1.0;
+			this.kiParam = 0.0;
+			this.kiParam = 0.0;
+			this.setParameters();
+		},
 		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
 			return new Promise((resolve) => {
@@ -614,6 +619,9 @@ export default {
 
 #setmode       {background-color: rgb(3, 248, 12);}
 #setmode:hover {background-color: #3e8e41} 
+
+#reset       {background-color: rgb(3, 248, 12);}
+#reset:hover {background-color: #3e8e41} 
 
 #stop       {background-color: rgb(255, 0, 0);}
 #stop:hover {background-color: #cc1e1eff;}
