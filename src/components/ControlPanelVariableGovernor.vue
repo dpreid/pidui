@@ -10,12 +10,12 @@
 <div class='container-sm m-2 bg-white border rounded'>
 	<div class='row align-content-center m-1'>
 		<div class='col-12'>
-			<canvas v-show="currentMode == 'stopped' || currentMode == 'pid_position'" id="smoothie-chart"></canvas>
+			<canvas v-show="currentMode == 'stopped' || currentMode == 'positionPid'" id="smoothie-chart"></canvas>
 		</div>
 	</div>
 	<div class='row align-content-center m-1'>
 		<div class='col-12'>
-			<canvas v-show="currentMode == 'dc_motor' || currentMode == 'pid_speed'" id="smoothie-chart_omega"></canvas>
+			<canvas v-show="currentMode == 'speedRaw' || currentMode == 'speedPid'" id="smoothie-chart_omega"></canvas>
 		</div>
 	</div>
 
@@ -42,10 +42,10 @@
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
 			<div class='col-sm'>
-				<button id="pidposition" class="btn btn-default btn-lg" @click="positionMode">PID Position</button>			
-				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedMode">PID Speed</button>
-				<button id="dcmotor" class="btn btn-default btn-lg" @click="DCMotorMode">DC Motor</button>
-				<button id="calibrate" class="btn btn-default btn-lg" @click="calibrate">Calibrate</button>
+				<button id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>			
+				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
+				<button id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
+				<button id="resetHeight" class="btn btn-default btn-lg" @click="resetHeight">Calibrate</button>
 				<button id="configure" class="btn btn-default btn-lg" @click="configure">Configure</button>
 			</div>
 		</div>
@@ -55,24 +55,24 @@
 
 	<div v-if='inputMode == "free"'>
 		
-		<div v-if="currentMode != 'stopped' && currentMode != 'calibrate'" class='row justify-content-center m-2'>
+		<div v-if="currentMode != 'stopped' && currentMode != 'resetHeight'" class='row justify-content-center m-2'>
 			<div class='col-12'><h2> Parameters </h2></div>
 		</div>
 
-		<div v-if='currentMode == "pid_position"' class="row justify-content-center m-2 align-items-center">
+		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
 			<div v-if='angleMode == "degrees"' class="col-3 sliderlabel"> Angle ({{angleParam}}deg)</div>
 			<div v-else class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
 			<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<div v-else class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
 		</div>
-		<div v-if='currentMode == "pid_speed"' class="row justify-content-center m-1 align-items-center">
+		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
 			<div class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
 			<div class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
 		</div>
 
-		<div v-if='currentMode == "dc_motor"'>
+		<div v-if='currentMode == "speedRaw"'>
 			<DCMotorPanel v-bind:dataSocket="getDataSocket" />
 		</div>
 	
@@ -94,7 +94,7 @@
 
 	
 
-	<div v-if='currentMode == "pid_position" || currentMode == "pid_speed"' class="row justify-content-center m-1 align-items-center">
+	<div v-if='currentMode == "positionPid" || currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
 			<input type='text' class='form-control' id="kp" v-model="kpParam">
@@ -111,10 +111,7 @@
 			<label for="dt">dt:</label>
 			<input type='text' class='form-control' id="dt" v-model="dtParam">
         </div>
-		<div class='form-group col-2'>
-			<label for="Nerrors">N_errors:</label>
-			<input type='text' class='form-control' id="Nerrors" v-model="N_errorsParam">
-        </div>
+
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
 	</div>
 
@@ -148,12 +145,11 @@ export default {
 			kpParam: 1,
 			kiParam: 0,
 			kdParam: 0,
-			dtParam: 3,
-			N_errorsParam: 10,
+			dtParam: 20,
 			angleMode: 'degrees',		// 'radians'
 			isStopped: true,
 			changingMode: false,
-			currentMode: "stopped",		//"pid_position", "pid_speed", "dc_motor", "calibrate", "configure"
+			currentMode: "stopped",		//"positionPid", "speedPid", "speedRaw", "resetHeight", "configure"
 			inputMode: 'free',		//'step', 'ramp'
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
@@ -163,6 +159,7 @@ export default {
 			angle_min: -3.14,
 			ang_vel_max: 1000,
 			ang_vel_min: -1000,
+			timerParam: 30,			//hardware stop timer in seconds
         }
     },
     created(){
@@ -170,13 +167,10 @@ export default {
 		eventBus.$on('setfreeinput', this.setFreeMode);
 		eventBus.$on('setstepinput', this.setStepMode);
 		eventBus.$on('setrampinput', this.setRampMode);
-		eventBus.$on('setdcmotormode', this.DCMotorMode);
-		eventBus.$on('setpidpositionmode', this.positionMode);	
-		eventBus.$on('setpidspeedmode', this.speedMode);		
-
-		// if(localStorage.key('governor_height') != null){
-		// 	this.getSavedParameters();
-		// }
+		eventBus.$on('setdcmotormode', this.speedRaw);
+		eventBus.$on('setpidpositionmode', this.positionPid);	
+		eventBus.$on('setpidspeedmode', this.speedPid);	
+		eventBus.$on('hardwarestop', this.hasStopped);	
 		
 	},
         
@@ -186,11 +180,10 @@ export default {
 		this.setParameters();			//resets the parameters to default settings on UI
 		console.log('params set');
 		await new Promise((resolve)=>{
-			setTimeout(() => {resolve(console.log('waiting to calibrate'))}, 1000);		//give the system time to send and change parameters before attempting calibration
+			setTimeout(() => {resolve(console.log('waiting to resetHeight'))}, 1000);		//give the system time to send and change parameters before attempting calibration
 			});
 		
-		this.calibrate();				//resets the governor to its zero position on startup.
-		console.log('calibrated');
+		this.resetHeight();
 	},
 	computed: {
 		getDataSocket(){
@@ -201,93 +194,94 @@ export default {
 		stop(){
 			this.clearMessages();
 			this.speedParam = 0;
-			console.log("STOP");
 			this.currentMode = 'stopped';
 			this.dataSocket.send(JSON.stringify({
-				cmd: "set_mode",
-				param: "STOP"
+				set: "mode",
+				to: "stop"
 			}));
 			this.changingMode = false;
 			this.updateStore();
 		},
-		calibrate(){
+		hasStopped(){
+			if(this.currentMode != 'stopped'){
+				this.clearMessages();
+				this.speedParam = 0;
+				this.currentMode = 'stopped';
+				this.changingMode = false;
+				this.updateStore();
+			}
+			
+		},
+		resetHeight(){
 			this.clearMessages();
 			if(this.currentMode == 'stopped'){
-				console.log("CALIBRATE");
-				this.currentMode = 'calibrate';
+				this.currentMode = 'resetHeight';
 				this.dataSocket.send(JSON.stringify({
-				cmd: "set_mode",
-				param: "CALIBRATE"
+				set: "mode",
+				to: "resetHeight"
 				}));
 			} else{
-				this.error = 'Must STOP before CALIBRATION';
+				this.error = 'Must STOP before resetHeight';
 			}
-			this.heightParam = 0;				//calibrating brings the governor back to 0 height
+			this.heightParam = 0;
 			this.changingMode = false;
 			this.updateStore();
 			
 		},
-		//sets configuration mode but does not run configuration - this is done with setHeight
 		configure(){
 			this.clearMessages();
-			if(this.currentMode == 'configure'){
-				console.log("CONFIGURE");
+			if(this.currentMode == 'stopped'){
 				this.currentMode = 'configure';
 				this.dataSocket.send(JSON.stringify({
-				cmd: "set_mode",
-				param: "CONFIGURE"
+				set: "mode",
+				to: "configure"
 				}));
 			} else{
-				this.error = 'Must be in CONFIGURATION mode';
-			}
-			
-			this.changingMode = false;
-			this.updateStore();
-			localStorage.setItem('governor_height', this.heightParam);
-		},
-		positionMode(){
-			this.clearMessages();
-			if(this.currentMode == 'stopped'){
-				console.log("PID_POSITION_MODE");
-				this.currentMode = 'pid_position';
-				this.dataSocket.send(JSON.stringify({
-				cmd: "set_mode",
-				param: "PID_POSITION_MODE"
-				}));
-			} else{
-				this.error = 'Must STOP before entering PID_Position mode';
+				this.error = 'Must STOP before configure';
 			}
 			
 			this.changingMode = false;
 			this.updateStore();
 		},
-		speedMode(){
+		positionPid(){
 			this.clearMessages();
 			if(this.currentMode == 'stopped'){
-				console.log("PID_SPEED_MODE");
-				this.currentMode = 'pid_speed';
+				this.currentMode = 'positionPid';
 				this.dataSocket.send(JSON.stringify({
-				cmd: "set_mode",
-				param: "PID_SPEED_MODE"
+				set: "mode",
+				to: "positionPid"
 				}));
 			} else{
-				this.error = 'Must STOP before entering PID_Speed mode';
+				this.error = 'Must STOP before entering positionPid mode';
 			}
-
+			
 			this.changingMode = false;
 			this.updateStore();
 		},
-		DCMotorMode(){
+		speedPid(){
 			this.clearMessages();
 			if(this.currentMode == 'stopped'){
-				console.log("DC_MOTOR_MODE");
-				this.currentMode = 'dc_motor';
+				this.currentMode = 'speedPid';
 				this.dataSocket.send(JSON.stringify({
-				cmd: "set_mode",
-				param: "DC_MOTOR_MODE"
+				set: "mode",
+				to: "speedPid"
 				}));
 			} else{
-				this.error = 'Must STOP before entering DC Motor mode';
+				this.error = 'Must STOP before entering speedPid mode';
+			}
+			this.changingMode = false;
+			this.updateStore();
+		},
+		speedRaw(){
+			this.clearMessages();
+			if(this.currentMode == 'stopped'){
+				this.currentMode = 'speedRaw';
+				this.dataSocket.send(JSON.stringify({
+				set: "mode",
+				to: "speedRaw"
+				}));
+			} else{
+				this.error = 'Must STOP before entering speedRaw mode';
 			}
 
 			this.changingMode = false;
@@ -295,58 +289,59 @@ export default {
 		},
 		setPosition(){
 			this.clearMessages();
-			if(this.currentMode == 'pid_position'){
-				console.log("Set position");
+			if(this.currentMode == 'positionPid'){
 				let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
 				this.dataSocket.send(JSON.stringify({
-				cmd: "set_position",
-				param: pos
+				set: "position",
+				to: pos
 				}));
 			} else{
-				this.error = 'Must be in PID Position mode';
+				this.error = 'Must be in positionPid mode';
 			}
 			
 		},
 		setSpeed(){
 			this.clearMessages();
-			if(this.currentMode == 'pid_speed' || this.currentMode == 'dc_motor'){
-				console.log("Set speed");
+			if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
 				this.dataSocket.send(JSON.stringify({
-				cmd: "set_speed",
-				param: this.speedParam
+				set: "speed",
+				to: this.speedParam
 				}));
 			} else{
-				this.error == 'Must be in PID Speed or DC Motor mode';
+				this.error == 'Must be in speedPid or speedRaw mode';
 			}
 			
 		},
 		setHeight(){
 			this.clearMessages();
 			if(this.currentMode == 'configure'){
-				console.log("Set height");
 				this.dataSocket.send(JSON.stringify({
-				cmd: "set_height",
-				param: this.heightParam
+				set: "height",
+				to: this.heightParam
 				}));
 			} else{
-				this.error = 'Must be in CONFIGURATION mode';
+				this.error = 'Must be in configure mode';
 			}
 			
 		},
 		setParameters(){
 			this.clearMessages();
-			console.log("Set parameters");
 			this.dataSocket.send(JSON.stringify({
-				cmd: "set_parameters",
-				Kp: this.kpParam,
-				Ki: this.kiParam,
-				Kd: this.kdParam,
+				set: "parameters",
+				kp: this.kpParam,
+				ki: this.kiParam,
+				kd: this.kdParam,
 				dt: this.dtParam,
-				N_errors: this.N_errorsParam
 			}));
 			this.updateStore();
 		},
-
+		setTimer(){
+			this.clearMessages();
+			this.dataSocket.send(JSON.stringify({
+				set: "timer",
+				to: this.timerParam
+			}));
+		},
 		hotkey(event){
 			if(event.key == "s"){
 				this.stop();
@@ -367,10 +362,6 @@ export default {
 			store.state.currentMode = this.currentMode;
 			store.state.inputMode = this.inputMode;
 			console.log('store updated');
-		},
-		//only saving and checking for governor height for now, but could add PID parameters etc.
-		getSavedParameters(){
-			this.heightParam = localStorage.getItem('governor_height');
 		},
 		setFreeMode(){
 			this.inputMode = 'free';
@@ -436,20 +427,6 @@ export default {
 			resolve(console.log('opened'));
 			//dataOpen = true; 
 			
-			// this.dataSocket.send(JSON.stringify({
-			// 	cmd: "set_mode",
-			// 	param: "CALIBRATE"
-			// }));
-			// this.dataSocket.send(JSON.stringify({
-			// 	cmd: "set_parameters",
-			// 	Kp: this.kpParam,
-			// 	Ki: this.kiParam,
-			// 	Kd: this.kdParam,
-			// 	dt: this.dtParam,
-			// 	N_errors: this.N_errors
-			// }));
-			
-			//DO I WANT TO SEND DEFAULT PARAMETERS HERE?
 
 		};
 
@@ -466,10 +443,16 @@ export default {
 				// series.append(NaN, 0)
 				// series.append(NaN, NaN)
 				// }
-
+				
+				
 				var enc = obj.enc
 				store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
 				var enc_ang_vel = obj.enc_ang_vel;			//encoder reports angular velocity in specific modes
+
+				if(obj.awaiting_stop){
+					eventBus.$emit('hardwarestop');
+				}
+
 
 				if (messageCount == 0){
 					delay = thisDelay
@@ -635,8 +618,8 @@ export default {
 #dcmotor        {background-color: rgb(217, 255, 0);}
 #dcmotor:hover  {background-color: rgb(190, 187, 2);}
 
-#calibrate         {background-color: #5b7fa5ff;}
-#calibrate:hover   {background-color: #46627fff;}
+#resetHeight         {background-color: #5b7fa5ff;}
+#resetHeight:hover   {background-color: #46627fff;}
 
 #configure         {background-color: rgb(220, 38, 236);}
 #configure:hover   {background-color: rgb(76, 19, 82);}

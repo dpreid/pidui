@@ -5,6 +5,9 @@ export const store = {
        current_enc_pos: 0,
         current_angle: 0,     //in rad
         current_ang_vel: 0,   //in rpm
+        previous_ang_vels: [],
+        values_in_average: 100,
+        average_count: 0,
         current_time: 0,
         start_time: 0,
         currentMode: '',
@@ -27,25 +30,21 @@ export const store = {
          Ki:0,
          Kd:0,
          dt:3,
-         N_errors: 10
         },
        },
-       calculateAngularVelocity(){
-          let current_index = this.state.data.length - 1;
-          let current_data = this.state.data[current_index];
-          let previous_data = this.state.data[current_index - 1];
-          if(current_data && previous_data){
-              let theta_delta = current_data.theta - previous_data.theta;
-              let time_delta = current_data.t - previous_data.t;
-              let ang_vel = theta_delta / time_delta;
-              return ang_vel;
-          } 
-          else{
-             
-             return NaN;
+       calculateAverageVelocity(){
+         this.state.previous_ang_vels[this.state.average_count] = this.state.current_ang_vel;
+          if(this.state.average_count >= this.state.values_in_average - 1){
+              this.state.average_count = 0;
+          } else{
+              this.state.average_count++;
           }
-          
-  
+         let sum = 0;
+          for(let i=0;i<this.state.values_in_average;i++){
+              sum += this.state.previous_ang_vels[i];
+          }
+
+          return sum/this.state.values_in_average;
        },
        clearAllData(){
         this.state.data = [];

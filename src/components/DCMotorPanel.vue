@@ -19,7 +19,7 @@
                 <option value="6.0"></option>
             </datalist>
         <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rpm)</label>
-        <div class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='angVel'></div>
+        <div class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='avgAngVel'></div>
     </div>
 </div>
 
@@ -57,13 +57,18 @@ export default {
           let data = this.data_store.state.current_ang_vel;
           return data;
       },
+      avgAngVel(){
+          let average = this.data_store.calculateAverageVelocity();
+          return average.toFixed(2);
+      }
   },
   methods: {
       setVoltage(){
-          let signal = (this.voltage/this.motor_max_voltage) * 255;
+          //let signal = (this.voltage/this.motor_max_voltage) * 255;
+          let signal = this.voltage*100/6.0;        //signal is between 0-100% with 100% -> 6V.
           this.dataSocket.send(JSON.stringify({
-				cmd: "set_speed",
-				param: signal
+				set: "speed",
+				to: signal
 			}));
       }
       
