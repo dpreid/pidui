@@ -7,14 +7,14 @@
         <tr>
             <!-- <th scope="col">ID</th> -->
             <th scope="col">Time/s</th>
-            <th scope="col">Angle/rad</th>
-            <th scope="col">Angular Velocity/rad/s</th>
+            <th v-if='remoteLabVersion == "robot_arm"' scope="col">Angle/rad</th>
+            <th v-if='remoteLabVersion == "variable_governor" || remoteLabVersion == "spinning_disk"' scope="col">Angular Velocity/rad/s</th>
         </tr>
         <tr v-for="row in tableData" :id="row.id" :key="row.id" v-bind:class="[row.id == selected_row_id ? 'selected-row' : '']" @click="changeSelected(row.id)">
             <!-- <td>{{row.id}}</td> -->
             <td>{{row.t}}</td>
-            <td>{{row.theta.toFixed(2)}}</td>
-            <td>{{row.omega.toFixed(2)}}</td>
+            <td v-if='remoteLabVersion == "robot_arm"'>{{row.theta.toFixed(2)}}</td>
+            <td v-if='remoteLabVersion == "variable_governor" || remoteLabVersion == "spinning_disk"'>{{row.omega.toFixed(2)}}</td>
         </tr>
                             
     </table> 
@@ -29,6 +29,9 @@ import { eventBus } from "../main.js";
 
 export default {
     name: 'TableOutput',
+    props:{
+      remoteLabVersion: String,
+  },
     data(){
         return{
             //tableData: this.$store.getters.getData,     //will update table data whenever store data updates

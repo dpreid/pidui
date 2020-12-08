@@ -10,12 +10,7 @@
 <div class='container-sm m-2 bg-white border rounded'>
 	<div class='row align-content-center m-1'>
 		<div class='col-12'>
-			<canvas v-show="currentMode == 'stopped' || currentMode == 'positionPid'" id="smoothie-chart"></canvas>
-		</div>
-	</div>
-	<div class='row align-content-center m-1'>
-		<div class='col-12'>
-			<canvas v-show="currentMode == 'speedRaw' || currentMode == 'speedPid'" id="smoothie-chart_omega"></canvas>
+			<canvas id="smoothie-chart_omega"></canvas>
 		</div>
 	</div>
 
@@ -32,7 +27,7 @@
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
-				<label class='m-2' for="graphSelect">Input type:</label>
+				<label class='m-2' for="inputSelect">Input type:</label>
 				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
 					<option value="free">Free</option>
 					<option value="step">Step</option>
@@ -41,8 +36,7 @@
 			</div>
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
-			<div class='col-sm'>
-				<button id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>			
+			<div class='col-sm'>		
 				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
 				<button id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
 				<button id="resetHeight" class="btn btn-default btn-lg" @click="resetHeight">Calibrate</button>
@@ -59,13 +53,6 @@
 			<div class='col-12'><h2> Parameters </h2></div>
 		</div>
 
-		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
-			<div v-if='angleMode == "degrees"' class="col-3 sliderlabel"> Angle ({{angleParam}}deg)</div>
-			<div v-else class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
-			<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
-			<div v-else class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
-			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
-		</div>
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
 			<div class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
 			<div class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
@@ -94,7 +81,7 @@
 
 	
 
-	<div v-if='currentMode == "positionPid" || currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
+	<div v-if='currentMode == "speedPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
 			<input type='text' class='form-control' id="kp" v-model="kpParam">
@@ -139,24 +126,19 @@ export default {
     data(){
         return{
 			dataSocket: null,
-			angleParam: 0,			//always stores degrees, even in rad mode
 			speedParam: 0,
 			heightParam: 0,
 			kpParam: 1,
 			kiParam: 0,
 			kdParam: 0,
 			dtParam: 20,
-			angleMode: 'degrees',		// 'radians'
 			isStopped: true,
 			changingMode: false,
-			currentMode: "stopped",		//"positionPid", "speedPid", "speedRaw", "resetHeight", "configure"
+			currentMode: "stopped",		//"speedPid", "speedRaw", "resetHeight", "configure"
 			inputMode: 'free',		//'step', 'ramp'
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
-			canvas: null,
 			canvas_omega: null,
-			angle_max: 3.14,
-			angle_min: -3.14,
 			ang_vel_max: 1000,
 			ang_vel_min: -1000,
 			timerParam: 30,			//hardware stop timer in seconds
@@ -167,8 +149,7 @@ export default {
 		eventBus.$on('setfreeinput', this.setFreeMode);
 		eventBus.$on('setstepinput', this.setStepMode);
 		eventBus.$on('setrampinput', this.setRampMode);
-		eventBus.$on('setdcmotormode', this.speedRaw);
-		eventBus.$on('setpidpositionmode', this.positionPid);	
+		eventBus.$on('setdcmotormode', this.speedRaw);	
 		eventBus.$on('setpidspeedmode', this.speedPid);	
 		eventBus.$on('hardwarestop', this.hasStopped);	
 		
@@ -184,6 +165,9 @@ export default {
 			});
 		
 		this.resetHeight();
+
+		//set the graph data parameter in store
+		store.setGraphDataParameter('omega');
 	},
 	computed: {
 		getDataSocket(){
@@ -210,7 +194,6 @@ export default {
 				this.changingMode = false;
 				this.updateStore();
 			}
-			
 		},
 		resetHeight(){
 			this.clearMessages();
@@ -238,21 +221,6 @@ export default {
 				}));
 			} else{
 				this.error = 'Must STOP before configure';
-			}
-			
-			this.changingMode = false;
-			this.updateStore();
-		},
-		positionPid(){
-			this.clearMessages();
-			if(this.currentMode == 'stopped'){
-				this.currentMode = 'positionPid';
-				this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "positionPid"
-				}));
-			} else{
-				this.error = 'Must STOP before entering positionPid mode';
 			}
 			
 			this.changingMode = false;
@@ -286,19 +254,6 @@ export default {
 
 			this.changingMode = false;
 			this.updateStore();
-		},
-		setPosition(){
-			this.clearMessages();
-			if(this.currentMode == 'positionPid'){
-				let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
-				this.dataSocket.send(JSON.stringify({
-				set: "position",
-				to: pos
-				}));
-			} else{
-				this.error = 'Must be in positionPid mode';
-			}
-			
 		},
 		setSpeed(){
 			this.clearMessages();
@@ -358,7 +313,6 @@ export default {
 			store.state.pid_parameters.Ki = this.kiParam;
 			store.state.pid_parameters.Kd = this.kdParam;
 			store.state.pid_parameters.dt = this.dtParam
-			store.state.pid_parameters.N_errors = this.N_errorsParam;
 			store.state.currentMode = this.currentMode;
 			store.state.inputMode = this.inputMode;
 			console.log('store updated');
@@ -401,24 +355,18 @@ export default {
 		let a;
 		let b;
 		let debug = false;
-		let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
+		//let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
 
 		var initialSamplingCount = 1200 // 2 mins at 10Hz
 		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
-		let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
+		//let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
 
 		let responsiveSmoothie = true;
 		let thisTime;
 
-		var chart = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:3.14,minValue:-3.14,labels:{fillStyle:'#0024ff',precision:2}}); //interpolation:'linear
-		//var chart = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}}); //interpolation:'linear
 		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:1000,minValue:-1000,labels:{fillStyle:'#0024ff',precision:2}});
-		this.canvas = document.getElementById("smoothie-chart");
 		this.canvas_omega = document.getElementById("smoothie-chart_omega");
-		let series = new TimeSeries();
 		let series_omega = new TimeSeries();
-		chart.addTimeSeries(series, {lineWidth:2,strokeStyle:'#0024ff'});
-		chart.streamTo(this.canvas, 0);
 		chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#0024ff'});
 		chart_omega.streamTo(this.canvas_omega, 0);
 
@@ -445,8 +393,8 @@ export default {
 				// }
 				
 				
-				var enc = obj.enc
-				store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
+				// var enc = obj.enc
+				// store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
 				var enc_ang_vel = obj.enc_ang_vel;			//encoder reports angular velocity in specific modes
 
 				if(obj.awaiting_stop){
@@ -471,37 +419,13 @@ export default {
 				
 				messageCount += 1
 
-				//https://stackoverflow.com/questions/4633177/c-how-to-wrap-a-float-to-the-interval-pi-pi
-				if (wrapEncoder){ //wrap and convert to degrees
-					enc = Math.atan2(Math.sin(obj.enc / (encoderPPR/2) * Math.PI), Math.cos(obj.enc / (encoderPPR/2) * Math.PI)) / Math.PI * 180
-					enc = Math.min(180, enc)
-					enc = Math.max(-180, enc)
-					//this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
-					//only save values to the data store if within the min/max range
-					store.state.current_angle = enc * Math.PI / 180;
-					store.state.current_ang_vel = enc_ang_vel;
-
-				}
-				else{ //convert to radians only
-					enc = enc * 2* Math.PI / encoderPPR;
-					//this.$store.dispatch('setCurrentAngle', enc);		//for data storage, radians
-					//only save values to the data store if within the min/max range
-					if(enc >= -Math.PI && enc <= Math.PI){
-						store.state.current_angle = enc;
-					}
-					if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
+				if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
 						store.state.current_ang_vel = enc_ang_vel;
 					}
-			
-				}
 
 				thisTime = msgTime + delay
 				
 				if (!isNaN(thisTime)){
-					if(!isNaN(enc)){
-						series.append(msgTime + delay, enc)	
-						
-					}
 					
 					if(!isNaN(enc_ang_vel)){
 						series_omega.append(msgTime + delay, enc_ang_vel)	
@@ -511,12 +435,12 @@ export default {
 					//this.$store.dispatch('setCurrentTime', msgTime + delay);			//for output graph
 					store.state.current_time = msgTime + delay;
 					if(debug) {
-						console.log(delay,thisDelay,msgTime, enc)
+						console.log(delay,thisDelay,msgTime, enc_ang_vel)
 					}
 				}
 				else {
 					if (debug) {
-						console.log("NaN so not logging to smoothie",delay,thisDelay,msgTime, enc)
+						console.log("NaN so not logging to smoothie",delay,thisDelay,msgTime, enc_ang_vel)
 					}
 				} 
 
@@ -548,11 +472,6 @@ export default {
 </script>
 
 <style scoped>
-
-#smoothie-chart{
-	width:100%;
-	height: 120px;
-}
 
 #smoothie-chart_omega{
 	width:100%;
@@ -608,9 +527,6 @@ export default {
 
 #stop       {background-color: rgb(255, 0, 0);}
 #stop:hover {background-color: #cc1e1eff;}
-
-#pidposition        {background-color: rgb(255, 106, 0);}
-#pidposition:hover  {background-color: #cc661eff;}
 
 #pidspeed        {background-color: rgb(255, 187, 0);}
 #pidspeed:hover  {background-color: #cc9d1eff;}

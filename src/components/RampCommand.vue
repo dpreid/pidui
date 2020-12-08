@@ -5,16 +5,16 @@
         </div>
 
         <div class="row justify-content-center">  
-            <label class='m-2' v-if='mode == "dc_motor"' for="ramp_start">Start V</label>
-            <input v-if='mode == "dc_motor"' id="ramp_start" v-model="ramp_start" size="3">
+            <label class='m-2' v-if='mode == "speedRaw"' for="ramp_start">Start V</label>
+            <input v-if='mode == "speedRaw"' id="ramp_start" v-model="ramp_start" size="3">
 
-            <button v-show="mode == 'dc_motor'" id="set" @click="setStart">Set</button>
+            <button v-show="mode == 'speedRaw'" id="set" @click="setStart">Set</button>
         </div>
         <div class="row justify-content-center">    
 
-            <label v-if='mode == "dc_motor"' for="ramp_gradient">Ramp gradient (V/s)</label>
-            <label v-else-if='mode == "pid_position"' for="ramp_gradient">Ramp gradient (rad/s)</label>
-            <label v-else-if='mode == "pid_speed"' for="ramp_gradient">Ramp gradient (rpm/s)</label>
+            <label v-if='mode == "speedRaw"' for="ramp_gradient">Ramp gradient (V/s)</label>
+            <label v-else-if='mode == "positionPid"' for="ramp_gradient">Ramp gradient (rad/s)</label>
+            <label v-else-if='mode == "speedPid"' for="ramp_gradient">Ramp gradient (rpm/s)</label>
 
             <input id="ramp_gradient" v-model="ramp_gradient" size="3">
 
@@ -66,7 +66,6 @@ export default {
   },
   methods: {
      async runCommand(){
-         console.log('RUN');
          this.time = 0;
          this.time_interval = parseFloat(this.time_interval);
          this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
@@ -75,13 +74,13 @@ export default {
          store.state.ramp.ramp_start = 0;
          store.state.ramp.ramp_gradient = this.ramp_gradient;
          
-         if(this.mode == 'pid_speed'){
+         if(this.mode == 'speedPid'){
              this.max_value = store.state.ramp.max_rpm
              eventBus.$emit('addrampfunction', 'rpm', this.max_value);
-         } else if(this.mode == 'dc_motor'){
+         } else if(this.mode == 'speedRaw'){
              this.max_value = store.state.ramp.max_voltage;
              eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
-         } else if(this.mode == 'pid_position'){
+         } else if(this.mode == 'positionPid'){
              this.max_value = 6*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
              eventBus.$emit('addrampfunction', 'theta', this.max_value);
 
@@ -94,27 +93,26 @@ export default {
      },
      sendCommand(){
          this.time += this.time_interval;        //in seconds
-         console.log('SEND COMMAND = ' + this.time);
          let ramp_value = this.ramp_gradient * this.time;
          if(ramp_value >= this.max_value){
-             console.log('stopped sending ramp command');
              this.stopCommand();
          }
 
-         if(this.mode == 'dc_motor'){
-             let signal = ((ramp_value + parseFloat(this.ramp_start))/this.motor_max_voltage) * 255;
+         if(this.mode == 'speedRaw'){
+             //let signal = ((ramp_value + parseFloat(this.ramp_start))/this.motor_max_voltage) * 255;
+             let signal = ((ramp_value + parseFloat(this.ramp_start))/this.max_value) * 100;    //percentage of max 6V
              console.log('signal = ' + signal);
              this.dataSocket.send(JSON.stringify({
-				cmd: "set_speed",
-				param: signal
+				set: "speed",
+				to: signal
 			}));
-         } else if(this.mode == 'pid_speed'){
+         } else if(this.mode == 'speedPid'){
              let rpm = ramp_value;         
              this.dataSocket.send(JSON.stringify({
-				cmd: "set_speed",
-				param: rpm
+				set: "speed",
+				to: rpm
 			}));
-         } else if(this.mode == 'pid_position'){
+         } else if(this.mode == 'positionPid'){
              //console.log('sending ramp command = ' + ramp_value);
              //let new_ang_rad = store.state.current_angle + ramp_value;
              let new_ang_rad = ramp_value;
@@ -129,8 +127,8 @@ export default {
                  new_enc_pos = 1000 - (Math.abs(new_enc_pos) - 1000);
              }
              this.dataSocket.send(JSON.stringify({
-				cmd: "set_position",
-				param: new_enc_pos
+				set: "position",
+				to: new_enc_pos
 			}));
          } else{
              this.stopCommand();
@@ -141,10 +139,11 @@ export default {
          clearInterval(this.interval_id);
      },
      setStart(){
-         let signal = 255*parseFloat(this.ramp_start)/this.motor_max_voltage;
+        //  let signal = 255*parseFloat(this.ramp_start)/this.motor_max_voltage;
+        let signal = 100*parseFloat(this.ramp_start)/this.max_value;
          this.dataSocket.send(JSON.stringify({
-				cmd: "set_speed",
-				param: signal
+				set: "speed",
+				to: signal
             }));
      }
   }

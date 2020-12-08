@@ -1,6 +1,6 @@
 <template>
   <div id="app" class='container-fluid-sm m-0'>
-    <navigation-bar />
+    <navigation-bar :remoteLabVersion="remoteLabVersion"/>
 
     <div v-if='!getLoggedIn'>
         <login  />
@@ -14,11 +14,14 @@
             <div v-else-if="remoteLabVersion == 'spinning_disk'"><control-panel-spinning-disk /></div>
             <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm /></div>
              
-            <div class='col-sm-12' v-if='isTableOn'><table-output /></div>
+            <div class='col-sm-12' v-if='isTableOn'><table-output :remoteLabVersion="remoteLabVersion"/></div>
           </div>
 
           <!-- RIGHT HAND COLUMN -->
           <div class='col-sm-6' > 
+            <div v-if='isSystemDiagramsOn' class='row'>
+              <system-diagrams />
+            </div>
             <div class='row'>
                 <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder /></div> 
                 <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
@@ -51,6 +54,7 @@ import DataRecorder from "./components/DataRecorder.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
 import GraphInput from "./components/GraphInput.vue";
 import Login from "./components/Login.vue";
+import SystemDiagrams from "./components/SystemDiagrams.vue";
 
 import { eventBus } from "./main.js";
 import userData from './userDataStore';
@@ -72,10 +76,11 @@ export default {
     NavigationBar,
     GraphInput,
     Login,
+    SystemDiagrams,
   },
   data() {
     return {
-      remoteLabVersion: 'variable_governor',    //'spinning_disk', 'robot_arm'
+      remoteLabVersion: 'robot_arm', //'variable_governor',    //'spinning_disk', 'robot_arm'
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,
@@ -83,6 +88,7 @@ export default {
       isAutoCommandOn: false,
       isDataRecorderOn: false,
       isInputGraphOn: false,
+      isSystemDiagramsOn: false,
     }
   },
   created(){
@@ -93,10 +99,12 @@ export default {
     eventBus.$on('togglestopwatch', this.toggleStopwatch);
     eventBus.$on('toggletable', this.toggleTable);
     eventBus.$on('togglegraphinput', this.toggleInputGraph);
+    eventBus.$on('togglesystemdiagrams', this.toggleSystemDiagrams);
 
-    eventBus.$on('setexercise1', this.setExercise1Interface);
-    eventBus.$on('setexercise2', this.setExercise2Interface);
-    eventBus.$on('setexercise3', this.setExercise3Interface);
+    eventBus.$on('setexercise1v1', this.setExercise1v1Interface);
+    eventBus.$on('setexercise1v2', this.setExercise1v2Interface);
+    eventBus.$on('setexercise1v3', this.setExercise1v3Interface);
+    eventBus.$on('setexercise2v1', this.setExercise2v1Interface);
 
   },
   methods: {
@@ -122,7 +130,10 @@ export default {
     toggleInputGraph(){
       this.isInputGraphOn = !this.isInputGraphOn;
     },
-    setExercise1Interface(){
+    toggleSystemDiagrams(){
+      this.isSystemDiagramsOn = !this.isSystemDiagramsOn;
+    },
+    setExercise1v1Interface(){
       this.isGraphOn = false;
       this.isDataRecorderOn = false;
       this.isTableOn = false;
@@ -135,7 +146,7 @@ export default {
       eventBus.$emit('setfreeinput');
 
     },
-    setExercise2Interface(){
+    setExercise1v2Interface(){
       this.isGraphOn = true;
       this.isDataRecorderOn = true;
       this.isTableOn = false;
@@ -147,7 +158,19 @@ export default {
       eventBus.$emit('setdcmotormode');
       eventBus.$emit('setstepinput');
     },
-    setExercise3Interface(){
+    setExercise1v3Interface(){
+      this.isGraphOn = true;
+      this.isDataRecorderOn = true;
+      this.isTableOn = false;
+      this.isInputGraphOn = true;
+      this.isAutoCommandOn = false;
+      this.isWorkspaceOn = false;
+      
+      eventBus.$emit('stop');
+      eventBus.$emit('setpidpositionmode');
+      eventBus.$emit('setstepinput');
+    },
+    setExercise2v1Interface(){
       this.isGraphOn = true;
       this.isDataRecorderOn = true;
       this.isTableOn = false;

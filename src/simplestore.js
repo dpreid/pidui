@@ -12,6 +12,7 @@ export const store = {
         start_time: 0,
         currentMode: '',
         inputMode: '',
+        graphDataParameter: 'omega',   //'theta'
         data: [],
         step:{
            step_time: 0,      //seconds
@@ -31,6 +32,9 @@ export const store = {
          Kd:0,
          dt:3,
         },
+       },
+       setGraphDataParameter(param){
+         this.state.graphDataParameter = param;
        },
        calculateAverageVelocity(){
          this.state.previous_ang_vels[this.state.average_count] = this.state.current_ang_vel;

@@ -20,7 +20,7 @@
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
-				<label class='m-2' for="graphSelect">Input type:</label>
+				<label class='m-2' for="inputSelect">Input type:</label>
 				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
 					<option value="free">Free</option>
 					<option value="step">Step</option>
@@ -50,7 +50,7 @@
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
 		</div>
 
-		<div v-if='currentMode == "speedRaw"'>
+		<div v-else-if='currentMode == "speedRaw"'>
 			<DCMotorPanel v-bind:dataSocket="getDataSocket" />
 		</div>
 	
@@ -67,7 +67,7 @@
 
 	
 
-	<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
+	<div v-if='currentMode == "speedPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
 			<input type='text' class='form-control' id="kp" v-model="kpParam">
@@ -112,24 +112,18 @@ export default {
     data(){
         return{
 			dataSocket: null,
-			angleParam: 0,			//always stores degrees, even in rad mode
 			speedParam: 0,
-			heightParam: 0,
 			kpParam: 1,
 			kiParam: 0,
 			kdParam: 0,
 			dtParam: 20,
-			angleMode: 'degrees',		// 'radians'
 			isStopped: true,
 			changingMode: false,
 			currentMode: "stopped",		//speedPid", "speedRaw"
 			inputMode: 'free',		//'step', 'ramp'
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
-			canvas: null,
 			canvas_omega: null,
-			angle_max: 3.14,
-			angle_min: -3.14,
 			ang_vel_max: 1000,
             ang_vel_min: -1000,
             timerParam: 30,			//hardware stop timer in seconds
@@ -143,7 +137,7 @@ export default {
 		eventBus.$on('setdcmotormode', this.speedRaw);
 		eventBus.$on('setpidpositionmode', this.positionPid);	
 		eventBus.$on('setpidspeedmode', this.speedPid);		
-		
+		eventBus.$on('hardwarestop', this.hasStopped);
 	},
         
     async mounted(){
@@ -151,11 +145,9 @@ export default {
 		console.log('connection complete');
 		this.setParameters();			//resets the parameters to default settings on UI
 		console.log('params set');
-		await new Promise((resolve)=>{
-			setTimeout(() => {resolve(console.log('waiting to resetHeight'))}, 1000);		//give the system time to send and change parameters before attempting calibration
-			});
-		
-		this.resetHeight();
+
+		//set the graph data parameter in store
+		store.setGraphDataParameter('omega');
 	},
 	computed: {
 		getDataSocket(){
@@ -178,52 +170,6 @@ export default {
 			this.clearMessages();
 			this.speedParam = 0;
 			this.currentMode = 'stopped';
-			this.changingMode = false;
-			this.updateStore();
-		},
-		resetHeight(){
-			this.clearMessages();
-			if(this.currentMode == 'stopped'){
-				this.currentMode = 'resetHeight';
-				this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "resetHeight"
-				}));
-			} else{
-				this.error = 'Must STOP before resetHeight';
-			}
-			this.heightParam = 0;
-			this.changingMode = false;
-			this.updateStore();
-			
-		},
-		configure(){
-			this.clearMessages();
-			if(this.currentMode == 'stopped'){
-				this.currentMode = 'configure';
-				this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "configure"
-				}));
-			} else{
-				this.error = 'Must STOP before configure';
-			}
-			
-			this.changingMode = false;
-			this.updateStore();
-		},
-		positionPid(){
-			this.clearMessages();
-			if(this.currentMode == 'stopped'){
-				this.currentMode = 'positionPid';
-				this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "positionPid"
-				}));
-			} else{
-				this.error = 'Must STOP before entering positionPid mode';
-			}
-			
 			this.changingMode = false;
 			this.updateStore();
 		},
@@ -256,19 +202,6 @@ export default {
 			this.changingMode = false;
 			this.updateStore();
 		},
-		setPosition(){
-			this.clearMessages();
-			if(this.currentMode == 'positionPid'){
-				let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
-				this.dataSocket.send(JSON.stringify({
-				set: "position",
-				to: pos
-				}));
-			} else{
-				this.error = 'Must be in positionPid mode';
-			}
-			
-		},
 		setSpeed(){
 			this.clearMessages();
 			if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
@@ -278,18 +211,6 @@ export default {
 				}));
 			} else{
 				this.error == 'Must be in speedPid or speedRaw mode';
-			}
-			
-		},
-		setHeight(){
-			this.clearMessages();
-			if(this.currentMode == 'configure'){
-				this.dataSocket.send(JSON.stringify({
-				set: "height",
-				to: this.heightParam
-				}));
-			} else{
-				this.error = 'Must be in configure mode';
 			}
 			
 		},
@@ -327,7 +248,6 @@ export default {
 			store.state.pid_parameters.Ki = this.kiParam;
 			store.state.pid_parameters.Kd = this.kdParam;
 			store.state.pid_parameters.dt = this.dtParam
-			store.state.pid_parameters.N_errors = this.N_errorsParam;
 			store.state.currentMode = this.currentMode;
 			store.state.inputMode = this.inputMode;
 			console.log('store updated');
@@ -370,11 +290,11 @@ export default {
 		let a;
 		let b;
 		let debug = false;
-		let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
+		//let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
 
 		var initialSamplingCount = 1200 // 2 mins at 10Hz
 		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
-		let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
+		//let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
 
 		let responsiveSmoothie = true;
 		let thisTime;
@@ -408,8 +328,8 @@ export default {
 				// }
 				
 				
-				var enc = obj.enc
-				store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
+				//var enc = obj.enc
+				//store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
 				var enc_ang_vel = obj.enc_ang_vel;			//encoder reports angular velocity in specific modes
 
 				if(obj.awaiting_stop){
@@ -434,28 +354,8 @@ export default {
 				
 				messageCount += 1
 
-				//https://stackoverflow.com/questions/4633177/c-how-to-wrap-a-float-to-the-interval-pi-pi
-				if (wrapEncoder){ //wrap and convert to degrees
-					enc = Math.atan2(Math.sin(obj.enc / (encoderPPR/2) * Math.PI), Math.cos(obj.enc / (encoderPPR/2) * Math.PI)) / Math.PI * 180
-					enc = Math.min(180, enc)
-					enc = Math.max(-180, enc)
-					//this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
-					//only save values to the data store if within the min/max range
-					store.state.current_angle = enc * Math.PI / 180;
+				if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
 					store.state.current_ang_vel = enc_ang_vel;
-
-				}
-				else{ //convert to radians only
-					enc = enc * 2* Math.PI / encoderPPR;
-					//this.$store.dispatch('setCurrentAngle', enc);		//for data storage, radians
-					//only save values to the data store if within the min/max range
-					if(enc >= -Math.PI && enc <= Math.PI){
-						store.state.current_angle = enc;
-					}
-					if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
-						store.state.current_ang_vel = enc_ang_vel;
-					}
-			
 				}
 
 				thisTime = msgTime + delay
@@ -470,12 +370,12 @@ export default {
 					//this.$store.dispatch('setCurrentTime', msgTime + delay);			//for output graph
 					store.state.current_time = msgTime + delay;
 					if(debug) {
-						console.log(delay,thisDelay,msgTime, enc)
+						console.log(delay,thisDelay,msgTime, enc_ang_vel)
 					}
 				}
 				else {
 					if (debug) {
-						console.log("NaN so not logging to smoothie",delay,thisDelay,msgTime, enc)
+						console.log("NaN so not logging to smoothie",delay,thisDelay,msgTime, enc_ang_vel)
 					}
 				} 
 

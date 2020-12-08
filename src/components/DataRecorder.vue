@@ -69,6 +69,7 @@ export default {
           //let ang_vel = this.$store.getters.calculateAngularVelocity;
           //let ang_vel = store.calculateAngularVelocity();
           let ang_vel = store.state.current_ang_vel;
+          //let ang_vel = store.calculateAverageVelocity();
           //let index = this.$store.getters.getNumData - 1;
           //let index = store.getNumData() -1;
           //should the ang_vel calculated this loop be placed in the previous data point? Or this one?!!!!!!!!!!!!!!!

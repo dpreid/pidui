@@ -7,13 +7,13 @@
     </div>
 
     <div class="row mb-2 justify-content-center align-items-center" id="chart-functions">
-        <div class='form-group col-3'>
+        <!-- <div class='form-group col-3'>
             <label class='m-2' for="graphSelect">Graph:</label>
             <select class='col-sm' name="graphSelect" id="graphSelect" v-model="currentDataParameter" @change="getData">
                 <option value="theta">Angle</option>
                 <option value="omega">Angular Velocity</option>
             </select> 
-        </div>
+        </div> -->
         <div class='form-group col-3'>
             <label class='m-2' for="gradient">Gradient:</label>
             <input class='col-sm' id="gradient" :value="gradient" readonly> 
@@ -123,7 +123,7 @@ export default {
         return{
             dataStore: store,
             chart: null,
-            currentDataParameter: 'theta',
+            //currentDataParameter: 'theta',
             chartData: [],
             gradient_start_point: {x:0, y:0},
             gradient_end_point: {x:0, y:0},
@@ -178,7 +178,8 @@ export default {
                     yAxes: [{
                         scaleLabel:{
                             display: true,
-                            labelString: this.currentDataParameter
+                            //labelString: this.currentDataParameter
+                            labelString: store.state.graphDataParameter
                         },
                         type: 'linear',
                         position: 'left',
@@ -231,7 +232,8 @@ export default {
                 dataset.data.push(data);
             });
             this.chart.update(0);       //instantly update with 0 parameter, no animation
-            this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.currentDataParameter;
+            // this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.currentDataParameter;
+            this.chart.options.scales.yAxes[0].scaleLabel.labelString = store.state.graphDataParameter;
         },
         clearData(){
             this.chartData = [];
@@ -248,7 +250,7 @@ export default {
                     let x_data = store.state.data[i].t;
                     let y_data;
                     //let x_data = data.t;
-                    switch(this.currentDataParameter){
+                    switch(store.state.graphDataParameter){
                         case 'theta':
                             //y_data = data.theta;
                             y_data = store.state.data[i].theta;
@@ -271,16 +273,13 @@ export default {
                     //let data = this.$store.getters.getData[index];
                     let x_data = store.state.data[index].t;
                     //let x_data = data.t;
-                    switch(this.currentDataParameter){
+                    switch(store.state.graphDataParameter){
                             case 'theta':
                                 y_data = store.state.data[index].theta;
                                 //y_data = data.theta;
                                 break;
                             case 'omega':
-                                if(index > 0){
-                                    y_data = store.state.data[index].omega;
-                                    //y_data = this.$store.getters.getData[index - 1].omega;
-                                }
+                                y_data = store.state.data[index].omega;
                                 break;
 
                         }
