@@ -1,6 +1,6 @@
 <template>
 <div class='m-2 p-2 bg-white border rounded'>
-   <div class="form-group row justify-content-center pb-2">
+   <div class="form-group row justify-content-center align-items-center pb-2">
         <label class="col-sm-2 col-form-label" for="voltage">Input voltage ({{voltage}}V)</label>
         <div class="col-4"><input type="range" min="-6" max="6" step="0.5" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
             <datalist id="tickmarks">
@@ -19,7 +19,12 @@
                 <option value="6.0"></option>
             </datalist>
         <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rpm)</label>
-        <div class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='avgAngVel'></div>
+
+        <div class='col-sm-4' v-if='isAnalogueOutput'>
+            <analogue-output :outputValue="avgAngVel" :minValue="0" :maxValue="1000" :intervalValue="100"></analogue-output>
+        </div>
+        <div v-else class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='avgAngVel'></div>
+
     </div>
 </div>
 
@@ -29,6 +34,7 @@
 import { store } from "../simplestore.js";
 //import { eventBus } from "../main.js";
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import AnalogueOutput from "./AnalogueOutput.vue";
 
 export default {
 
@@ -41,6 +47,7 @@ export default {
         data_store: store,
         voltage: 0,
         motor_max_voltage: 12.0,
+        isAnalogueOutput: true,
     }
   },
   beforeMount(){
@@ -50,7 +57,7 @@ export default {
 
   },
   components: {
-    
+    AnalogueOutput
   },
   computed:{
       angVel(){
@@ -70,7 +77,8 @@ export default {
 				set: "speed",
 				to: signal
 			}));
-      }
+      },
+      
       
   }
 }

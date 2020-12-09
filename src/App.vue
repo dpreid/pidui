@@ -80,7 +80,7 @@ export default {
   },
   data() {
     return {
-      remoteLabVersion: 'robot_arm', //'variable_governor',    //'spinning_disk', 'robot_arm'
+      remoteLabVersion: 'variable_governor',    //'spinning_disk', 'robot_arm'
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,

@@ -99,22 +99,51 @@ export default {
           this.hasPlotted = false;
       },
       outputToCSV(){
-          let csv = 'Time/s,Angle/rad,AngVel/rad/s\n';
-          //let data = this.$store.getters.getData;
-          let data = store.state.data;
-          data.forEach(function(d){
-              csv += d.t.toString();
-              csv += ",";
-              csv += d.theta.toString();
-              csv += ',';
-              csv += d.omega.toString();
-              csv += "\n";
-          });
+          let csv = '';
+          let filename = '';
+            let date = new Date();
+            filename = date.getDate().toString() + (date.getMonth() + 1).toString() + date.getFullYear().toString();
+          if(store.state.graphDataParameter == 'theta'){
+              filename += 'Position';
+              csv = 'Time/s,Angle/rad\n';
+            //let data = this.$store.getters.getData;
+            let data = store.state.data;
+            data.forEach(function(d){
+                csv += d.t.toString();
+                csv += ",";
+                csv += d.theta.toString();
+                csv += "\n";
+            });
+          } else if(store.state.graphDataParameter == 'omega'){
+              filename += 'AngularVelocity';
+              csv = 'Time/s,AngVel/rad/s\n';
+            //let data = this.$store.getters.getData;
+            let data = store.state.data;
+            data.forEach(function(d){
+                csv += d.t.toString();
+                csv += ",";
+                csv += d.omega.toString();
+                csv += "\n";
+            });
+          } else{
+              csv = 'Time/s,Angle/rad,AngVel/rad/s\n';
+            //let data = this.$store.getters.getData;
+            let data = store.state.data;
+            data.forEach(function(d){
+                csv += d.t.toString();
+                csv += ",";
+                csv += d.theta.toString();
+                csv += ',';
+                csv += d.omega.toString();
+                csv += "\n";
+            });
+          }
+            filename += '.csv';
           //console.log(csv);
           let hiddenElement = document.createElement('a');
           hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
           hiddenElement.target = '_blank';
-          hiddenElement.download = 'pendulum.csv';
+          hiddenElement.download = filename;
           hiddenElement.click();
       },
       
