@@ -21,7 +21,7 @@
         <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rpm)</label>
 
         <div class='col-sm-4' v-if='isAnalogueOutput'>
-            <analogue-output :outputValue="avgAngVel" :minValue="0" :maxValue="1000" :intervalValue="100"></analogue-output>
+            <analogue-output :outputValue="angVel" :minValue="0" :maxValue="1000" :intervalValue="100"></analogue-output>
         </div>
         <div v-else class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='avgAngVel'></div>
 

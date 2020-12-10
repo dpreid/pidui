@@ -1,8 +1,7 @@
 <template>
-<div class='container-sm m-2 p-2 bg-white'>
+<div class='container-sm m-0 p-0 bg-white'>
     <div class='row'>
         <div class='col-12'>
-            <!-- <div class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" v-model='armValue'></div> -->
             <canvas id='output'></canvas>
         </div>
     </div>
@@ -28,7 +27,7 @@ export default {
     return {
         canvas: null,
         ctx: null,
-        arm: 0,
+        arm: 0,         
     }
   },
   created(){
@@ -61,6 +60,11 @@ export default {
   watch:{
       armValue(){
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);  
+          if(isNaN(Number(this.outputValue))){
+              this.arm = 0;
+          } else{
+              this.arm = Math.abs(Number(this.outputValue));
+          }
           this.drawDial();
           this.drawTicks();
           this.drawArm();
@@ -68,11 +72,6 @@ export default {
   },
   methods: {
       drawArm(){
-          if(isNaN(Number(this.outputValue))){
-              this.arm = 0;
-          } else{
-              this.arm = Number(this.outputValue);
-          }
         let angle = Math.PI/2 + 2*Math.PI*this.arm/this.maxValue;
         this.ctx.lineWidth = 2;              // HAND WIDTH.
 
@@ -90,15 +89,19 @@ export default {
       drawDial(){
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.height/2 - 5, 0, Math.PI * 2);
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = 3;
+        this.ctx.fillStyle = 'rgba(50, 50, 50, 0.1)';
         this.ctx.strokeStyle = '#92949C';
         this.ctx.stroke();
+        this.ctx.fill();
+        
 
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.height/2, 0, Math.PI * 2);
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = 3;
         this.ctx.strokeStyle = '#92949C';
         this.ctx.stroke();
+        
 
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, 5, 0, Math.PI * 2);
@@ -112,22 +115,29 @@ export default {
           let num_ticks = (this.maxValue - this.minValue)/this.intervalValue;
           let angle = Math.PI/2;
           for (let i = 0; i < num_ticks; i++) {
-            angle += 2*Math.PI/num_ticks;       // THE ANGLE TO MARK.
+            angle = i*2*Math.PI/num_ticks + Math.PI/2;       // THE ANGLE TO MARK.
             this.ctx.lineWidth = 1;            // HAND WIDTH.
             this.ctx.beginPath();
 
             var x1 = (this.canvas.width / 2) + Math.cos(angle) * (this.canvas.height/2);
             var y1 = (this.canvas.height / 2) + Math.sin(angle) * (this.canvas.height/2);
-            var x2 = (this.canvas.width / 2) + Math.cos(angle) * (this.canvas.height/2 - (this.canvas.height/2 / 7));
-            var y2 = (this.canvas.height / 2) + Math.sin(angle) * (this.canvas.height/2 - (this.canvas.height/2 / 7));
+            var x2 = (this.canvas.width / 2) + Math.cos(angle) * (this.canvas.height/2 - (this.canvas.height/2 / 4));
+            var y2 = (this.canvas.height / 2) + Math.sin(angle) * (this.canvas.height/2 - (this.canvas.height/2 / 4));
 
             this.ctx.moveTo(x1, y1);
             this.ctx.lineTo(x2, y2);
 
             this.ctx.strokeStyle = '#466B76';
             this.ctx.stroke();
+
+            this.drawTickValue((this.minValue + i*this.intervalValue).toString(), x2, y2);
         }
       },
+      drawTickValue(value, x, y){
+          this.ctx.font = "10px Arial";
+          this.ctx.textAlign = "center";
+          this.ctx.fillText(value, x, y); 
+      }
 
       
   }
