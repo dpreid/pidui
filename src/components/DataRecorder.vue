@@ -62,25 +62,17 @@ export default {
       },
       plot(){
           this.data_points_count++;
-          //let angle = this.$store.getters.getCurrentAngle;
-          let angle = store.state.current_angle;
-          //let time = this.$store.getters.getTime;
+          let angle = parseFloat(store.state.current_angle);
           let time = store.getTime();
-          //let ang_vel = this.$store.getters.calculateAngularVelocity;
-          //let ang_vel = store.calculateAngularVelocity();
-          let ang_vel = store.state.current_ang_vel;
-          //let ang_vel = store.calculateAverageVelocity();
-          //let index = this.$store.getters.getNumData - 1;
-          //let index = store.getNumData() -1;
-          //should the ang_vel calculated this loop be placed in the previous data point? Or this one?!!!!!!!!!!!!!!!
-        //   if(index >= 0){
-        //       console.log("index = " + index);
-        //       console.log("ang vel = " + ang_vel);
-        //       //this.$store.dispatch('updateAngularVelocity', index, ang_vel);  //update previous ang_vel
-        //       store.state.data[index].omega = ang_vel;  //update previous ang_vel
-        //   }
+          let ang_vel = parseFloat(store.state.current_ang_vel);
           
-          let data_object = {id: store.getNumData(), t: parseFloat(time), theta: parseFloat(angle), omega: parseFloat(ang_vel)};
+          //get values in different units
+          //angle in degrees
+          let angle_deg = angle*180.0/Math.PI;
+          //ang_vel in rad/s
+          let ang_vel_rad = 2*Math.PI*ang_vel/60.0
+          
+          let data_object = {id: store.getNumData(), t: parseFloat(time), theta: angle, omega: ang_vel, theta_deg:angle_deg, omega_rad: ang_vel_rad};
           //this.$store.dispatch('addData', data_object);
           store.addData(data_object);
           eventBus.$emit('updateGraph');

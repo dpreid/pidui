@@ -22,6 +22,7 @@ export default {
       minValue: Number,
       maxValue: Number,
       intervalValue: Number,
+      minorIntervalValue: Number,
   },
   data () {
     return {
@@ -41,6 +42,7 @@ export default {
       this.ctx = this.canvas.getContext('2d');
       this.drawDial();
       this.drawTicks();
+      this.drawMinorTicks();
       this.drawArm();
 
   },
@@ -67,13 +69,14 @@ export default {
           }
           this.drawDial();
           this.drawTicks();
+          this.drawMinorTicks();
           this.drawArm();
       }
   },
   methods: {
       drawArm(){
         let angle = Math.PI/2 + 2*Math.PI*this.arm/this.maxValue;
-        this.ctx.lineWidth = 2;              // HAND WIDTH.
+        this.ctx.lineWidth = 4;              // HAND WIDTH.
 
         this.ctx.beginPath();
         // START FROM CENTER OF THE CLOCK.
@@ -116,7 +119,7 @@ export default {
           let angle = Math.PI/2;
           for (let i = 0; i < num_ticks; i++) {
             angle = i*2*Math.PI/num_ticks + Math.PI/2;       // THE ANGLE TO MARK.
-            this.ctx.lineWidth = 1;            // HAND WIDTH.
+            this.ctx.lineWidth = 2;            // HAND WIDTH.
             this.ctx.beginPath();
 
             var x1 = (this.canvas.width / 2) + Math.cos(angle) * (this.canvas.height/2);
@@ -137,7 +140,27 @@ export default {
           this.ctx.font = "10px Arial";
           this.ctx.textAlign = "center";
           this.ctx.fillText(value, x, y); 
-      }
+      },
+      drawMinorTicks(){
+          let num_ticks = (this.maxValue - this.minValue)/this.minorIntervalValue;
+          let angle = Math.PI/2;
+          for (let i = 0; i < num_ticks; i++) {
+            angle = i*2*Math.PI/num_ticks + Math.PI/2;       // THE ANGLE TO MARK.
+            this.ctx.lineWidth = 1;            // HAND WIDTH.
+            this.ctx.beginPath();
+
+            var x1 = (this.canvas.width / 2) + Math.cos(angle) * (this.canvas.height/2);
+            var y1 = (this.canvas.height / 2) + Math.sin(angle) * (this.canvas.height/2);
+            var x2 = (this.canvas.width / 2) + Math.cos(angle) * (this.canvas.height/2 - (this.canvas.height/2 / 7));
+            var y2 = (this.canvas.height / 2) + Math.sin(angle) * (this.canvas.height/2 - (this.canvas.height/2 / 7));
+
+            this.ctx.moveTo(x1, y1);
+            this.ctx.lineTo(x2, y2);
+
+            this.ctx.strokeStyle = '#466B76';
+            this.ctx.stroke();
+        }
+      },
 
       
   }

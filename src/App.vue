@@ -59,7 +59,6 @@ import SystemDiagrams from "./components/SystemDiagrams.vue";
 import { eventBus } from "./main.js";
 import userData from './userDataStore';
 
-
 export default {
   name: 'App',
   components: {

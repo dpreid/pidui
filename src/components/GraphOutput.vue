@@ -7,13 +7,15 @@
     </div>
 
     <div class="row mb-2 justify-content-center align-items-center" id="chart-functions">
-        <!-- <div class='form-group col-3'>
-            <label class='m-2' for="graphSelect">Graph:</label>
-            <select class='col-sm' name="graphSelect" id="graphSelect" v-model="currentDataParameter" @change="getData">
-                <option value="theta">Angle</option>
-                <option value="omega">Angular Velocity</option>
+        <div class='form-group col-3'>
+            <label class='m-2' for="unitSelect">Units:</label>
+            <select class='col-sm' name="unitSelect" id="unitSelect" v-model="unit" @change="getData">
+                <option v-if='getGraphParameter == "theta"' value="radians">rads</option>
+                <option v-if='getGraphParameter == "theta"' value="degrees">degs</option>
+                <option v-if='getGraphParameter == "omega"' value="rpm">RPM</option>
+                <option v-if='getGraphParameter == "omega"' value="rad/s">rad/s</option>
             </select> 
-        </div> -->
+        </div>
         <div class='form-group col-3'>
             <label class='m-2' for="gradient">Gradient:</label>
             <input class='col-sm' id="gradient" :value="gradient" readonly> 
@@ -27,8 +29,8 @@
                 <option value="quadratic">Quadratic</option>
                 <option value="trigonometric">Trigonometric</option>
                 <option value="exponential">Exponential</option>
-                <option v-if='getCurrentMode == "dc_motor" || getCurrentMode == "stopped"' value="step">Step</option>
-                <option v-if='getCurrentMode == "dc_motor" || getCurrentMode == "stopped"' value="ramp">Ramp</option>
+                <option v-if='getGraphParameter == "omega"' value="step">Step</option>
+                <option v-if='getGraphParameter == "omega"' value="ramp">Ramp</option>
             </select> 
 
             <div v-if="currentFunction === 'linear'">
@@ -123,7 +125,7 @@ export default {
         return{
             dataStore: store,
             chart: null,
-            //currentDataParameter: 'theta',
+            currentDataParameter: store.state.graphDataParameter,
             chartData: [],
             gradient_start_point: {x:0, y:0},
             gradient_end_point: {x:0, y:0},
@@ -139,7 +141,7 @@ export default {
             YAxisMin: 0,
             XAxisMax: 0,
             XAxisMin: 0,
-
+            unit: '',
         }
     },
     methods: {
@@ -252,12 +254,19 @@ export default {
                     //let x_data = data.t;
                     switch(store.state.graphDataParameter){
                         case 'theta':
-                            //y_data = data.theta;
-                            y_data = store.state.data[i].theta;
+                            if(this.unit == 'deg'){
+                                y_data = store.state.data[i].theta_deg;
+                            } else {
+                                y_data = store.state.data[i].theta;
+                            }
                             break;
                         case 'omega':
-                            //y_data = data.omega;
-                            y_data = store.state.data[i].omega;
+                            if(this.unit == 'rpm'){
+                                y_data = store.state.data[i].omega;
+                            } else{
+                                y_data = store.state.data[i].omega_rad;
+                            }
+                            break;
 
                     }
                     this.addDataToChart({x: x_data, y: y_data});
@@ -275,11 +284,18 @@ export default {
                     //let x_data = data.t;
                     switch(store.state.graphDataParameter){
                             case 'theta':
-                                y_data = store.state.data[index].theta;
-                                //y_data = data.theta;
+                                if(this.unit == 'deg'){
+                                    y_data = store.state.data[index].theta_deg;
+                                } else {
+                                    y_data = store.state.data[index].theta;
+                                }
                                 break;
                             case 'omega':
-                                y_data = store.state.data[index].omega;
+                                if(this.unit == 'rpm'){
+                                    y_data = store.state.data[index].omega;
+                                } else{
+                                    y_data = store.state.data[index].omega_rad;
+                                }
                                 break;
 
                         }
@@ -383,7 +399,7 @@ export default {
                 return parseFloat(this.func_a)*Math.exp(parseFloat(this.func_b)*t);
             },
             step(t){
-                let A = parseFloat(store.state.step.step_size);
+                //let A = parseFloat(store.state.step.step_size);
                 let t0 = parseFloat(this.func_c);
                 //let w0 = -parseFloat(this.func_a)*A*(1-Math.exp(t0/parseFloat(this.func_b)));
                 //let t0 = 0;
@@ -392,12 +408,12 @@ export default {
                 if(t < t0){
                     return 0;
                 } else{
-                    return parseFloat(this.func_a)*A*expterm; 
+                    return parseFloat(this.func_a)*expterm; 
                 }
                 
             },
             ramp(t){
-                let A = parseFloat(store.state.ramp.ramp_gradient);
+                //let A = parseFloat(store.state.ramp.ramp_gradient);
                 let tau = parseFloat(this.func_b);
                 let K = parseFloat(this.func_a);
                 let t0 = parseFloat(this.func_c);
@@ -406,7 +422,7 @@ export default {
                 if(t < t0){
                     return w0;
                 } else{
-                    return K*A*((t-t0) - tau + tau*Math.exp(-(t-t0)/tau)) + w0;
+                    return K*((t-t0) - tau + tau*Math.exp(-(t-t0)/tau)) + w0;
                 }
                 
             },
@@ -430,11 +446,21 @@ export default {
                 console.log(this.dataStore.state.currentMode);
                 let data = this.dataStore.state.currentMode;
                 return data;
-            }
+            },
+            getGraphParameter(){
+                return store.state.graphDataParameter;
+            },
       },
       mounted() {
         this.createChart();
         this.getData();
+
+        //set default unit
+        if(store.state.graphDataParameter == 'theta'){
+            this.unit = 'rad';
+        } else{
+            this.unit = 'rpm';
+        }
       },
       created(){
         //eventBus.$on('updateGraph', this.getData );

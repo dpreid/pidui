@@ -71,7 +71,7 @@
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
-			<input type='text' class='form-control' id="ki" v-model="kiParam">
+				<input type='text' class='form-control' id="ki" v-model="kiParam">
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
@@ -289,7 +289,6 @@ export default {
 		let a;
 		let b;
 		let debug = false;
-		let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
 
 		var initialSamplingCount = 1200 // 2 mins at 10Hz
 		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
@@ -353,28 +352,15 @@ export default {
 				
 				messageCount += 1
 
-				//https://stackoverflow.com/questions/4633177/c-how-to-wrap-a-float-to-the-interval-pi-pi
-				if (wrapEncoder){ //wrap and convert to degrees
-					enc = Math.atan2(Math.sin(obj.enc / (encoderPPR/2) * Math.PI), Math.cos(obj.enc / (encoderPPR/2) * Math.PI)) / Math.PI * 180
-					enc = Math.min(180, enc)
-					enc = Math.max(-180, enc)
-					//this.$store.dispatch('setCurrentAngle', enc * Math.PI / 180);		//for output graph, convert to radians
-					//only save values to the data store if within the min/max range
-					store.state.current_angle = enc * Math.PI / 180;
-					//store.state.current_ang_vel = enc_ang_vel;
+				//encoder position in radians
+				enc = enc * 2* Math.PI / encoderPPR;
 
-				}
-				else{ //convert to radians only
-					enc = enc * 2* Math.PI / encoderPPR;
-					//this.$store.dispatch('setCurrentAngle', enc);		//for data storage, radians
-					//only save values to the data store if within the min/max range
-					if(enc >= -Math.PI && enc <= Math.PI){
-						store.state.current_angle = enc;
-					}
-					// if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
-					// 	store.state.current_ang_vel = enc_ang_vel;
-					// }
-			
+				if(enc >= -Math.PI && enc <= Math.PI){
+					store.state.current_angle = enc;
+
+					//in degrees
+					let enc_deg = enc*180.0/Math.PI;
+					store.state.current_angle_deg = enc_deg;
 				}
 
 				thisTime = msgTime + delay

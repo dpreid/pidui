@@ -33,6 +33,7 @@
           <b-dropdown-item v-if='remoteLabVersion == "robot_arm"' @click='setExercise1v3'>Exercise 1.3</b-dropdown-item>
           <b-dropdown-item v-if='remoteLabVersion == "robot_arm"' @click='setExercise2v1'>Exercise 2.1</b-dropdown-item>
         </b-nav-item-dropdown>
+
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
