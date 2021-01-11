@@ -241,6 +241,7 @@ export default {
 			this.updateStore();
 		},
 		speedRaw(){
+			console.log('set speedRaw');
 			this.clearMessages();
 			if(this.currentMode == 'stopped'){
 				this.currentMode = 'speedRaw';

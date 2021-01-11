@@ -3,7 +3,7 @@
     <div class="row m-2 justify-content-center align-items-center">
         <button class="btn btn-default btn-xs" v-if="!isRecording" id="recordButton" @click="record">Record</button>
         <button class="btn btn-default btn-xs" v-if="isRecording" id="stopButton" @click="stopRecording">Stop</button>
-        <button class="btn btn-default btn-xs" v-if="hasPlotted" id="clearButton" @click="clearGraph">Reset</button>
+        <button class="btn btn-default btn-xs" id="clearButton" @click="clearGraph">Reset</button>
         <button class="btn btn-default btn-xs" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
     </div>
    <div class="form-group row justify-content-center pb-2">
@@ -25,7 +25,7 @@ export default {
     return {
         //store: this.$store,
         isRecording: false,
-        time_interval: 0.5,
+        time_interval: 0.05,
         interval_id: 0,
         data_points_count: 0,
         hasPlotted: false,

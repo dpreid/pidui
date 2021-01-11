@@ -87,7 +87,7 @@ export default {
              
      },
      sendCommand(){
-         
+         console.log('sending command');
          if(this.mode == 'speedRaw'){
              //let signal = (this.step_size/this.motor_max_voltage) * 255;
              let signal = this.step_size*100/6.0;        //signal is between 0-100% with 100% -> 6V.

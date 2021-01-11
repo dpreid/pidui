@@ -78,17 +78,20 @@
                 </div>
             </div>
             <div v-else-if="currentFunction === 'step'">
+                
                 <label class='m-2' for="func_a">Y(s)=</label>
                 <input id="func_a" v-model="func_a" size="3">
                 <label class='m-2' for="func_b">/s(</label>
                 <input id="func_b" v-model="func_b" size="3"> 
                 <label class='m-2' for="func_b"> s+1)</label>
+                
                 <label class='m-2' for='func_c'> t0 = </label>
                 <input id="func_c" v-model="func_c" size="3"> 
                 <div class="row-sm justify-content-center">
                     <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
                     <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
+                
             </div>
             <div v-else-if="currentFunction === 'ramp'">
                 <label class='m-2' for="func_a">Y(s)=</label>

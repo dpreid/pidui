@@ -20,7 +20,7 @@
           <!-- RIGHT HAND COLUMN -->
           <div class='col-sm-6' > 
             <div v-if='isSystemDiagramsOn' class='row'>
-              <system-diagrams />
+              <system-diagrams :remoteLabVersion="remoteLabVersion"/>
             </div>
             <div class='row'>
                 <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder /></div> 
@@ -31,6 +31,12 @@
             <div v-if='isGraphOn'><graph-output type="graph" id="0" /></div> 
           </div>
         </div>
+
+
+        <div v-if='isSimulationOn' class='row'>
+          <simulation />
+        </div>
+
 
 
         <div v-if="isWorkspaceOn">
@@ -58,6 +64,7 @@ import SystemDiagrams from "./components/SystemDiagrams.vue";
 
 import { eventBus } from "./main.js";
 import userData from './userDataStore';
+import Simulation from './components/Simulation.vue';
 
 export default {
   name: 'App',
@@ -76,10 +83,11 @@ export default {
     GraphInput,
     Login,
     SystemDiagrams,
+    Simulation,
   },
   data() {
     return {
-      remoteLabVersion: 'variable_governor',    //'spinning_disk', 'robot_arm'
+      remoteLabVersion: 'robot_arm',    //'spinning_disk', 'variable_governor'
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,
@@ -88,6 +96,7 @@ export default {
       isDataRecorderOn: false,
       isInputGraphOn: false,
       isSystemDiagramsOn: false,
+      isSimulationOn: false,
     }
   },
   created(){
@@ -99,6 +108,7 @@ export default {
     eventBus.$on('toggletable', this.toggleTable);
     eventBus.$on('togglegraphinput', this.toggleInputGraph);
     eventBus.$on('togglesystemdiagrams', this.toggleSystemDiagrams);
+    eventBus.$on('togglesimulation', this.toggleSimulation);
 
     eventBus.$on('setexercise1v1', this.setExercise1v1Interface);
     eventBus.$on('setexercise1v2', this.setExercise1v2Interface);
@@ -112,6 +122,10 @@ export default {
     },
     toggleGraph(){
       this.isGraphOn = !this.isGraphOn;
+      //graph requires the data recorder in order to plot data so automatically add it when graph added - don't automatically remove it.
+      if(this.isGraphOn){
+        this.isDataRecorderOn = true;
+      }
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
@@ -131,6 +145,9 @@ export default {
     },
     toggleSystemDiagrams(){
       this.isSystemDiagramsOn = !this.isSystemDiagramsOn;
+    },
+    toggleSimulation(){
+      this.isSimulationOn = !this.isSimulationOn;
     },
     setExercise1v1Interface(){
       this.isGraphOn = false;
