@@ -30,7 +30,8 @@
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
 			<div class='col-sm'>
-				<button id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>			
+				<button id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>		
+				<button id="armposition" class="btn btn-default btn-lg" @click="changeArm">Set Arm</button>		
 				<button id="zero" class="btn btn-default btn-lg" @click="zero">Zero</button>
 			</div>
 		</div>
@@ -50,6 +51,12 @@
 			<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-36" max="36" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<div v-else class="col-7"><input type="range" min="-36" max="36" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+		</div>
+
+		<div v-if='currentMode == "changeArm"' class="row justify-content-center m-2 align-items-center">
+			<div class="col-3 sliderlabel"> Arm(0-180) ({{armPosition}})</div>
+			<div class="col-7"><input type="range" min="0" max="180" v-model="armPosition" class="slider" id="armSlider"></div>
+			<button id="set" class="btn btn-default btn-lg col-2" @click="setArm">Set</button>
 		</div>
 	
 	</div>
@@ -114,6 +121,7 @@ export default {
 			kiParam: 0,
 			kdParam: 0,
 			dtParam: 20,
+			armPosition: 90,			//position between 0 - 180, 90 hanging vertically
 			angleMode: 'degrees',		// 'radians'
 			isStopped: true,
 			changingMode: false,
@@ -213,6 +221,33 @@ export default {
 				this.error = 'Must be in positionPid mode';
 			}
 			
+		},
+		changeArm(){
+			this.clearMessages();
+			if(this.currentMode == 'stopped'){
+				this.currentMode = 'changeArm';
+				this.dataSocket.send(JSON.stringify({
+				set: "mode",
+				to: "changeArm"
+				}));
+			} else{
+				this.error = 'Must STOP before entering changeArm mode';
+			}
+			
+			this.changingMode = false;
+			this.updateStore();
+		},
+		setArm(){
+			this.clearMessages();
+			if(this.currentMode == 'changeArm'){
+				let pos = this.armPosition;
+				this.dataSocket.send(JSON.stringify({
+				set: "arm",
+				to: pos
+				}));
+			} else{
+				this.error = 'Must be in changeArm mode';
+			}
 		},
 		setParameters(){
 			this.clearMessages();
@@ -479,6 +514,9 @@ export default {
 
 #pidposition        {background-color: rgb(255, 106, 0);}
 #pidposition:hover  {background-color: #cc661eff;}
+
+#armposition        {background-color: rgb(0, 217, 255);}
+#armposition:hover  {background-color: rgb(30, 76, 204);}
 
 #zero        {background-color: rgb(0, 255, 255);}
 #zero:hover  {background-color: rgb(1, 5, 240);}
