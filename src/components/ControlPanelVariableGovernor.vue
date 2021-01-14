@@ -38,6 +38,7 @@
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
 			<div class='col-sm'>		
 				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
+				<button id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>	
 				<button id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
 				<button id="resetHeight" class="btn btn-default btn-lg" @click="resetHeight">Calibrate</button>
 				<button id="configure" class="btn btn-default btn-lg" @click="configure">Configure</button>
@@ -51,6 +52,12 @@
 		
 		<div v-if="currentMode != 'stopped' && currentMode != 'resetHeight'" class='row justify-content-center m-2'>
 			<div class='col-12'><h2> Parameters </h2></div>
+		</div>
+
+		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
+			<div class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
+			<div class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
+			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
 		</div>
 
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
@@ -70,7 +77,7 @@
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
+		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
 		<!-- <h2> RAMP MODE </h2> -->
 	</div>
 
@@ -118,6 +125,9 @@ import RampCommand from './RampCommand.vue';
 
 export default {
 	name: "ControlPanel",
+	props:{
+		isDataRecorderOn: Boolean,
+	},
 	components:{
 		DCMotorPanel,
 		StepCommand,
@@ -128,6 +138,7 @@ export default {
 			dataSocket: null,
 			speedParam: 0,
 			heightParam: 0,
+			angleParam: 0,			//in degrees
 			kpParam: 1,
 			kiParam: 0,
 			kdParam: 0,
@@ -164,7 +175,7 @@ export default {
 			setTimeout(() => {resolve(console.log('waiting to resetHeight'))}, 1000);		//give the system time to send and change parameters before attempting calibration
 			});
 		
-		this.resetHeight();
+		//this.resetHeight();			//this should run!!!!!!!!!!!!!!!!!!!
 
 		//set the graph data parameter in store
 		store.setGraphDataParameter('omega');
@@ -229,6 +240,7 @@ export default {
 		speedPid(){
 			this.clearMessages();
 			if(this.currentMode == 'stopped'){
+				store.setGraphDataParameter('omega');
 				this.currentMode = 'speedPid';
 				this.dataSocket.send(JSON.stringify({
 				set: "mode",
@@ -244,6 +256,7 @@ export default {
 			console.log('set speedRaw');
 			this.clearMessages();
 			if(this.currentMode == 'stopped'){
+				store.setGraphDataParameter('omega');
 				this.currentMode = 'speedRaw';
 				this.dataSocket.send(JSON.stringify({
 				set: "mode",
@@ -265,6 +278,35 @@ export default {
 				}));
 			} else{
 				this.error == 'Must be in speedPid or speedRaw mode';
+			}
+			
+		},
+		positionPid(){
+			this.clearMessages();
+			if(this.currentMode == 'stopped'){
+				store.setGraphDataParameter('theta');
+				this.currentMode = 'positionPid';
+				this.dataSocket.send(JSON.stringify({
+				set: "mode",
+				to: "positionPid"
+				}));
+			} else{
+				this.error = 'Must STOP before entering positionPid mode';
+			}
+			
+			this.changingMode = false;
+			this.updateStore();
+		},
+		setPosition(){
+			this.clearMessages();
+			if(this.currentMode == 'positionPid'){
+				let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
+				this.dataSocket.send(JSON.stringify({
+				set: "position",
+				to: pos
+				}));
+			} else{
+				this.error = 'Must be in positionPid mode';
 			}
 			
 		},
@@ -331,12 +373,13 @@ export default {
 			this.kpParam = 1.0;
 			this.kiParam = 0.0;
 			this.kiParam = 0.0;
+			this.dtParam = 20.0;
 			this.setParameters();
 		},
 		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
 			return new Promise((resolve) => {
-				let dataUrl = 'wss://video.practable.io:443/bi/dpr/pendulum0';
+				let dataUrl = 'wss://video.practable.io:443/bi/dpr/governor0';
 
 		//console.log(dataUrl)
 
@@ -360,12 +403,12 @@ export default {
 
 		var initialSamplingCount = 1200 // 2 mins at 10Hz
 		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
-		//let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
+		let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
 
 		let responsiveSmoothie = true;
 		let thisTime;
 
-		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:1000,minValue:-1000,labels:{fillStyle:'#0024ff',precision:2}});
+		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:220,minValue:-220,labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_omega = document.getElementById("smoothie-chart_omega");
 		let series_omega = new TimeSeries();
 		chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#0024ff'});
@@ -393,9 +436,8 @@ export default {
 				// series.append(NaN, NaN)
 				// }
 				
-				
-				// var enc = obj.enc
-				// store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
+				var enc = obj.enc
+				store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
 				var enc_ang_vel = obj.enc_ang_vel;			//encoder reports angular velocity in specific modes
 
 				if(obj.awaiting_stop){
@@ -420,16 +462,32 @@ export default {
 				
 				messageCount += 1
 
-				if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
-						store.state.current_ang_vel = enc_ang_vel;
-					}
+				// if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
+				// 		store.state.current_ang_vel = enc_ang_vel;
+				// 	}
+
+				store.state.current_ang_vel = enc_ang_vel;
+
+				//encoder position in radians
+				enc = enc * 2* Math.PI / encoderPPR;
+
+				if(enc >= -Math.PI && enc <= Math.PI){
+					store.state.current_angle = enc;
+
+					//in degrees
+					let enc_deg = enc*180.0/Math.PI;
+					store.state.current_angle_deg = enc_deg;
+				}
 
 				thisTime = msgTime + delay
 				
 				if (!isNaN(thisTime)){
 					
 					if(!isNaN(enc_ang_vel)){
-						series_omega.append(msgTime + delay, enc_ang_vel)	
+						//display in rad/s
+						let ang_vel_rad = enc_ang_vel*2*Math.PI/60;
+						series_omega.append(msgTime + delay, ang_vel_rad);	
+						//series_omega.append(msgTime + delay, enc_ang_vel)	
 						
 					}
 					
@@ -531,6 +589,9 @@ export default {
 
 #pidspeed        {background-color: rgb(255, 187, 0);}
 #pidspeed:hover  {background-color: #cc9d1eff;}
+
+#pidposition        {background-color: rgb(115, 255, 0);}
+#pidposition:hover  {background-color: rgb(58, 92, 3);}
 
 #dcmotor        {background-color: rgb(217, 255, 0);}
 #dcmotor:hover  {background-color: rgb(190, 187, 2);}

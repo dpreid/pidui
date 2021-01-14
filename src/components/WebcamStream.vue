@@ -27,7 +27,7 @@ export default {
 	},
 	mounted(){
 		let canvas = document.getElementById("video-canvas");
-		let playerUrl = 'wss://video.practable.io:443/out/dpr/video0';
+		let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';
 		console.log(playerUrl);
 		let player = new JSMpeg.Player(playerUrl, {canvas: canvas});
 		console.log(player);

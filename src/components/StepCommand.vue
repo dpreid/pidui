@@ -17,7 +17,8 @@
             <input id="time_interval" v-model="time_to_step" size="3" @change='updateStore'>
             <label for="time_interval">seconds</label>
 
-            <button v-show="mode == 'speedRaw' || mode == 'positionPid' || mode == 'speedPid'" id="run" @click="runCommand">Run</button>
+            <button id="run" @click="runCommand">Run</button>
+            <button v-if="isDataRecorderOn" id="run" @click="runRecord">Run+Record</button>
 
         </div>
 
@@ -35,7 +36,8 @@ export default {
   name: 'StepCommand',
   props:{
       mode: String,
-      dataSocket: ReconnectingWebSocket
+      dataSocket: ReconnectingWebSocket,
+      isDataRecorderOn: Boolean,
   },
   data () {
     return {
@@ -131,6 +133,9 @@ export default {
              store.state.step.step_start = 0;
          }
          store.state.step.step_size = this.step_size;
+     },
+     runRecord(){
+         eventBus.$emit('runrecord');
      }
   }
 }

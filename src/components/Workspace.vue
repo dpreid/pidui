@@ -33,6 +33,9 @@ let shapes = [];        //the added objects to canvas
 
 export default {
     name: "Workspace",
+    props:{
+      mode: String,
+  },
     data(){
         return{
             isSelected: false,
@@ -42,13 +45,27 @@ export default {
             rotateMode: false,
             // isCaliperActive: false,
             workspace_canvas_clickable: true,
+            ruler_width: 800,
+            ruler_height: 80,
         }
     },
     created(){
         eventBus.$on('addprotractor', this.addProtractor);
         eventBus.$on('addruler', this.addRuler);
+
+        if(this.mode == 'robot_arm'){
+            this.ruler_width = 533;
+            this.ruler_height = 53.3;
+        } else if(this.mode == 'variable_governor'){
+            this.ruler_width = 640;
+            this.ruler_height = 64;
+        } else{
+            this.ruler_width = 800;
+            this.ruler_height = 80;
+        }
     },
     mounted(){
+        
         shapes = [];        //ensure when mounted again that the shapes are not redrawn
 
         canvas = document.getElementById("workspace");
@@ -112,11 +129,13 @@ export default {
             protractor.src = document.getElementById("protractor").src;
         },
         addRuler(){
-            ruler.onload = function() {
+            ruler.onload = () => {
                 let x = 100;
                 let y= 300;
-                let w=800;
-                let h=80;
+                let w = this.ruler_width;
+                let h = this.ruler_height;
+                
+                
                 shapes.push( {x:x, y:y, width:w, height:h, image:ruler, angle:0} );
                 ctx.drawImage(ruler, x, y, w, h);
                 
@@ -127,7 +146,7 @@ export default {
             if(event.repeat){
                 return;
             } else{
-                if(event.key == "r"){
+                if(event.key == "o"){
                     this.rotateMode = !this.rotateMode;
                 } 
                 // else if(event.key == "c")

@@ -5,6 +5,7 @@ export const store = {
        current_enc_pos: 0,
         current_angle: 0,     //in rad
         current_ang_vel: 0,   //in rpm
+        previous_unwrap_angle: 0,
         previous_ang_vels: [],
         values_in_average: 100,
         average_count: 0,
@@ -52,6 +53,9 @@ export const store = {
        },
        clearAllData(){
         this.state.data = [];
+        this.current_angle_unwrapped = 0;          //TESTING1111111111111
+        this.current_ang_vel_unwrapped = 0
+
        },
        getNumData(){
            return this.state.data.length;

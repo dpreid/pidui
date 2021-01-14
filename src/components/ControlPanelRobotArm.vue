@@ -20,12 +20,14 @@
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
-				<label class='m-2' for="inputSelect">Input type:</label>
-				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
-					<option value="free">Free</option>
-					<option value="step">Step</option>
-					<option value="ramp">Ramp</option>
-				</select> 
+				<div v-if='currentMode == "positionPid"'>
+					<label class='m-2' for="inputSelect">Input type:</label>
+					<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
+						<option value="free">Free</option>
+						<option value="step">Step</option>
+						<!-- <option value="ramp">Ramp</option> -->
+					</select> 
+				</div>
 			</div>
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
@@ -54,19 +56,19 @@
 		</div>
 
 		<div v-if='currentMode == "changeArm"' class="row justify-content-center m-2 align-items-center">
-			<div class="col-3 sliderlabel"> Arm(0-180) ({{armPosition}})</div>
-			<div class="col-7"><input type="range" min="0" max="180" v-model="armPosition" class="slider" id="armSlider"></div>
+			<div class="col-3 sliderlabel"> Arm(60-120) ({{armPosition}})</div>
+			<div class="col-7"><input type="range" min="60" max="120" v-model="armPosition" class="slider" id="armSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setArm">Set</button>
 		</div>
 	
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
+		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
+		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
 		<!-- <h2> RAMP MODE </h2> -->
 	</div>
 	
@@ -108,6 +110,9 @@ import RampCommand from './RampCommand.vue';
 
 export default {
 	name: "ControlPanel",
+	props:{
+		isDataRecorderOn: Boolean,
+	},
 	components:{
 		//DCMotorPanel,
 		StepCommand,
@@ -299,6 +304,7 @@ export default {
 			this.kpParam = 1.0;
 			this.kiParam = 0.0;
 			this.kiParam = 0.0;
+			this.dtParam = 20.0;
 			this.setParameters();
 		},
 		async connect(){

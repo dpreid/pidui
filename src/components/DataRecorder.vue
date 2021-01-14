@@ -29,6 +29,8 @@ export default {
         interval_id: 0,
         data_points_count: 0,
         hasPlotted: false,
+        previous_angle: 0,
+        wrap_index: 0,
     }
   },
   components: {
@@ -65,12 +67,36 @@ export default {
           let angle = parseFloat(store.state.current_angle);
           let time = store.getTime();
           let ang_vel = parseFloat(store.state.current_ang_vel);
+          console.log("angle = " + angle);
           
+
+          //=================================ramp mode needs to unwrap the angle=========
+          if(store.state.inputMode == 'ramp'){
+            if(angle < 0){
+              angle = angle + 2*Math.PI;
+            }
+
+            if(Math.abs(angle - this.previous_angle) > (3/2)*Math.PI){
+              this.wrap_index++;
+            }
+            
+            this.previous_angle = angle;
+
+            angle = this.wrap_index*2*Math.PI + angle;
+
+            
+            
+          }
+
+          //==================================================
+
+
           //get values in different units
           //angle in degrees
           let angle_deg = angle*180.0/Math.PI;
           //ang_vel in rad/s
-          let ang_vel_rad = 2*Math.PI*ang_vel/60.0
+          let ang_vel_rad = 2*Math.PI*ang_vel/60.0;
+
           
           let data_object = {id: store.getNumData(), t: parseFloat(time), theta: angle, omega: ang_vel, theta_deg:angle_deg, omega_rad: ang_vel_rad};
           //this.$store.dispatch('addData', data_object);
@@ -89,6 +115,13 @@ export default {
           store.clearAllData();
           eventBus.$emit('clearalldata');
           this.hasPlotted = false;
+          this.wrap_index = 0;
+          if(store.state.current_angle < 0){
+            this.previous_angle = store.state.current_angle + 2*Math.PI;
+          } else{
+            this.previous_angle = store.state.current_angle;
+          }
+          
       },
       outputToCSV(){
           let csv = '';

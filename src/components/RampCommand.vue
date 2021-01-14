@@ -20,6 +20,7 @@
 
             
             <button id="run" @click="runCommand">Run</button>
+            <button v-if="isDataRecorderOn" id="runAndRecord" @click="runRecord">Run + Record</button>
 
         </div>
 
@@ -37,7 +38,8 @@ export default {
   name: 'RampCommand',
   props:{
       mode: String,
-      dataSocket: ReconnectingWebSocket
+      dataSocket: ReconnectingWebSocket,
+      isDataRecorderOn: Boolean,
   },
   data () {
     return {
@@ -50,6 +52,7 @@ export default {
         time_interval: 0.01,          //seconds
         interval_id: null,
         max_value: 6,
+        initial_angle: 0,
     }
   },
   components: {
@@ -81,11 +84,11 @@ export default {
              this.max_value = store.state.ramp.max_voltage;
              eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
          } else if(this.mode == 'positionPid'){
-             this.max_value = 6*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
+             this.max_value = 12*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
              eventBus.$emit('addrampfunction', 'theta', this.max_value);
 
          }
-
+            this.initial_angle = store.state.current_angle;         //new!!!!!!!!!!!!!!!!!!!!!!!!!
          
          this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
         
@@ -94,9 +97,9 @@ export default {
      sendCommand(){
          this.time += this.time_interval;        //in seconds
          let ramp_value = this.ramp_gradient * this.time;
-         if(ramp_value >= this.max_value){
-             this.stopCommand();
-         }
+        //  if(ramp_value >= this.max_value){
+        //      this.stopCommand();
+        //  }
 
          if(this.mode == 'speedRaw'){
              //let signal = ((ramp_value + parseFloat(this.ramp_start))/this.motor_max_voltage) * 255;
@@ -115,16 +118,21 @@ export default {
          } else if(this.mode == 'positionPid'){
              //console.log('sending ramp command = ' + ramp_value);
              //let new_ang_rad = store.state.current_angle + ramp_value;
-             let new_ang_rad = ramp_value;
+             //ramp_value = ramp_value % 2*Math.PI;
+             let new_ang_rad = ramp_value + this.initial_angle;
              //let current_enc_pos = store.state.current_enc_pos;
              //let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
              let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
-            console.log('new enc pos = ' + new_enc_pos);
+            
 
              if(new_enc_pos > 1000){
-                 new_enc_pos = -(1000 - (new_enc_pos - 1000));
+                 let remain = new_enc_pos % 1000;
+                 console.log('remain = ' + remain);
+                 new_enc_pos = -(1000 - remain);
              } else if(new_enc_pos < -1000){
-                 new_enc_pos = 1000 - (Math.abs(new_enc_pos) - 1000);
+                 let remain = new_enc_pos % 1000;
+                 console.log('remain = ' + remain);
+                 new_enc_pos = 1000 + remain;
              }
              this.dataSocket.send(JSON.stringify({
 				set: "position",
@@ -145,6 +153,9 @@ export default {
 				set: "speed",
 				to: signal
             }));
+     },
+     runRecord(){
+         eventBus.$emit('runrecord');
      }
   }
 }

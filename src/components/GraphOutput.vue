@@ -10,12 +10,13 @@
         <div class='form-group col-3'>
             <label class='m-2' for="unitSelect">Units:</label>
             <select class='col-sm' name="unitSelect" id="unitSelect" v-model="unit" @change="getData">
-                <option v-if='getGraphParameter == "theta"' value="radians">rads</option>
-                <option v-if='getGraphParameter == "theta"' value="degrees">degs</option>
+                <option v-if='getGraphParameter == "theta"' value="rad">rad</option>
+                <option v-if='getGraphParameter == "theta"' value="deg">deg</option>
                 <option v-if='getGraphParameter == "omega"' value="rpm">RPM</option>
                 <option v-if='getGraphParameter == "omega"' value="rad/s">rad/s</option>
             </select> 
         </div>
+
         <div class='form-group col-3'>
             <label class='m-2' for="gradient">Gradient:</label>
             <input class='col-sm' id="gradient" :value="gradient" readonly> 
@@ -128,7 +129,6 @@ export default {
         return{
             dataStore: store,
             chart: null,
-            currentDataParameter: store.state.graphDataParameter,
             chartData: [],
             gradient_start_point: {x:0, y:0},
             gradient_end_point: {x:0, y:0},
@@ -145,6 +145,15 @@ export default {
             XAxisMax: 0,
             XAxisMin: 0,
             unit: '',
+        }
+    },
+    watch:{
+        getGraphParameter(){
+            if(store.state.graphDataParameter == 'theta'){
+                this.unit = 'rad';
+            } else{
+                this.unit = 'rad/s';
+            }
         }
     },
     methods: {
@@ -183,7 +192,6 @@ export default {
                     yAxes: [{
                         scaleLabel:{
                             display: true,
-                            //labelString: this.currentDataParameter
                             labelString: store.state.graphDataParameter
                         },
                         type: 'linear',
@@ -237,7 +245,6 @@ export default {
                 dataset.data.push(data);
             });
             this.chart.update(0);       //instantly update with 0 parameter, no animation
-            // this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.currentDataParameter;
             this.chart.options.scales.yAxes[0].scaleLabel.labelString = store.state.graphDataParameter;
         },
         clearData(){
@@ -268,6 +275,7 @@ export default {
                                 y_data = store.state.data[i].omega;
                             } else{
                                 y_data = store.state.data[i].omega_rad;
+                                
                             }
                             break;
 
@@ -287,19 +295,20 @@ export default {
                     //let x_data = data.t;
                     switch(store.state.graphDataParameter){
                             case 'theta':
-                                if(this.unit == 'deg'){
-                                    y_data = store.state.data[index].theta_deg;
-                                } else {
-                                    y_data = store.state.data[index].theta;
-                                }
-                                break;
-                            case 'omega':
-                                if(this.unit == 'rpm'){
-                                    y_data = store.state.data[index].omega;
-                                } else{
-                                    y_data = store.state.data[index].omega_rad;
-                                }
-                                break;
+                            if(this.unit == 'deg'){
+                                y_data = store.state.data[index].theta_deg;
+                            } else {
+                                y_data = store.state.data[index].theta;
+                                
+                            }
+                            break;
+                        case 'omega':
+                            if(this.unit == 'rpm'){
+                                y_data = store.state.data[index].omega;
+                            } else{
+                                y_data = store.state.data[index].omega_rad;
+                            }
+                            break;
 
                         }
                         this.addDataToChart({x: x_data, y: y_data});
@@ -462,7 +471,7 @@ export default {
         if(store.state.graphDataParameter == 'theta'){
             this.unit = 'rad';
         } else{
-            this.unit = 'rpm';
+            this.unit = 'rad/s';
         }
       },
       created(){

@@ -18,10 +18,10 @@
                 <option value="5.5"></option>
                 <option value="6.0"></option>
             </datalist>
-        <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rpm)</label>
+        <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rad/s)</label>
 
         <div class='col-sm-4' v-if='isAnalogueOutput'>
-            <analogue-output :outputValue="angVel" :minValue="0" :maxValue="1000" :intervalValue="100" :minorIntervalValue="20"></analogue-output>
+            <analogue-output :outputValue="angVel" :minValue="0" :maxValue="200" :intervalValue="20" :minorIntervalValue="10"></analogue-output>
         </div>
         <div v-else class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='avgAngVel'></div>
 
@@ -62,6 +62,8 @@ export default {
   computed:{
       angVel(){
           let data = this.data_store.state.current_ang_vel;
+          //convert to rad/s
+          data = data*2*Math.PI/60;
           return data;
       },
       avgAngVel(){
