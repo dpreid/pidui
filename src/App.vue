@@ -10,7 +10,7 @@
           <!-- LEFT HAND COLUMN -->
           <div class='col-sm-6'> 
             <div><webcam-stream /></div>
-            <div v-if="remoteLabVersion == 'variable_governor'"><control-panel-variable-governor :isDataRecorderOn="isDataRecorderOn"/></div>
+            <div v-if="remoteLabVersion == 'variable_governor'"><control-panel-variable-governor :isDataRecorderOn="isDataRecorderOn" :showTooltips="showTooltips"/></div>
             <div v-else-if="remoteLabVersion == 'spinning_disk'"><control-panel-spinning-disk :isDataRecorderOn="isDataRecorderOn"/></div>
             <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm :isDataRecorderOn="isDataRecorderOn"/></div>
              
@@ -97,6 +97,7 @@ export default {
       isInputGraphOn: false,
       isSystemDiagramsOn: false,
       isSimulationOn: false,
+      showTooltips: true,             //global tooltip setting
     }
   },
   created(){

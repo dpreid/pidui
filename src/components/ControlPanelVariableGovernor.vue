@@ -24,7 +24,7 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" @click="changingMode = true">Set Mode</button>
+				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':2000, 'hide':0}}" title="Change hardware mode" @click="changingMode = true">Set Mode</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
@@ -92,19 +92,23 @@
 	<div v-if='currentMode == "speedPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
-			<input type='text' class='form-control' id="kp" v-model="kpParam">
+			<input type='text' :class="getInputClass(kpParam)" id="kp" v-model="kpParam">
+			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="kp" :title='checkValueRange("kp", kpParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
-			<input type='text' class='form-control' id="ki" v-model="kiParam">
+			<input type='text' :class="getInputClass(kiParam)" id="ki" v-model="kiParam">
+			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="ki" :title='checkValueRange("ki", kiParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
-			<input type='text' class='form-control' id="kd" v-model="kdParam">
+			<input type='text' :class="getInputClass(kdParam)" id="kd" v-model="kdParam">
+			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="kd" :title='checkValueRange("kd", kdParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="dt">dt:</label>
-			<input type='text' class='form-control' id="dt" v-model="dtParam">
+			<input type='text' :class="getInputClass(dtParam)" id="dt" v-model="dtParam">
+			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="dt" :title='checkValueRange("dt", dtParam)'></b-tooltip>
         </div>
 
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
@@ -128,6 +132,7 @@ export default {
 	name: "ControlPanel",
 	props:{
 		isDataRecorderOn: Boolean,
+		showTooltips: Boolean,
 	},
 	components:{
 		DCMotorPanel,
@@ -188,6 +193,14 @@ export default {
 		getDataSocket(){
 			return this.dataSocket;
 		},
+		isTooltipsDisabled(){
+			if(this.showTooltips){
+				return false;
+			} else{
+				return true;
+			}
+			
+		}
 	},
 	methods:{
 		stop(){
@@ -548,6 +561,40 @@ export default {
 		window.addEventListener('beforeunload', this.stop);			//refreshing page, changing URL
 			})
 		
+		},
+		getInputClass(param){
+			if(!isNaN(param)){
+				return 'form-control';
+			} else {
+				return 'border border-danger form-control';
+			}
+		},
+		checkValueRange(id, param){
+			if(id == 'kp'){
+				if(param >= 10 || param < 1){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'ki'){
+				if(param >= 10 || param <= 0){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'kd'){
+				if(param >= 10 || param <= 0){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'dt'){
+				if(param >= 20 || param <= 1){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			}
 		}
 
 		
