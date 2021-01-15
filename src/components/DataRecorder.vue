@@ -6,9 +6,9 @@
         <button class="btn btn-default btn-xs" id="clearButton" @click="clearGraph">Reset</button>
         <button class="btn btn-default btn-xs" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
     </div>
-   <div class="form-group row justify-content-center pb-2">
+   <div class="form-group row justify-content-center p-2">
         <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
-        <div class='col-sm-4'><input type='text' class='form-control' id="time_interval" v-model="time_interval"></div>
+        <div class='col-sm-2 mr-4'><input type='text' size='3' :class="[{'border': hasError}, {'border-danger': hasError}, form-control]" id="time_interval" v-model="time_interval"></div>
         <label class="col-sm-2 col-form-label" for="time_interval">seconds</label>
     </div>
 </div>
@@ -43,19 +43,28 @@ export default {
       hasData(){
           //return this.$store.getters.getNumData !== 0;
             return store.getNumData !== 0;
+      },
+      hasError(){
+        if(!isNaN(this.time_interval)){
+          return false;
+        } else { 
+          return true;
+        }
       }
   },
   methods: {
       record(){
           //this.$store.dispatch('setStartTime', new Date().getTime());
           //store.state.start_time = new Date().getTime();
-          store.state.start_time = store.state.current_time;
-          this.data_points_count = 0;
-          this.isRecording = true;
-          console.log("record");
-          this.interval_id = setInterval(() => {
-                this.plot()
-            }, parseFloat(this.time_interval)*1000);
+          if(!this.hasError){
+            store.state.start_time = store.state.current_time;
+            this.data_points_count = 0;
+            this.isRecording = true;
+            this.interval_id = setInterval(() => {
+                  this.plot()
+              }, parseFloat(this.time_interval)*1000);
+          } 
+          
       },
       stopRecording(){
           this.isRecording = false;

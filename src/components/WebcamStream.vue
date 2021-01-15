@@ -1,9 +1,11 @@
 <template>
-<div id="video">
-    <canvas id="video-canvas"></canvas>
-	
+<div class='container-sm'>
+<div class='row' id="video">
+	<div class='col-12'>
+		<canvas id="video-canvas"></canvas>
+	</div>
 </div>
-
+</div>
 </template>
 
 <script>
@@ -39,5 +41,8 @@ export default {
 </script>
 
 <style scoped>
-
+#video-canvas{
+	width:100%;
+	height: 100%;
+}
 </style>

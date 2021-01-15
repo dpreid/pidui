@@ -10,7 +10,8 @@
 <div class='container-sm m-2 bg-white border rounded'>
 	<div class='row align-content-center m-1'>
 		<div class='col-12'>
-			<canvas id="smoothie-chart_omega"></canvas>
+			<canvas v-show='currentMode == "positionPid"' id="smoothie-chart_theta"></canvas>
+			<canvas v-show='currentMode != "positionPid"' id="smoothie-chart_omega"></canvas>
 		</div>
 	</div>
 
@@ -73,7 +74,7 @@
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
+		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
@@ -150,8 +151,11 @@ export default {
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
 			canvas_omega: null,
+			canvas_theta: null,
 			ang_vel_max: 1000,
 			ang_vel_min: -1000,
+			angle_max: 3.14,
+			angle_min: -3.14,
 			timerParam: 30,			//hardware stop timer in seconds
         }
     },
@@ -253,7 +257,6 @@ export default {
 			this.updateStore();
 		},
 		speedRaw(){
-			console.log('set speedRaw');
 			this.clearMessages();
 			if(this.currentMode == 'stopped'){
 				store.setGraphDataParameter('omega');
@@ -265,20 +268,25 @@ export default {
 			} else{
 				this.error = 'Must STOP before entering speedRaw mode';
 			}
-
+			
 			this.changingMode = false;
 			this.updateStore();
 		},
 		setSpeed(){
 			this.clearMessages();
-			if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
-				this.dataSocket.send(JSON.stringify({
-				set: "speed",
-				to: this.speedParam
-				}));
-			} else{
-				this.error == 'Must be in speedPid or speedRaw mode';
+			if(!isNaN(this.speedParam)){
+				if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
+					this.dataSocket.send(JSON.stringify({
+					set: "speed",
+					to: this.speedParam
+					}));
+				} else{
+					this.error == 'Must be in speedPid or speedRaw mode';
+				}
+			} else {
+				this.error = 'Speed parameter is NaN';
 			}
+			
 			
 		},
 		positionPid(){
@@ -299,15 +307,20 @@ export default {
 		},
 		setPosition(){
 			this.clearMessages();
-			if(this.currentMode == 'positionPid'){
-				let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
-				this.dataSocket.send(JSON.stringify({
-				set: "position",
-				to: pos
-				}));
-			} else{
-				this.error = 'Must be in positionPid mode';
+			if(!isNaN(this.angleParam)){
+				if(this.currentMode == 'positionPid'){
+					let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
+					this.dataSocket.send(JSON.stringify({
+					set: "position",
+					to: pos
+					}));
+				} else{
+					this.error = 'Must be in positionPid mode';
+				}
+			} else {
+				this.error = 'Angle parameter is NaN';
 			}
+			
 			
 		},
 		setHeight(){
@@ -324,7 +337,8 @@ export default {
 		},
 		setParameters(){
 			this.clearMessages();
-			this.dataSocket.send(JSON.stringify({
+			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam)){
+				this.dataSocket.send(JSON.stringify({
 				set: "parameters",
 				kp: this.kpParam,
 				ki: this.kiParam,
@@ -332,6 +346,10 @@ export default {
 				dt: this.dtParam,
 			}));
 			this.updateStore();
+			} else{
+				this.error = 'Cannot parse PID parameters';
+			}
+			
 		},
 		setTimer(){
 			this.clearMessages();
@@ -407,12 +425,20 @@ export default {
 
 		let responsiveSmoothie = true;
 		let thisTime;
-
+		
+		//smoothie chart for displaying angular velocity data
 		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:220,minValue:-220,labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_omega = document.getElementById("smoothie-chart_omega");
 		let series_omega = new TimeSeries();
 		chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#0024ff'});
 		chart_omega.streamTo(this.canvas_omega, 0);
+
+		//smoothie chart for displaying angle data
+		var chart_theta = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:3.14,minValue:-3.14,labels:{fillStyle:'#0024ff',precision:2}});
+		this.canvas_theta = document.getElementById("smoothie-chart_theta");
+		let series_theta = new TimeSeries();
+		chart_theta.addTimeSeries(series_theta, {lineWidth:2,strokeStyle:'#0024ff'});
+		chart_theta.streamTo(this.canvas_theta, 0);
 
 		this.dataSocket.onopen = function (event) {
 			console.log("dataSocket open" + event);
@@ -482,6 +508,10 @@ export default {
 				thisTime = msgTime + delay
 				
 				if (!isNaN(thisTime)){
+
+					if(!isNaN(enc)){
+						series_theta.append(msgTime + delay, enc)	
+					}
 					
 					if(!isNaN(enc_ang_vel)){
 						//display in rad/s
@@ -533,6 +563,11 @@ export default {
 <style scoped>
 
 #smoothie-chart_omega{
+	width:100%;
+	height: 120px;
+}
+
+#smoothie-chart_theta{
 	width:100%;
 	height: 120px;
 }
