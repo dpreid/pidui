@@ -9,8 +9,10 @@
    <div class="form-group row justify-content-center p-2">
         <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
         <div class='col-sm-2 mr-4'><input type='text' size='3' :class="[{'border': hasError}, {'border-danger': hasError}, form-control]" id="time_interval" v-model="time_interval"></div>
+        <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="time_interval" :title='checkValueRange(time_interval)'></b-tooltip>
         <label class="col-sm-2 col-form-label" for="time_interval">seconds</label>
     </div>
+    
 </div>
 </template>
 
@@ -21,6 +23,9 @@ import { eventBus } from "../main.js";
 export default {
 
   name: 'DataRecorder',
+  props:{
+		disableTooltips: Boolean,
+	},
   data () {
     return {
         //store: this.$store,
@@ -31,6 +36,7 @@ export default {
         hasPlotted: false,
         previous_angle: 0,
         wrap_index: 0,
+        tooltip_delay: 2000,
     }
   },
   components: {
@@ -179,6 +185,13 @@ export default {
           hiddenElement.target = '_blank';
           hiddenElement.download = filename;
           hiddenElement.click();
+      },
+      checkValueRange(value){
+        if(value > 0.02){
+          return 'OK';
+        } else{
+          return 'Too small';
+        }
       },
       
   }

@@ -24,7 +24,7 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':2000, 'hide':0}}" title="Change hardware mode" @click="changingMode = true">Set Mode</button>
+				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" @click="changingMode = true">Set Mode</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
@@ -74,11 +74,11 @@
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
+		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
+		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 		<!-- <h2> RAMP MODE </h2> -->
 	</div>
 
@@ -89,26 +89,26 @@
 
 	
 
-	<div v-if='currentMode == "speedPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
+	<div v-if='currentMode == "speedPid" || currentMode == "positionPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
 			<input type='text' :class="getInputClass(kpParam)" id="kp" v-model="kpParam">
-			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="kp" :title='checkValueRange("kp", kpParam)'></b-tooltip>
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='checkValueRange("kp", kpParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
 			<input type='text' :class="getInputClass(kiParam)" id="ki" v-model="kiParam">
-			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="ki" :title='checkValueRange("ki", kiParam)'></b-tooltip>
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='checkValueRange("ki", kiParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
 			<input type='text' :class="getInputClass(kdParam)" id="kd" v-model="kdParam">
-			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="kd" :title='checkValueRange("kd", kdParam)'></b-tooltip>
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='checkValueRange("kd", kdParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="dt">dt:</label>
 			<input type='text' :class="getInputClass(dtParam)" id="dt" v-model="dtParam">
-			<b-tooltip triggers='focus' :disabled.sync="isTooltipsDisabled" target="dt" :title='checkValueRange("dt", dtParam)'></b-tooltip>
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='checkValueRange("dt", dtParam)'></b-tooltip>
         </div>
 
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
@@ -132,7 +132,7 @@ export default {
 	name: "ControlPanel",
 	props:{
 		isDataRecorderOn: Boolean,
-		showTooltips: Boolean,
+		disableTooltips: Boolean,
 	},
 	components:{
 		DCMotorPanel,
@@ -162,6 +162,7 @@ export default {
 			angle_max: 3.14,
 			angle_min: -3.14,
 			timerParam: 30,			//hardware stop timer in seconds
+			tooltip_delay: 2000,
         }
     },
     created(){
@@ -193,14 +194,6 @@ export default {
 		getDataSocket(){
 			return this.dataSocket;
 		},
-		isTooltipsDisabled(){
-			if(this.showTooltips){
-				return false;
-			} else{
-				return true;
-			}
-			
-		}
 	},
 	methods:{
 		stop(){

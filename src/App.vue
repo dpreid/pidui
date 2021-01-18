@@ -23,7 +23,7 @@
               <system-diagrams :remoteLabVersion="remoteLabVersion"/>
             </div>
             <div class='row'>
-                <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder /></div> 
+                <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder :showTooltips="showTooltips"/></div> 
                 <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
             </div>
             

@@ -5,13 +5,16 @@
         </div>
         <div class="row justify-content-center">    
 
-            <label v-if='mode == "speedRaw"' for="step_size">Step size (0-6V)</label>
-            <label v-else-if='mode == "positionPid"' for="step_size">Step size (0-72 degrees)</label>
-            <label v-else-if='mode == "speedPid"' for="step_size">Step size (0-1000rpm)</label>
+            <label v-if='mode == "speedRaw"' for="step_raw">Step size (0-6V)</label>
+            <label v-else-if='mode == "positionPid"' for="step_speed">Step size (0-72 degrees)</label>
+            <label v-else-if='mode == "speedPid"' for="step_position">Step size (0-1000rpm)</label>
 
-            <input v-if='mode == "speedRaw"' id="step_size" v-model="step_size" max='6' min='0' size="3" @change='updateStore'>
-            <input v-else-if='mode == "speedPid"' id="step_size" v-model="step_size" max='1000' min='0' size="3" @change='updateStore'>
-            <input v-else-if='mode == "positionPid"' id="step_size" v-model="step_size" max='72' min='0' size="3" @change='updateStore'>
+            <input v-if='mode == "speedRaw"' id="step_raw" v-model="step_size" max='6' min='0' size="3" @change='updateStore'>
+            <input v-else-if='mode == "speedPid"' id="step_speed" v-model="step_size" max='1000' min='0' size="3" @change='updateStore'>
+            <input v-else-if='mode == "positionPid"' id="step_position" v-model="step_size" max='72' min='0' size="3" @change='updateStore'>
+            <b-tooltip v-if='mode == "speedRaw"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_raw" :title='checkValueRange(step_size)'></b-tooltip>
+            <b-tooltip v-else-if='mode == "speedPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_speed" :title='checkValueRange(step_size)'></b-tooltip>
+            <b-tooltip v-else-if='mode == "positionPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_position" :title='checkValueRange(step_size)'></b-tooltip>
 
             <label for="time_interval">After</label>
             <input id="time_interval" v-model="time_to_step" size="3" @change='updateStore'>
@@ -38,6 +41,7 @@ export default {
       mode: String,
       dataSocket: ReconnectingWebSocket,
       isDataRecorderOn: Boolean,
+      disableTooltips: Boolean,
   },
   data () {
     return {
@@ -45,6 +49,7 @@ export default {
         step_size: null,            //only positive steps
         motor_max_voltage: 12,
         encoder_max: 1000,
+        tooltip_delay: 2000,
     }
   },
   components: {
@@ -136,7 +141,17 @@ export default {
      },
      runRecord(){
          eventBus.$emit('runrecord');
-     }
+     },
+     checkValueRange(value){
+         if(this.mode == 'positionPid'){
+             return 'TEMP ' + value;
+         } else if(this.mode == 'speedPid'){
+             console.log("working");
+             return 'TEMP ' + value;
+         } else {
+             return 'TEMP ' + value;
+         }
+     },
   }
 }
 </script>

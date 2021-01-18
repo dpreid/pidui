@@ -338,7 +338,7 @@ export default {
 		let responsiveSmoothie = true;
 		let thisTime;
 
-		var chart = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:3.14,minValue:-3.14,labels:{fillStyle:'#0024ff',precision:2}}); //interpolation:'linear
+		var chart = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:1.57,minValue:-1.57,labels:{fillStyle:'#0024ff',precision:2}}); //interpolation:'linear
 		this.canvas = document.getElementById("smoothie-chart");
 		let series = new TimeSeries();
 		chart.addTimeSeries(series, {lineWidth:2,strokeStyle:'#0024ff'});
