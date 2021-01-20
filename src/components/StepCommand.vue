@@ -5,23 +5,24 @@
         </div>
         <div class="row justify-content-center">    
 
-            <label v-if='mode == "speedRaw"' for="step_raw">Step size (0-6V)</label>
-            <label v-else-if='mode == "positionPid"' for="step_speed">Step size (0-72 degrees)</label>
-            <label v-else-if='mode == "speedPid"' for="step_position">Step size (0-1000rpm)</label>
+            <label v-if='mode == "speedRaw"' class='mr-2' for="step_raw">Step size (0 - {{max_voltage_step}}V)</label>
+            <label v-else-if='mode == "positionPid"' class='mr-2' for="step_speed">Step size (0 - {{max_position_step.toFixed(2)}} rad)</label>
+            <label v-else-if='mode == "speedPid"' class='mr-2' for="step_position">Step size (0 - {{max_speed_step}} rad/s)</label>
 
-            <input v-if='mode == "speedRaw"' id="step_raw" v-model="step_size" max='6' min='0' size="3" @change='updateStore'>
-            <input v-else-if='mode == "speedPid"' id="step_speed" v-model="step_size" max='1000' min='0' size="3" @change='updateStore'>
-            <input v-else-if='mode == "positionPid"' id="step_position" v-model="step_size" max='72' min='0' size="3" @change='updateStore'>
+            <!-- NO NEED FOR ALL 3 OF THESE -->
+            <input v-if='mode == "speedRaw"' :class='getInputClass(step_size)' id="step_raw" v-model="step_size" max='max_voltage_step' min='0' @change='updateStore'>
+            <input v-else-if='mode == "speedPid"' :class='getInputClass(step_size)' id="step_speed" v-model="step_size" max='max_speed_step' min='0' @change='updateStore'>
+            <input v-else-if='mode == "positionPid"' :class='getInputClass(step_size)' id="step_position" v-model="step_size" max='max_position_step' min='0' @change='updateStore'>
             <b-tooltip v-if='mode == "speedRaw"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_raw" :title='checkValueRange(step_size)'></b-tooltip>
             <b-tooltip v-else-if='mode == "speedPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_speed" :title='checkValueRange(step_size)'></b-tooltip>
             <b-tooltip v-else-if='mode == "positionPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_position" :title='checkValueRange(step_size)'></b-tooltip>
 
-            <label for="time_interval">After</label>
-            <input id="time_interval" v-model="time_to_step" size="3" @change='updateStore'>
-            <label for="time_interval">seconds</label>
+            <label class='mr-2' for="time_interval">After</label>
+            <input class='mr-2' id="time_interval" v-model="time_to_step" size="3" @change='updateStore'>
+            <label class='mr-2' for="time_interval">seconds</label>
 
             <button id="run" @click="runCommand">Run</button>
-            <button v-if="isDataRecorderOn" id="run" @click="runRecord">Run+Record</button>
+            <button v-if="isDataRecorderOn && mode != 'stopped'" id="run" @click="runRecord">Run+Record</button>
 
         </div>
 
@@ -38,6 +39,7 @@ export default {
 
   name: 'StepCommand',
   props:{
+      remoteLabVersion: String,
       mode: String,
       dataSocket: ReconnectingWebSocket,
       isDataRecorderOn: Boolean,
@@ -50,6 +52,9 @@ export default {
         motor_max_voltage: 12,
         encoder_max: 1000,
         tooltip_delay: 2000,
+        max_position_step: Math.PI, 
+        max_speed_step: 100,
+        max_voltage_step: 6,
     }
   },
   components: {
@@ -59,7 +64,13 @@ export default {
 
   },
   created(){
-		eventBus.$on('runrecord', this.runCommand);
+        eventBus.$on('runrecord', this.runCommand);
+        
+        if(this.remoteLabVersion == 'variable_governor'){
+            this.max_position_step = Math.PI;             //variable governor can spin full circle
+        } else {
+            this.max_position_step = 3*Math.PI/10;          //robot arm is soft limited to 300 encoder steps from 0.
+        }
 	},
   mounted(){
 
@@ -103,7 +114,7 @@ export default {
 				to: signal
 			}));
          } else if(this.mode == 'positionPid'){
-             let new_ang_rad = store.state.current_angle + this.step_size*Math.PI / 180.0;
+             let new_ang_rad = store.state.current_angle + this.step_size;
              //let current_enc_pos = store.state.current_enc_pos;
             //  let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
             let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
@@ -118,7 +129,7 @@ export default {
 				to: new_enc_pos
 			}));
          } else if(this.mode == 'speedPid'){
-             let rpm = store.state.current_ang_vel + this.step_size;         //this is in rpm
+             let rpm = store.state.current_ang_vel + this.step_size*60/(2*Math.PI);         //current_ang_vel is in rpm, signal needs to be in rpm
              //let rpm = (signal / (2.0*Math.PI))*60;                             //convert to rpm
              this.dataSocket.send(JSON.stringify({
 				set: "speed",
@@ -143,22 +154,101 @@ export default {
          eventBus.$emit('runrecord');
      },
      checkValueRange(value){
-         if(this.mode == 'positionPid'){
-             return 'TEMP ' + value;
-         } else if(this.mode == 'speedPid'){
-             console.log("working");
-             return 'TEMP ' + value;
-         } else {
-             return 'TEMP ' + value;
+         if(isNaN(value) || value < 0){
+             return 'Invalid step';
+         } else{
+             if(this.remoteLabVersion == 'variable_governor' || this.remoteLabVersion == 'spinning_disk'){
+                if(this.mode == 'positionPid'){
+                    if(value > this.max_position_step){
+                        return 'Step too large';
+                    } else {
+                        return 'Step size OK';
+                    }
+                    
+
+                } else if(this.mode == 'speedPid'){
+
+                    if(value > this.max_speed_step){
+                        return 'Step too large';
+                    } else {
+                        return 'Step size OK';
+                    }
+
+                } else if(this.mode == 'speedRaw'){
+                    if(value > this.max_voltage_step){
+                        return 'Step too large';
+                    } else {
+                        return 'Step size OK';
+                    }
+                } else {
+
+                    return '';
+
+                }
+            } else if(this.remoteLabVersion == 'robot_arm'){
+                if(this.mode == 'positionPid'){
+                    if(store.state.current_angle + value > this.max_position_step){
+                        return 'Steps outside of arm range';
+                    } else{
+                        return 'Step size OK';
+                    }
+                    
+                } else {
+                    return '';
+                }
+            }
          }
+         
+         
      },
+     getInputClass(value){
+         let standard_class = 'mr-2 form-control';
+         let additional_class = '';
+
+			if(!isNaN(value) && value >= 0){
+                if(this.mode == 'positionPid'){
+                    if(this.remoteLabVersion == 'robot_arm'){
+                        if(store.state.current_angle + value > this.max_position_step){
+                            additional_class = ' error';
+                        } 
+                    } else {
+                        if(value > this.max_position_step){
+                            additional_class = ' error';
+                }       
+                    }
+                } 
+                else if(this.mode == 'speedPid'){
+                    if(value > this.max_speed_step){
+                        additional_class = ' error';
+                    } 
+                } 
+                else {
+                    if(value > this.max_voltage_step){
+                        additional_class = ' error';
+                    } 
+                }
+				
+			} else {
+				additional_class = ' error';
+            }
+            
+            return standard_class + additional_class;
+		},
   }
 }
 </script>
 
 <style scoped>
+input{
+    width: 10%;
+}
+.error{
+    border:thick solid red
+}
 
-
+.error:focus{
+    border:thick solid red
+}
 
 #run       {background-color: #4CAF50FF;}
 #run:hover {background-color: #3e8e41} 

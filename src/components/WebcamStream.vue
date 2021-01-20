@@ -29,7 +29,8 @@ export default {
 	},
 	mounted(){
 		let canvas = document.getElementById("video-canvas");
-		let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';
+		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video0';		//for robot arm
+		let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';		//for variable governor
 		console.log(playerUrl);
 		let player = new JSMpeg.Player(playerUrl, {canvas: canvas});
 		console.log(player);
@@ -42,7 +43,7 @@ export default {
 
 <style scoped>
 #video-canvas{
-	width:100%;
+	width:80%;
 	height: 100%;
 }
 </style>

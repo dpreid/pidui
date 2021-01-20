@@ -32,7 +32,7 @@
 				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
 					<option value="free">Free</option>
 					<option value="step">Step</option>
-					<option value="ramp">Ramp</option>
+					<option v-if='remoteLabVersion != "robot_arm"' value="ramp">Ramp</option>
 				</select> 
 			</div>
 		</div>
@@ -74,11 +74,11 @@
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+		<StepCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+		<RampCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 		<!-- <h2> RAMP MODE </h2> -->
 	</div>
 
@@ -133,6 +133,7 @@ export default {
 	props:{
 		isDataRecorderOn: Boolean,
 		disableTooltips: Boolean,
+		remoteLabVersion: String,
 	},
 	components:{
 		DCMotorPanel,
@@ -343,7 +344,7 @@ export default {
 		},
 		setParameters(){
 			this.clearMessages();
-			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam)){
+			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0 && this.dtParam >= 0){
 				this.dataSocket.send(JSON.stringify({
 				set: "parameters",
 				kp: this.kpParam,
@@ -556,10 +557,10 @@ export default {
 		
 		},
 		getInputClass(param){
-			if(!isNaN(param)){
+			if(!isNaN(param) && param >= 0){
 				return 'form-control';
 			} else {
-				return 'border border-danger form-control';
+				return ' form-control error';
 			}
 		},
 		checkValueRange(id, param){
@@ -601,6 +602,14 @@ export default {
 </script>
 
 <style scoped>
+
+.error{
+    border:thick solid red
+}
+
+.error:focus{
+    border:thick solid red
+}
 
 #smoothie-chart_omega{
 	width:100%;

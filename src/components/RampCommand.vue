@@ -6,21 +6,21 @@
 
         <div class="row justify-content-center">  
             <label class='m-2' v-if='mode == "speedRaw"' for="ramp_start">Start V</label>
-            <input v-if='mode == "speedRaw"' id="ramp_start" v-model="ramp_start" size="3">
-
-            <button v-show="mode == 'speedRaw'" id="set" @click="setStart">Set</button>
+            <input v-if='mode == "speedRaw" || mode == "speedPid"' id="ramp_start" v-model="ramp_start" size="3">
+            <b-tooltip v-if='mode == "speedRaw"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_start"> Set a starting value before ramp function begins.</b-tooltip>
+            <button v-show="mode == 'speedRaw' || mode == 'speedPid'" id="set" @click="setStart">Set</button>
         </div>
         <div class="row justify-content-center">    
 
             <label v-if='mode == "speedRaw"' for="ramp_gradient">Ramp gradient (V/s)</label>
             <label v-else-if='mode == "positionPid"' for="ramp_gradient">Ramp gradient (rad/s)</label>
-            <label v-else-if='mode == "speedPid"' for="ramp_gradient">Ramp gradient (rpm/s)</label>
+            <label v-else-if='mode == "speedPid"' for="ramp_gradient">Ramp gradient ((rad/s)/s)</label>
 
-            <input id="ramp_gradient" v-model="ramp_gradient" size="3">
-
+            <input :class='getInputClass(ramp_gradient)' id="ramp_gradient" v-model="ramp_gradient" size="3">
+            <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_gradient" :title='checkValueRange(ramp_gradient)'></b-tooltip>
             
-            <button id="run" @click="runCommand">Run</button>
-            <button v-if="isDataRecorderOn" id="runAndRecord" @click="runRecord">Run + Record</button>
+            <button id="run" v-if="mode != 'stopped'" @click="runCommand">Run</button>
+            <button v-if="isDataRecorderOn && mode != 'stopped'" id="runAndRecord" @click="runRecord">Run + Record</button>
 
         </div>
 
@@ -37,9 +37,11 @@ export default {
 
   name: 'RampCommand',
   props:{
+      remoteLabVersion: String,
       mode: String,
       dataSocket: ReconnectingWebSocket,
       isDataRecorderOn: Boolean,
+      disableTooltips: Boolean,
   },
   data () {
     return {
@@ -53,6 +55,10 @@ export default {
         interval_id: null,
         max_value: 6,
         initial_angle: 0,
+        tooltip_delay: 2000,
+        max_position_ramp: Math.PI,
+        max_speed_ramp: Math.PI,
+        max_voltage_ramp: 6,
     }
   },
   components: {
@@ -78,13 +84,13 @@ export default {
          store.state.ramp.ramp_gradient = this.ramp_gradient;
          
          if(this.mode == 'speedPid'){
-             this.max_value = store.state.ramp.max_rpm
-             eventBus.$emit('addrampfunction', 'rpm', this.max_value);
+             this.max_value = store.state.ramp.max_rad_s;
+             eventBus.$emit('addrampfunction', 'rad/s', this.max_value);
          } else if(this.mode == 'speedRaw'){
              this.max_value = store.state.ramp.max_voltage;
              eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
          } else if(this.mode == 'positionPid'){
-             this.max_value = 12*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
+             this.max_value = 2*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
              eventBus.$emit('addrampfunction', 'theta', this.max_value);
 
          }
@@ -97,20 +103,19 @@ export default {
      sendCommand(){
          this.time += this.time_interval;        //in seconds
          let ramp_value = this.ramp_gradient * this.time;
-        //  if(ramp_value >= this.max_value){
-        //      this.stopCommand();
-        //  }
+         if(ramp_value >= this.max_value){
+             this.stopCommand();
+         }
 
          if(this.mode == 'speedRaw'){
              //let signal = ((ramp_value + parseFloat(this.ramp_start))/this.motor_max_voltage) * 255;
              let signal = ((ramp_value + parseFloat(this.ramp_start))/this.max_value) * 100;    //percentage of max 6V
-             console.log('signal = ' + signal);
              this.dataSocket.send(JSON.stringify({
 				set: "speed",
 				to: signal
 			}));
          } else if(this.mode == 'speedPid'){
-             let rpm = ramp_value;         
+             let rpm = ramp_value*60/(2*Math.PI);         
              this.dataSocket.send(JSON.stringify({
 				set: "speed",
 				to: rpm
@@ -127,11 +132,9 @@ export default {
 
              if(new_enc_pos > 1000){
                  let remain = new_enc_pos % 1000;
-                 console.log('remain = ' + remain);
                  new_enc_pos = -(1000 - remain);
              } else if(new_enc_pos < -1000){
                  let remain = new_enc_pos % 1000;
-                 console.log('remain = ' + remain);
                  new_enc_pos = 1000 + remain;
              }
              this.dataSocket.send(JSON.stringify({
@@ -156,13 +159,85 @@ export default {
      },
      runRecord(){
          eventBus.$emit('runrecord');
-     }
+     },
+     checkValueRange(value){
+         if(isNaN(value) || value < 0){
+             return 'Invalid ramp';
+         } else{
+             if(this.mode == 'positionPid'){
+                    if(value > this.max_position_ramp){
+                        return 'Ramp gradient is large';
+                    } else {
+                        return 'Ramp gradient OK';
+                    }
+                    
+
+                } else if(this.mode == 'speedPid'){
+
+                    if(value > this.max_speed_ramp){
+                        return 'Ramp gradient is large';
+                    } else {
+                        return 'Ramp gradient OK';
+                    }
+
+                } else if(this.mode == 'speedRaw'){
+                    if(value > this.max_voltage_ramp){
+                        return 'Ramp gradient is large';
+                    } else {
+                        return 'Ramp gradient OK';
+                    }
+                } else {
+
+                    return '';
+
+                }
+         }
+         
+         
+     },
+     getInputClass(value){
+         let standard_class = 'mr-2 form-control';
+         let additional_class = '';
+
+			if(!isNaN(value) && value >= 0){
+                if(this.mode == 'positionPid'){
+                    if(value > this.max_position_ramp){
+                        additional_class = ' error';
+                    }
+                } 
+                else if(this.mode == 'speedPid'){
+                    if(value > this.max_speed_ramp){
+                        additional_class = ' error';
+                    } 
+                } 
+                else {
+                    if(value > this.max_voltage_ramp){
+                        additional_class = ' error';
+                    } 
+                }
+				
+			} else {
+				additional_class = ' error';
+            }
+            
+            return standard_class + additional_class;
+		},
   }
 }
 </script>
 
 <style scoped>
+input{
+    width: 10%;
+}
 
+.error{
+    border:thick solid red
+}
+
+.error:focus{
+    border:thick solid red
+}
 
 
 #run       {background-color: #4CAF50FF;}

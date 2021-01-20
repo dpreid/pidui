@@ -50,7 +50,7 @@
 		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
 			<div v-if='angleMode == "degrees"' class="col-3 sliderlabel"> Angle ({{angleParam}}deg)</div>
 			<div v-else class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
-			<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-36" max="36" v-model="angleParam" class="slider" id="angleSlider"></div>
+			<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-54" max="54" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<div v-else class="col-7"><input type="range" min="-36" max="36" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
 		</div>

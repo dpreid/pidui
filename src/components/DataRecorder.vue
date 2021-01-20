@@ -8,7 +8,7 @@
     </div>
    <div class="form-group row justify-content-center p-2">
         <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
-        <div class='col-sm-2 mr-4'><input type='text' size='3' :class="[{'border': hasError}, {'border-danger': hasError}, form-control]" id="time_interval" v-model="time_interval"></div>
+        <div class='col-sm-2 mr-4'><input type='text' size='3' :class="[{'error': hasError}, form-control]" id="time_interval" v-model="time_interval"></div>
         <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="time_interval" :title='checkValueRange(time_interval)'></b-tooltip>
         <label class="col-sm-2 col-form-label" for="time_interval">seconds</label>
     </div>
@@ -51,7 +51,7 @@ export default {
             return store.getNumData !== 0;
       },
       hasError(){
-        if(!isNaN(this.time_interval)){
+        if(!isNaN(this.time_interval) && this.time_interval > 0.02){
           return false;
         } else { 
           return true;
@@ -199,6 +199,14 @@ export default {
 </script>
 
 <style scoped>
+
+.error{
+    border:thick solid red
+}
+
+.error:focus{
+    border:thick solid red
+}
 
 #recordButton       {background-color: rgb(0, 255, 8);}
 #recordButton:hover {background-color: #3e8e41} 
