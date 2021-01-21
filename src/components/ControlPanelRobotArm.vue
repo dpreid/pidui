@@ -20,14 +20,13 @@
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
-				<div v-if='currentMode == "positionPid"'>
-					<label class='m-2' for="inputSelect">Input type:</label>
-					<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
-						<option value="free">Free</option>
-						<option value="step">Step</option>
-						<!-- <option value="ramp">Ramp</option> -->
-					</select> 
-				</div>
+				<label class='m-2' for="inputSelect">Input type:</label>
+				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
+					<option value="free">Free</option>
+					<option value="step">Step</option>
+					<!-- <option value="ramp">Ramp</option> -->
+				</select> 
+				
 			</div>
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
@@ -40,55 +39,57 @@
 
 	</div>
 
+	<div v-if='currentMode == "changeArm"' class="row justify-content-center m-2 align-items-center">
+		<div class="col-3 sliderlabel"> Arm(60-120) ({{armPosition}})</div>
+		<div class="col-7"><input type="range" min="60" max="120" v-model="armPosition" class="slider" id="armSlider"></div>
+		<button id="set" class="btn btn-default btn-lg col-2" @click="setArm">Set</button>
+	</div>
 
-	<div v-if='inputMode == "free"'>
-		
-		<div v-if="currentMode != 'stopped' && currentMode != 'zero'" class='row justify-content-center m-2'>
-			<div class='col-12'><h2> Parameters </h2></div>
+	<div v-if='currentMode == "positionPid"'>
+
+		<div v-if='inputMode == "free"'>
+
+			<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
+				<div class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
+				<div class="col-7"><input type="range" min="-50" max="50" v-model="angleParam" class="slider" id="angleSlider"></div>
+				<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+			</div>
+			
 		</div>
 
-		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
-			<div v-if='angleMode == "degrees"' class="col-3 sliderlabel"> Angle ({{angleParam}}deg)</div>
-			<div v-else class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
-			<div v-if='angleMode == "degrees"' class="col-7"><input type="range" min="-54" max="54" v-model="angleParam" class="slider" id="angleSlider"></div>
-			<div v-else class="col-7"><input type="range" min="-36" max="36" v-model="angleParam" class="slider" id="angleSlider"></div>
-			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+	
+
+		<div v-else-if="inputMode == 'step'">
+			<StepCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 		</div>
 
-		<div v-if='currentMode == "changeArm"' class="row justify-content-center m-2 align-items-center">
-			<div class="col-3 sliderlabel"> Arm(60-120) ({{armPosition}})</div>
-			<div class="col-7"><input type="range" min="60" max="120" v-model="armPosition" class="slider" id="armSlider"></div>
-			<button id="set" class="btn btn-default btn-lg col-2" @click="setArm">Set</button>
+		<div v-else-if="inputMode == 'ramp'">
+			<RampCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+			<!-- <h2> RAMP MODE </h2> -->
 		</div>
 	
 	</div>
-
-	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
-	</div>
-
-	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn"/>
-		<!-- <h2> RAMP MODE </h2> -->
-	</div>
-	
 
 	<div v-if='currentMode == "positionPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
-			<input type='text' class='form-control' id="kp" v-model="kpParam">
+			<input type='text' :class="getInputClass(kpParam)" id="kp" v-model="kpParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='checkValueRange("kp", kpParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
-				<input type='text' class='form-control' id="ki" v-model="kiParam">
+			<input type='text' :class="getInputClass(kiParam)" id="ki" v-model="kiParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='checkValueRange("ki", kiParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
-			<input type='text' class='form-control' id="kd" v-model="kdParam">
+			<input type='text' :class="getInputClass(kdParam)" id="kd" v-model="kdParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='checkValueRange("kd", kdParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="dt">dt:</label>
-			<input type='text' class='form-control' id="dt" v-model="dtParam">
+			<input type='text' :class="getInputClass(dtParam)" id="dt" v-model="dtParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='checkValueRange("dt", dtParam)'></b-tooltip>
         </div>
 
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
@@ -112,6 +113,8 @@ export default {
 	name: "ControlPanel",
 	props:{
 		isDataRecorderOn: Boolean,
+		disableTooltips: Boolean,
+		remoteLabVersion: String,
 	},
 	components:{
 		//DCMotorPanel,
@@ -127,7 +130,6 @@ export default {
 			kdParam: 0,
 			dtParam: 20,
 			armPosition: 90,			//position between 0 - 180, 90 hanging vertically
-			angleMode: 'degrees',		// 'radians'
 			isStopped: true,
 			changingMode: false,
 			currentMode: "stopped",		//"positionPid", "zero"
@@ -138,6 +140,7 @@ export default {
 			angle_max: 3.14,
 			angle_min: -3.14,
 			timerParam: 30,			//hardware stop timer in seconds
+			tooltip_delay: 2000,
         }
     },
     created(){
@@ -444,6 +447,40 @@ export default {
 		window.addEventListener('beforeunload', this.stop);			//refreshing page, changing URL
 			})
 		
+		},
+		getInputClass(param){
+			if(!isNaN(param) && param >= 0){
+				return 'form-control';
+			} else {
+				return ' form-control error';
+			}
+		},
+		checkValueRange(id, param){
+			if(id == 'kp'){
+				if(param >= 10 || param < 1){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'ki'){
+				if(param >= 10 || param <= 0){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'kd'){
+				if(param >= 10 || param <= 0){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'dt'){
+				if(param >= 20 || param <= 1){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			}
 		}
 
 		
@@ -457,6 +494,13 @@ export default {
 </script>
 
 <style scoped>
+.error{
+    border:thick solid red
+}
+
+.error:focus{
+    border:thick solid red
+}
 
 #smoothie-chart{
 	width:100%;

@@ -51,7 +51,7 @@ export default {
             return store.getNumData !== 0;
       },
       hasError(){
-        if(!isNaN(this.time_interval) && this.time_interval > 0.02){
+        if(!isNaN(this.time_interval) && this.time_interval >= 0.02){
           return false;
         } else { 
           return true;

@@ -11,8 +11,8 @@
           <div class='col-sm-6'> 
             <div><webcam-stream /></div>
             <div v-if="remoteLabVersion == 'variable_governor'"><control-panel-variable-governor :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
-            <div v-else-if="remoteLabVersion == 'spinning_disk'"><control-panel-spinning-disk :isDataRecorderOn="isDataRecorderOn"/></div>
-            <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm :isDataRecorderOn="isDataRecorderOn"/></div>
+            <div v-else-if="remoteLabVersion == 'spinning_disk'"><control-panel-spinning-disk :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
+            <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
              
             <div class='col-sm-12' v-if='isTableOn'><table-output :remoteLabVersion="remoteLabVersion"/></div>
           </div>
@@ -87,7 +87,7 @@ export default {
   },
   data() {
     return {
-      remoteLabVersion: 'variable_governor',    //'spinning_disk', 'robot_arm'
+      remoteLabVersion: 'variable_governor', //'robot_arm',    //'spinning_disk', 
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,

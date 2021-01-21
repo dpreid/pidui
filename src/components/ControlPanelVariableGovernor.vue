@@ -48,12 +48,9 @@
 
 	</div>
 
+<div v-if='currentMode == "positionPid" || currentMode == "speedPid" || currentMode == "speedRaw"'>
 
 	<div v-if='inputMode == "free"'>
-		
-		<div v-if="currentMode != 'stopped' && currentMode != 'resetHeight'" class='row justify-content-center m-2'>
-			<div class='col-12'><h2> Parameters </h2></div>
-		</div>
 
 		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
 			<div class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
@@ -81,6 +78,9 @@
 		<RampCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 		<!-- <h2> RAMP MODE </h2> -->
 	</div>
+
+</div>
+
 
 	<div v-if='currentMode == "configure"' class="row justify-content-center m-1 align-items-center">
 			<div class="col-3  sliderlabel"> Height ({{heightParam}}mm)</div>

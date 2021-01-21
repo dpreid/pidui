@@ -37,12 +37,9 @@
 
 	</div>
 
+<div v-if='currentMode == "speedPid" || currentMode == "speedRaw"'>
 
 	<div v-if='inputMode == "free"'>
-		
-		<div v-if="currentMode != 'stopped'" class='row justify-content-center m-2'>
-			<div class='col-12'><h2> Parameters </h2></div>
-		</div>
 
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
 			<div class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
@@ -57,32 +54,36 @@
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
+		<StepCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='currentMode' v-bind:dataSocket='getDataSocket'/>
+		<RampCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
 	</div>
 
-
+</div>
 	
 
 	<div v-if='currentMode == "speedPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
-			<input type='text' class='form-control' id="kp" v-model="kpParam">
+			<input type='text' :class="getInputClass(kpParam)" id="kp" v-model="kpParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='checkValueRange("kp", kpParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
-			<input type='text' class='form-control' id="ki" v-model="kiParam">
+			<input type='text' :class="getInputClass(kiParam)" id="ki" v-model="kiParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='checkValueRange("ki", kiParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
-			<input type='text' class='form-control' id="kd" v-model="kdParam">
+			<input type='text' :class="getInputClass(kdParam)" id="kd" v-model="kdParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='checkValueRange("kd", kdParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="dt">dt:</label>
-			<input type='text' class='form-control' id="dt" v-model="dtParam">
+			<input type='text' :class="getInputClass(dtParam)" id="dt" v-model="dtParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='checkValueRange("dt", dtParam)'></b-tooltip>
         </div>
 
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
@@ -104,6 +105,11 @@ import RampCommand from './RampCommand.vue';
 
 export default {
 	name: "ControlPanel",
+	props:{
+		isDataRecorderOn: Boolean,
+		disableTooltips: Boolean,
+		remoteLabVersion: String,
+	},
 	components:{
 		DCMotorPanel,
 		StepCommand,
@@ -126,7 +132,8 @@ export default {
 			canvas_omega: null,
 			ang_vel_max: 1000,
             ang_vel_min: -1000,
-            timerParam: 30,			//hardware stop timer in seconds
+			timerParam: 30,			//hardware stop timer in seconds
+			tooltip_delay: 2000,
         }
     },
     created(){
@@ -265,6 +272,7 @@ export default {
 			this.kpParam = 1.0;
 			this.kiParam = 0.0;
 			this.kiParam = 0.0;
+			this.dtParam = 20.0;
 			this.setParameters();
 		},
 		async connect(){
@@ -394,6 +402,40 @@ export default {
 		window.addEventListener('beforeunload', this.stop);			//refreshing page, changing URL
 			})
 		
+		},
+		getInputClass(param){
+			if(!isNaN(param) && param >= 0){
+				return 'form-control';
+			} else {
+				return ' form-control error';
+			}
+		},
+		checkValueRange(id, param){
+			if(id == 'kp'){
+				if(param >= 10 || param < 1){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'ki'){
+				if(param >= 10 || param <= 0){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'kd'){
+				if(param >= 10 || param <= 0){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			} else if(id == 'dt'){
+				if(param >= 20 || param <= 1){
+					return 'Outside appropriate range';
+				} else{
+					return 'Value looks good!';
+				}
+			}
 		}
 
 		
@@ -407,6 +449,13 @@ export default {
 </script>
 
 <style scoped>
+.error{
+    border:thick solid red
+}
+
+.error:focus{
+    border:thick solid red
+}
 
 #smoothie-chart_omega{
 	width:100%;
