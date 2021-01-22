@@ -28,7 +28,7 @@
             </div>
             
             <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
-            <div v-if='isGraphOn'><graph-output type="graph" id="0" /></div> 
+            <div v-if='isGraphOn'><graph-output type="graph" id="graph0" /></div> 
           </div>
         </div>
 
@@ -132,7 +132,6 @@ export default {
       this.isWorkspaceOn = false;
     },
     toggleDataRecorder(){
-      console.log('toggling data recorder');
       this.isDataRecorderOn = !this.isDataRecorderOn;
     },
     toggleStopwatch(){
@@ -140,6 +139,9 @@ export default {
     },
     toggleTable(){
       this.isTableOn = !this.isTableOn;
+      if(this.isTableOn){
+        this.isDataRecorderOn = true;
+      }
     },
     toggleInputGraph(){
       this.isInputGraphOn = !this.isInputGraphOn;

@@ -7,14 +7,14 @@
         <tr>
             <!-- <th scope="col">ID</th> -->
             <th scope="col">Time/s</th>
-            <th v-if='remoteLabVersion == "robot_arm"' scope="col">Angle/rad</th>
-            <th v-if='remoteLabVersion == "variable_governor" || remoteLabVersion == "spinning_disk"' scope="col">Angular Velocity/rad/s</th>
+            <th v-if='getMode() == "positionPid"' scope="col">Angle/rad</th>
+            <th v-else scope="col">Angular Velocity/rad/s</th>
         </tr>
         <tr v-for="row in tableData" :id="row.id" :key="row.id" v-bind:class="[row.id == selected_row_id ? 'selected-row' : '']" @click="changeSelected(row.id)">
             <!-- <td>{{row.id}}</td> -->
             <td>{{row.t}}</td>
-            <td v-if='remoteLabVersion == "robot_arm"'>{{row.theta.toFixed(2)}}</td>
-            <td v-if='remoteLabVersion == "variable_governor" || remoteLabVersion == "spinning_disk"'>{{row.omega.toFixed(2)}}</td>
+            <td v-if='getMode() == "positionPid"'>{{row.theta.toFixed(2)}}</td>
+            <td v-else>{{row.omega_rad.toFixed(2)}}</td>
         </tr>
                             
     </table> 
@@ -41,7 +41,14 @@ export default {
             selected_row_id: "0",
         }
     },
+    computed:{
+        
+    },
+    
     methods: {
+        getMode(){
+            return store.state.currentMode;
+        },
         getData(){
             //this.tableData = this.$store.getters.getData;
             //this.searchData = data;
@@ -73,18 +80,15 @@ export default {
         changeSelected(id){
             this.selected_row_id = id;
             var elmnt = document.getElementById(id);
-            elmnt.scrollIntoView(); 
+            elmnt.scrollIntoView(false); 
         }
-      },
-      computed:{
-    
       },
       mounted() {
         
         
       },
       created(){
-          eventBus.$on('updatetable', this.getData);                  //no longer required since Vuex store getter updates automatically
+          eventBus.$on('updatetable', this.getData);                  
             eventBus.$on('newselectedobject', this.changeSelected)
             eventBus.$on('clearalldata', this.getData);
       }

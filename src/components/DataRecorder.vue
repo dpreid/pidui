@@ -8,7 +8,7 @@
     </div>
    <div class="form-group row justify-content-center p-2">
         <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
-        <div class='col-sm-2 mr-4'><input type='text' size='3' :class="[{'error': hasError}, form-control]" id="time_interval" v-model="time_interval"></div>
+        <div class='col-sm-4 mr-4'><input type='text' :class="[{'error': hasError}, 'form-control']" id="time_interval" v-model="time_interval"></div>
         <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="time_interval" :title='checkValueRange(time_interval)'></b-tooltip>
         <label class="col-sm-2 col-form-label" for="time_interval">seconds</label>
     </div>
@@ -31,6 +31,7 @@ export default {
         //store: this.$store,
         isRecording: false,
         time_interval: 0.05,
+        time_interval_min: 0.01,
         interval_id: 0,
         data_points_count: 0,
         hasPlotted: false,
@@ -51,7 +52,7 @@ export default {
             return store.getNumData !== 0;
       },
       hasError(){
-        if(!isNaN(this.time_interval) && this.time_interval >= 0.02){
+        if(!isNaN(this.time_interval) && this.time_interval >= this.time_interval_min){
           return false;
         } else { 
           return true;
@@ -187,7 +188,7 @@ export default {
           hiddenElement.click();
       },
       checkValueRange(value){
-        if(value > 0.02){
+        if(value >= this.time_interval_min){
           return 'OK';
         } else{
           return 'Too small';
