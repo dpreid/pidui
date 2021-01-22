@@ -42,7 +42,7 @@
 	<div v-if='inputMode == "free"'>
 
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
-			<div class="col-3  sliderlabel"> Speed ({{speedParam}}rpm)</div>
+			<div class="col-3  sliderlabel"> Speed ({{(speedParam*2*Math.PI/60).toFixed(2)}}rpm)</div>
 			<div class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
 		</div>
@@ -67,23 +67,23 @@
 	<div v-if='currentMode == "speedPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
-			<input type='text' :class="getInputClass(kpParam)" id="kp" v-model="kpParam">
-			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='checkValueRange("kp", kpParam)'></b-tooltip>
+			<input type='text' :class="checkInputValid('kp', kpParam)" id="kp" v-model="kpParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='getTooltipTitle("kp", kpParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
-			<input type='text' :class="getInputClass(kiParam)" id="ki" v-model="kiParam">
-			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='checkValueRange("ki", kiParam)'></b-tooltip>
+			<input type='text' :class="checkInputValid('ki', kiParam)" id="ki" v-model="kiParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='getTooltipTitle("ki", kiParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
-			<input type='text' :class="getInputClass(kdParam)" id="kd" v-model="kdParam">
-			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='checkValueRange("kd", kdParam)'></b-tooltip>
+			<input type='text' :class="checkInputValid('kd',kdParam)" id="kd" v-model="kdParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='getTooltipTitle("kd", kdParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="dt">dt:</label>
-			<input type='text' :class="getInputClass(dtParam)" id="dt" v-model="dtParam">
-			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='checkValueRange("dt", dtParam)'></b-tooltip>
+			<input type='text' :class="checkInputValid('dt',dtParam)" id="dt" v-model="dtParam">
+			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='getTooltipTitle("dt", dtParam)'></b-tooltip>
         </div>
 
 		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
@@ -122,7 +122,7 @@ export default {
 			kpParam: 1,
 			kiParam: 0,
 			kdParam: 0,
-			dtParam: 20,
+			dtParam: 10,
 			isStopped: true,
 			changingMode: false,
 			currentMode: "stopped",		//speedPid", "speedRaw"
@@ -134,6 +134,18 @@ export default {
             ang_vel_min: -1000,
 			timerParam: 30,			//hardware stop timer in seconds
 			tooltip_delay: 2000,
+			max_parameter_values:{
+				kp: 10,
+				ki: 20,
+				kd: 5,
+				dt: 20,
+			},
+			min_parameter_values:{
+				kp: 1,
+				ki: 0,
+				kd: 0,
+				dt: 0.01,
+			},
         }
     },
     created(){
@@ -211,19 +223,25 @@ export default {
 		},
 		setSpeed(){
 			this.clearMessages();
-			if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
-				this.dataSocket.send(JSON.stringify({
-				set: "speed",
-				to: this.speedParam
-				}));
-			} else{
-				this.error == 'Must be in speedPid or speedRaw mode';
+			if(!isNaN(this.speedParam)){
+				if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
+					this.dataSocket.send(JSON.stringify({
+					set: "speed",
+					to: this.speedParam
+					}));
+				} else{
+					this.error == 'Must be in speedPid or speedRaw mode';
+				}
+			} else {
+				this.error = 'Speed parameter is NaN';
 			}
+			
 			
 		},
 		setParameters(){
 			this.clearMessages();
-			this.dataSocket.send(JSON.stringify({
+			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0 && this.dtParam >= 0){
+				this.dataSocket.send(JSON.stringify({
 				set: "parameters",
 				kp: this.kpParam,
 				ki: this.kiParam,
@@ -231,6 +249,9 @@ export default {
 				dt: this.dtParam,
 			}));
 			this.updateStore();
+			} else{
+				this.error = 'Cannot parse PID parameters';
+			}
 		},
         setTimer(){
 			this.clearMessages();
@@ -271,8 +292,8 @@ export default {
 		resetParameters(){
 			this.kpParam = 1.0;
 			this.kiParam = 0.0;
-			this.kiParam = 0.0;
-			this.dtParam = 20.0;
+			this.kdParam = 0.0;
+			this.dtParam = 10.0;
 			this.setParameters();
 		},
 		async connect(){
@@ -403,39 +424,70 @@ export default {
 			})
 		
 		},
-		getInputClass(param){
+		checkInputValid(id, param){
+			//check that value is actually a number and is not negative
 			if(!isNaN(param) && param >= 0){
-				return 'form-control';
+				if(id == 'kp'){
+					if(param > this.max_parameter_values.kp || param < this.min_parameter_values.kp){
+						return 'form-control error';
+					} else{
+						return 'form-control';
+					}
+			} else if(id == 'ki'){
+				if(param > this.max_parameter_values.ki || param < this.min_parameter_values.ki){
+					return 'form-control error';
+				} else{
+					return 'form-control';
+				}
+			} else if(id == 'kd'){
+				if(param > this.max_parameter_values.kd || param < this.min_parameter_values.kd){
+					return 'form-control error';
+				} else{
+					return 'form-control';
+				}
+			} else if(id == 'dt'){
+				if(param > this.max_parameter_values.dt || param < this.min_parameter_values.dt){
+					return 'form-control error';
+				} else{
+					return 'form-control';
+				}
+			}
+
 			} else {
 				return ' form-control error';
 			}
 		},
-		checkValueRange(id, param){
-			if(id == 'kp'){
-				if(param >= 10 || param < 1){
-					return 'Outside appropriate range';
-				} else{
-					return 'Value looks good!';
+		getTooltipTitle(id, param){
+			if(!isNaN(param)){
+				if(id == 'kp'){
+					if(param > this.max_parameter_values.kp || param < this.min_parameter_values.kp){
+						return 'Outside appropriate range';
+					} else{
+						return 'Value looks good!';
+					}
+				} else if(id == 'ki'){
+					if(param > this.max_parameter_values.ki || param < this.min_parameter_values.ki){
+						return 'Outside appropriate range';
+					} else{
+						return 'Value looks good!';
+					}
+				} else if(id == 'kd'){
+					if(param > this.max_parameter_values.kd || param < this.min_parameter_values.kd){
+						return 'Outside appropriate range';
+					} else{
+						return 'Value looks good!';
+					}
+				} else if(id == 'dt'){
+					if(param > this.max_parameter_values.dt || param < this.min_parameter_values.dt){
+						return 'Outside appropriate range';
+					} else{
+						return 'Value looks good!';
+					}
 				}
-			} else if(id == 'ki'){
-				if(param >= 10 || param <= 0){
-					return 'Outside appropriate range';
-				} else{
-					return 'Value looks good!';
-				}
-			} else if(id == 'kd'){
-				if(param >= 10 || param <= 0){
-					return 'Outside appropriate range';
-				} else{
-					return 'Value looks good!';
-				}
-			} else if(id == 'dt'){
-				if(param >= 20 || param <= 1){
-					return 'Outside appropriate range';
-				} else{
-					return 'Value looks good!';
-				}
+			} else{
+				return 'Invalid input';
 			}
+			
 		}
 
 		
