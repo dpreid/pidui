@@ -38,6 +38,7 @@ export default {
         previous_angle: 0,
         wrap_index: 0,
         tooltip_delay: 2000,
+        starting_angle: 0,
     }
   },
   components: {
@@ -64,6 +65,9 @@ export default {
           //this.$store.dispatch('setStartTime', new Date().getTime());
           //store.state.start_time = new Date().getTime();
           if(!this.hasError){
+            this.wrap_index = 0;
+            this.starting_angle = store.state.current_angle;    //in rad    NEW.
+            this.previous_angle = this.starting_angle;
             store.state.start_time = store.state.current_time;
             this.data_points_count = 0;
             this.isRecording = true;
@@ -75,6 +79,7 @@ export default {
       },
       stopRecording(){
           this.isRecording = false;
+          this.wrap_index = 0;
           console.log("stop recording");
           clearInterval(this.interval_id);
       },
@@ -85,12 +90,17 @@ export default {
           let ang_vel = parseFloat(store.state.current_ang_vel);
           console.log("angle = " + angle);
           
+          //in step and ramp mode, angle value should start from 0 no matter the initial position of encoder.   NEW
+          if(store.state.inputMode == 'ramp' || store.state.inputMode == 'step'){
+            angle = angle - this.starting_angle;
+          }
+
 
           //=================================ramp mode needs to unwrap the angle=========
           if(store.state.inputMode == 'ramp'){
-            if(angle < 0){
-              angle = angle + 2*Math.PI;
-            }
+            // if(angle < 0){
+            //   angle = angle + 2*Math.PI;
+            // }
 
             if(Math.abs(angle - this.previous_angle) > (3/2)*Math.PI){
               this.wrap_index++;
@@ -99,13 +109,10 @@ export default {
             this.previous_angle = angle;
 
             angle = this.wrap_index*2*Math.PI + angle;
-
-            
             
           }
 
           //==================================================
-
 
           //get values in different units
           //angle in degrees
