@@ -164,14 +164,14 @@ export default {
 			angle_min: -3.14,
 			timerParam: 30,			//hardware stop timer in seconds
 			tooltip_delay: 2000,
-			max_parameter_values:{
+			max_parameter_values:{		//default values, but setMaxParameters function changes these depending on mode.
 				kp: 10,
 				ki: 20,
 				kd: 5,
 				dt: 20,
 			},
 			min_parameter_values:{
-				kp: 1,
+				kp: 0,
 				ki: 0,
 				kd: 0,
 				dt: 0.01,
@@ -265,6 +265,7 @@ export default {
 		},
 		speedPid(){
 			this.clearMessages();
+			this.setMaxParameters('speedPid');
 			if(this.currentMode == 'stopped'){
 				store.setGraphDataParameter('omega');
 				this.currentMode = 'speedPid';
@@ -313,6 +314,7 @@ export default {
 		},
 		positionPid(){
 			this.clearMessages();
+			this.setMaxParameters('positionPid');
 			if(this.currentMode == 'stopped'){
 				store.setGraphDataParameter('theta');
 				this.currentMode = 'positionPid';
@@ -570,6 +572,19 @@ export default {
 		window.addEventListener('beforeunload', this.stop);			//refreshing page, changing URL
 			})
 		
+		},
+		setMaxParameters(mode){
+			if(mode == 'positionPid'){
+				this.max_parameter_values.kp = 10;
+				this.max_parameter_values.ki = 20;
+				this.max_parameter_values.kd = 5;
+				this.max_parameter_values.dt = 20;
+			} else if(mode == 'speedPid'){
+				this.max_parameter_values.kp = 2;			//NEED TO TEST THESE
+				this.max_parameter_values.ki = 10;
+				this.max_parameter_values.kd = 1;
+				this.max_parameter_values.dt = 20;
+			}
 		},
 		checkInputValid(id, param){
 			//check that value is actually a number and is not negative

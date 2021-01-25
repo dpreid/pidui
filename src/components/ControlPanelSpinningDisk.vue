@@ -135,13 +135,13 @@ export default {
 			timerParam: 30,			//hardware stop timer in seconds
 			tooltip_delay: 2000,
 			max_parameter_values:{
-				kp: 10,
-				ki: 20,
-				kd: 5,
+				kp: 2,
+				ki: 10,
+				kd: 1,
 				dt: 20,
 			},
 			min_parameter_values:{
-				kp: 1,
+				kp: 0,
 				ki: 0,
 				kd: 0,
 				dt: 0.01,

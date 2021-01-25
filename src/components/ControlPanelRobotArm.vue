@@ -148,7 +148,7 @@ export default {
 				dt: 20,
 			},
 			min_parameter_values:{
-				kp: 1,
+				kp: 0,
 				ki: 0,
 				kd: 0,
 				dt: 0.01,
