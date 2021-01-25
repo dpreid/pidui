@@ -211,6 +211,9 @@ export default {
 	methods:{
 		stop(){
 			this.clearMessages();
+			if(this.inputMode == 'ramp'){
+				eventBus.$emit('stopramp');
+			}
 			this.speedParam = 0;
 			this.currentMode = 'stopped';
 			this.dataSocket.send(JSON.stringify({

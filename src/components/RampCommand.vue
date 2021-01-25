@@ -6,8 +6,9 @@
 
         <div class="row justify-content-center">  
             <label class='m-2' v-if='mode == "speedRaw"' for="ramp_start">Start V</label>
+            <label class='m-2' v-else-if='mode == "speedPid"' for="ramp_start">Start rad/s</label>
             <input v-if='mode == "speedRaw" || mode == "speedPid"' id="ramp_start" v-model="ramp_start" size="3">
-            <b-tooltip v-if='mode == "speedRaw"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_start"> Set a starting value before ramp function begins.</b-tooltip>
+            <b-tooltip v-if='mode == "speedRaw" || mode == "speedPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_start"> Set a starting value before ramp function begins.</b-tooltip>
             <button v-show="mode == 'speedRaw' || mode == 'speedPid'" id="set" @click="setStart">Set</button>
         </div>
         <div class="row justify-content-center">    
@@ -19,8 +20,8 @@
             <input :class='getInputClass(ramp_gradient)' id="ramp_gradient" v-model="ramp_gradient" size="3">
             <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_gradient" :title='checkValueRange(ramp_gradient)'></b-tooltip>
             
-            <button id="run" v-if="mode != 'stopped'" @click="runCommand">Run</button>
-            <button v-if="isDataRecorderOn && mode != 'stopped'" id="runAndRecord" @click="runRecord">Run + Record</button>
+            <button id="run" v-if="mode != 'stopped'" @click="runCommand" :disabled="isRampRunning">Run</button>
+            <button v-if="isDataRecorderOn && mode != 'stopped'" id="runAndRecord" @click="runRecord" :disabled="isRampRunning">Run + Record</button>
 
         </div>
 
@@ -51,7 +52,7 @@ export default {
         motor_max_voltage: 12,
         encoder_max: 1000,
         time: 0,
-        time_interval: 0.01,          //seconds
+        time_interval: 0.1,          //seconds
         interval_id: null,
         max_value: 6,
         initial_angle: 0,
@@ -59,6 +60,7 @@ export default {
         max_position_ramp: Math.PI,
         max_speed_ramp: Math.PI,
         max_voltage_ramp: 6,
+        isRampRunning: false,
     }
   },
   components: {
@@ -68,35 +70,40 @@ export default {
 
   },
   created(){
-		eventBus.$on('runrecord', this.runCommand);
+        //eventBus.$on('runrecord', this.runCommand);
+        eventBus.$on('stopramp', this.stopCommand);
 	},
   mounted(){
 
   },
   methods: {
      async runCommand(){
-         this.time = 0;
-         this.time_interval = parseFloat(this.time_interval);
-         this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
-         //set store state for access by graph input component
-         store.state.ramp.ramp_start_time = this.time_until_ramp;
-         store.state.ramp.ramp_start = 0;
-         store.state.ramp.ramp_gradient = this.ramp_gradient;
-         
-         if(this.mode == 'speedPid'){
-             this.max_value = store.state.ramp.max_rad_s;
-             eventBus.$emit('addrampfunction', 'rad/s', this.max_value);
-         } else if(this.mode == 'speedRaw'){
-             this.max_value = store.state.ramp.max_voltage;
-             eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
-         } else if(this.mode == 'positionPid'){
-             this.max_value = 2*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
-             eventBus.$emit('addrampfunction', 'theta', this.max_value);
+         if(!this.isRampRunning){
+             this.time = 0;
+            this.time_interval = parseFloat(this.time_interval);
+            this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
+            //set store state for access by graph input component
+            store.state.ramp.ramp_start_time = this.time_until_ramp;
+            store.state.ramp.ramp_start = 0;
+            store.state.ramp.ramp_gradient = this.ramp_gradient;
+            
+            if(this.mode == 'speedPid'){
+                this.max_value = store.state.ramp.max_rad_s;
+                eventBus.$emit('addrampfunction', 'rad/s', this.max_value);
+            } else if(this.mode == 'speedRaw'){
+                this.max_value = store.state.ramp.max_voltage;
+                eventBus.$emit('addrampfunction', 'voltage(V)', this.max_value);
+            } else if(this.mode == 'positionPid'){
+                this.max_value = 6*Math.PI;      //don't like this !!!!!!!!!!!!!!!!!!!
+                eventBus.$emit('addrampfunction', 'theta', this.max_value);
 
+            }
+                this.initial_angle = store.state.current_angle;         //new!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
+            this.isRampRunning = true;
          }
-            this.initial_angle = store.state.current_angle;         //new!!!!!!!!!!!!!!!!!!!!!!!!!
          
-         this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
         
        
      },
@@ -115,27 +122,33 @@ export default {
 				to: signal
 			}));
          } else if(this.mode == 'speedPid'){
-             let rpm = ramp_value*60/(2*Math.PI);         
+             let rpm = ramp_value*60/(2*Math.PI) + this.ramp_start*60/(2*Math.PI);         
              this.dataSocket.send(JSON.stringify({
 				set: "speed",
 				to: rpm
 			}));
          } else if(this.mode == 'positionPid'){
-             //console.log('sending ramp command = ' + ramp_value);
-             //let new_ang_rad = store.state.current_angle + ramp_value;
-             //ramp_value = ramp_value % 2*Math.PI;
              let new_ang_rad = ramp_value + this.initial_angle;
-             //let current_enc_pos = store.state.current_enc_pos;
-             //let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
              let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
-            
 
              if(new_enc_pos > 1000){
+                 let half_rots = Math.floor(new_enc_pos / 1000);        //integer number of half rotations completed
                  let remain = new_enc_pos % 1000;
-                 new_enc_pos = -(1000 - remain);
-             } else if(new_enc_pos < -1000){
+                 if(half_rots % 2 == 0){
+                     new_enc_pos = remain;
+                 } else{
+                     new_enc_pos = -(1000 - remain);
+                 }
+             } 
+             //only positive rotation possible so value should never be less than -1000, but included for completeness.
+             else if(new_enc_pos < -1000){
+                 let half_rots = Math.floor(Math.abs(new_enc_pos) / 1000);
                  let remain = new_enc_pos % 1000;
-                 new_enc_pos = 1000 + remain;
+                 if(half_rots % 2 == 0){
+                     new_enc_pos = remain;
+                 } else{
+                     new_enc_pos = 1000 + remain;
+                 }
              }
              this.dataSocket.send(JSON.stringify({
 				set: "position",
@@ -148,16 +161,24 @@ export default {
      },
      stopCommand(){
          clearInterval(this.interval_id);
+         this.isRampRunning = false;
      },
      setStart(){
         //  let signal = 255*parseFloat(this.ramp_start)/this.motor_max_voltage;
-        let signal = 100*parseFloat(this.ramp_start)/this.max_value;
+        let signal;
+        if(this.mode == 'speedRaw'){
+            signal = 100*parseFloat(this.ramp_start)/this.max_value;
+        } else{
+            signal = this.ramp_start*60/(2*Math.PI);  
+        }
+        
          this.dataSocket.send(JSON.stringify({
 				set: "speed",
 				to: signal
             }));
      },
      runRecord(){
+         this.runCommand();
          eventBus.$emit('runrecord');
      },
      checkValueRange(value){

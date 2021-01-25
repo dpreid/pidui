@@ -67,7 +67,7 @@ export default {
         eventBus.$on('runrecord', this.runCommand);
         
         if(this.remoteLabVersion == 'variable_governor'){
-            this.max_position_step = Math.PI;             //variable governor can spin full circle
+            this.max_position_step = Math.PI/2;             //variable governor can spin full circle
         } else {
             this.max_position_step = 3*Math.PI/10;          //robot arm is soft limited to 300 encoder steps from 0.
         }
