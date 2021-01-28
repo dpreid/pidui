@@ -3,6 +3,6 @@ module.exports = {
     // options...
     runtimeCompiler: true,
     publicPath: process.env.NODE_ENV === 'production'
-    ? '/RemoteLabs/pidui/'
+    ? '/ui/spinner-1.0/'
     : '/'
   }

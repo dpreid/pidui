@@ -96,7 +96,7 @@
 <script>
 import { store } from "../simplestore.js";
 import { eventBus } from "../main";
-import ReconnectingWebSocket from 'reconnecting-websocket';
+//import ReconnectingWebSocket from 'reconnecting-websocket';
 import { SmoothieChart } from 'smoothie';
 import { TimeSeries } from 'smoothie';
 import DCMotorPanel from './DCMotorPanel.vue';
@@ -109,6 +109,7 @@ export default {
 		isDataRecorderOn: Boolean,
 		disableTooltips: Boolean,
 		remoteLabVersion: String,
+		url: String,
 	},
 	components:{
 		DCMotorPanel,
@@ -160,19 +161,33 @@ export default {
 	},
         
     async mounted(){
-		await this.connect();
-		console.log('connection complete');
-		this.setParameters();			//resets the parameters to default settings on UI
-		console.log('params set');
+		// await this.connect();
+		// console.log('connection complete');
+		// this.setParameters();			//resets the parameters to default settings on UI
+		// console.log('params set');
 
-		//set the graph data parameter in store
-		store.setGraphDataParameter('omega');
+		// //set the graph data parameter in store
+		// store.setGraphDataParameter('omega');
 	},
 	computed: {
 		getDataSocket(){
 			return this.dataSocket;
 		},
+		getUrl(){
+            return this.$store.getters.getDataURL;
+        }
 	},
+	watch:{
+        async getUrl(){
+            await this.connect();
+			console.log('connection complete');
+			this.setParameters();			//resets the parameters to default settings on UI
+			console.log('params set');
+
+			//set the graph data parameter in store
+			store.setGraphDataParameter('omega');
+        }
+    },
 	methods:{
 		stop(){
 			this.clearMessages();
@@ -299,18 +314,20 @@ export default {
 		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
 			return new Promise((resolve) => {
-				let dataUrl = 'wss://video.practable.io:443/bi/dpr/pendulum0';
+				// let dataUrl = 'wss://video.practable.io:443/bi/dpr/spinner0';
+				let dataUrl = this.url;
+		console.log("data URL is =" + dataUrl);
+		console.log("kk");
 
-		//console.log(dataUrl)
+		// var wsOptions = {
+		// 	automaticOpen: true,
+		// 	reconnectDecay: 1.5,
+		// 	reconnectInterval: 500,
+		// 	maxReconnectInterval: 10000,
+		// }
 
-		var wsOptions = {
-			automaticOpen: true,
-			reconnectDecay: 1.5,
-			reconnectInterval: 500,
-			maxReconnectInterval: 10000,
-		}
-
-		this.dataSocket = new ReconnectingWebSocket(dataUrl, null,wsOptions);
+		//this.dataSocket = new ReconnectingWebSocket(dataUrl, null,wsOptions);
+		this.dataSocket = new WebSocket(this.url);
 		//console.log(this.dataSocket);
 
 		//let dataOpen = false;

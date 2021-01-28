@@ -46,14 +46,6 @@
         </b-nav-form> -->
         <b-nav-item @click='clearWorkspace'>Clear Workspace</b-nav-item>
 
-        <b-nav-item-dropdown right>
-          <!-- Using 'button-content' slot -->
-          <template #button-content>
-            <em>User</em>
-          </template>
-          <b-dropdown-item>{{ getUserEmail }}</b-dropdown-item>
-          <b-dropdown-item @click='logout'>Sign Out</b-dropdown-item>
-        </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -63,7 +55,7 @@
 <script>
 //import { store } from "../simplestore.js";
 import { eventBus } from "../main.js";
-import userData from '../userDataStore';
+//import userData from '../userDataStore';
 
 export default {
 
@@ -80,9 +72,9 @@ export default {
     
   },
   computed:{
-      getUserEmail(){
-        return userData.getters.getUserEmail;
-      },
+      // getUserEmail(){
+      //   return userData.getters.getUserEmail;
+      // },
       labName(){
         if(this.remoteLabVersion == 'variable_governor'){
           return 'Variable Governor';
@@ -106,9 +98,9 @@ export default {
       clearWorkspace(){
           eventBus.$emit('clearworkspace');
       },
-      logout(){
-        userData.dispatch('logout');
-      },
+      // logout(){
+      //   userData.dispatch('logout');
+      // },
       setExercise1v1(){
         eventBus.$emit('setexercise1v1');
       },

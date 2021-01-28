@@ -2,7 +2,8 @@
 <div class='container-sm'>
 <div class='row' id="video">
 	<div class='col-12'>
-		<canvas id="video-canvas"></canvas>
+		<!-- <canvas id="video-canvas"></canvas> -->
+		<video-element :url="url" />
 	</div>
 </div>
 </div>
@@ -13,29 +14,81 @@
 //import { eventBus } from "../main";
 //import { JSMpeg } from "../../public/js/jsmpeg.min.js";
 //import JSMpeg from "jsmpeg";
-import JSMpeg from '@cycjimmy/jsmpeg-player';
+//import JSMpeg from '@cycjimmy/jsmpeg-player';
 //playerUrl = scheme + host + ':' + port + '/' + stream;
 //let playerUrl = 'ws://video.practable.io:8080/out/dpr/video0';
+import axios from "axios";
+import VideoElement from "./VideoElement.vue";
 
 export default {
-    name: "WebcamStream",
+	name: "WebcamStream",
+	prop:{
+		//stream: Object,
+	},
+	components:{
+		VideoElement,
+	},
     data(){
         return{
-
+			// player: null,
+			stream: Object,
         }
     },
-    created(){
+    computed:{
+		urlOK() {
+			return this.$store.getters.getVideoURLObtained;
+		},
+		streamOK(){
+			console.log("running stream ok");
+			//return this.stream;
+			return this.$store.getters.getStream("video");
+
+		},
+		url(){
+			return this.$store.getters.getVideoURL;
+		},
+		
+	},
+	methods:{
 		
 	},
 	mounted(){
-		let canvas = document.getElementById("video-canvas");
+		// let canvas = document.getElementById("video-canvas");
 		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video0';		//for robot arm
-		let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';		//for variable governor
-		console.log(playerUrl);
-		let player = new JSMpeg.Player(playerUrl, {canvas: canvas});
-		console.log(player);
+		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';		//for variable governor
+		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video2';		//for spinner
+		
+		//let player = new JSMpeg.Player(playerUrl, {canvas: canvas});
 
-	},
+		//new JSMpeg.Player(this.url, {canvas: canvas});
+
+			//this.connectPlayer();
+		},
+	watch:{
+		streamOK: function(is) {
+			if (is) {
+				console.log("HELLO");
+				this.stream = this.$store.getters.getStream("video");
+				var accessURL = this.stream.url;
+				var token = this.stream.token;
+				var store = this.$store;
+				axios
+				.post(accessURL, {}, { headers: { Authorization: token } })
+				.then((response) => {
+					store.dispatch("setVideoURL", response.data.uri);
+				})
+				.catch((err) => console.log(err));
+			} else{
+				console.log("no stream");
+			}
+    },
+		urlOK(is) {
+			if (is) {
+				console.log("get videoURL", this.urlOK, this.url);
+			}
+		},
+
+	}
 }
 
 

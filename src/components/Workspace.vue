@@ -60,8 +60,8 @@ export default {
             this.ruler_width = 640;
             this.ruler_height = 64;
         } else{
-            this.ruler_width = 800;
-            this.ruler_height = 80;
+            this.ruler_width = 1100;
+            this.ruler_height = 110;
         }
     },
     mounted(){

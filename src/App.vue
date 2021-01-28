@@ -2,17 +2,18 @@
   <div id="app" class='container-fluid-sm m-0'>
     <navigation-bar :remoteLabVersion="remoteLabVersion"/>
 
-    <div v-if='!getLoggedIn'>
+    <!-- <div v-if='!getLoggedIn'>
         <login  />
-    </div>
-    <div v-else>
+    </div> -->
+    <!-- <div v-else> -->
         <div class='row'>
           <!-- LEFT HAND COLUMN -->
           <div class='col-sm-6'> 
-            <div><webcam-stream /></div>
+            <streams :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+            <!-- <div><webcam-stream /></div>
             <div v-if="remoteLabVersion == 'variable_governor'"><control-panel-variable-governor :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
             <div v-else-if="remoteLabVersion == 'spinning_disk'"><control-panel-spinning-disk :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
-            <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
+            <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div> -->
              
             <div class='col-sm-12' v-if='isTableOn'><table-output :remoteLabVersion="remoteLabVersion"/></div>
           </div>
@@ -43,7 +44,7 @@
           <workspace :mode="remoteLabVersion"/>
         </div>
       </div>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script>
@@ -51,20 +52,21 @@ import GraphOutput from "./components/GraphOutput.vue";
 import TableOutput from "./components/TableOutput.vue";
 import Stopwatch from "./components/Stopwatch.vue";
 import Workspace from "./components/Workspace.vue";
-import WebcamStream from "./components/WebcamStream.vue";
-import ControlPanelVariableGovernor from "./components/ControlPanelVariableGovernor.vue";
-import ControlPanelRobotArm from './components/ControlPanelRobotArm.vue';
-import ControlPanelSpinningDisk from './components/ControlPanelSpinningDisk.vue';
+// import WebcamStream from "./components/WebcamStream.vue";
+// import ControlPanelVariableGovernor from "./components/ControlPanelVariableGovernor.vue";
+// import ControlPanelRobotArm from './components/ControlPanelRobotArm.vue';
+// import ControlPanelSpinningDisk from './components/ControlPanelSpinningDisk.vue';
 import DataRecorder from "./components/DataRecorder.vue";
 //import AutoCommand from "./components/AutoCommand.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
 import GraphInput from "./components/GraphInput.vue";
-import Login from "./components/Login.vue";
+//import Login from "./components/Login.vue";
 import SystemDiagrams from "./components/SystemDiagrams.vue";
 
 import { eventBus } from "./main.js";
-import userData from './userDataStore';
+//import userData from './userDataStore';
 import Simulation from './components/Simulation.vue';
+import Streams from './components/Streams.vue';
 
 export default {
   name: 'App',
@@ -73,21 +75,22 @@ export default {
     TableOutput,
     Stopwatch,
     Workspace,
-    WebcamStream,
-    ControlPanelVariableGovernor,
-    ControlPanelSpinningDisk,
-    ControlPanelRobotArm,
+    //WebcamStream,
+    //ControlPanelVariableGovernor,
+    //ControlPanelSpinningDisk,
+    //ControlPanelRobotArm,
     DataRecorder,
     //AutoCommand,
     NavigationBar,
     GraphInput,
-    Login,
+    //Login,
     SystemDiagrams,
     Simulation,
+    Streams,
   },
   data() {
-    return {
-      remoteLabVersion: 'variable_governor', //'robot_arm',    //'spinning_disk', 
+   return {
+      remoteLabVersion: 'spinning_disk', //'robot_arm', //, 'variable_governor',
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,
@@ -203,9 +206,9 @@ export default {
     },
   },
   computed: {
-    getLoggedIn(){
-      return userData.getters.isLoggedIn;
-    }
+    // getLoggedIn(){
+    //   return userData.getters.isLoggedIn;
+    // }
     
   }
 }

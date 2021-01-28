@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@cycjimmy/jsmpeg-player": "^5.0.1",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.18.0",
     "chart.js": "^2.9.4",
