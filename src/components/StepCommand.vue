@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import ReconnectingWebSocket from 'reconnecting-websocket';
+//import ReconnectingWebSocket from 'reconnecting-websocket';
 import { store } from "../simplestore.js";
 import { eventBus } from "../main.js";
 
@@ -41,7 +41,7 @@ export default {
   props:{
       remoteLabVersion: String,
       mode: String,
-      dataSocket: ReconnectingWebSocket,
+      dataSocket: WebSocket,
       isDataRecorderOn: Boolean,
       disableTooltips: Boolean,
   },
@@ -60,9 +60,7 @@ export default {
   components: {
     
   },
-  computed:{
-
-  },
+  
   created(){
         eventBus.$on('runrecord', this.runCommand);
         
@@ -73,7 +71,7 @@ export default {
         }
 	},
   mounted(){
-
+      
   },
   methods: {
      async runCommand(){

@@ -1,8 +1,8 @@
 <template>
 <div>
-    <div v-if='"version" == "spinning_disk"'><control-panel-spinning-disk :remoteLabVersion="version" :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips" :url="url"/></div>
-    <div v-else-if='"version" == "robot_arm"'><control-panel-robot-arm :remoteLabVersion="version" :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips" :url="url"/></div>
-    <div v-else-if='"version" == "variable_governor"'><control-panel-variable-governor :remoteLabVersion="version" :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips" :url="url"/></div>
+    <div v-if='version == "spinning_disk"'><control-panel-spinning-disk :remoteLabVersion="version" :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips" :url="url"/></div>
+    <div v-else-if='version == "robot_arm"'><control-panel-robot-arm :remoteLabVersion="version" :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips" :url="url"/></div>
+    <div v-else-if='version == "variable_governor"'><control-panel-variable-governor :remoteLabVersion="version" :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips" :url="url"/></div>
 
 </div>
 </template>
@@ -15,19 +15,13 @@ import ControlPanelVariableGovernor from "./ControlPanelVariableGovernor.vue";
 
 export default {
 	name: "DataStream",
-	prop:{
-        remoteLabVersion: String,
-        isDataRecorderOn: Boolean,
-        disableTooltips: Boolean,
-	},
 	components:{
 		ControlPanelRobotArm,
         ControlPanelSpinningDisk,
-        ControlPanelVariableGovernor,
+		ControlPanelVariableGovernor,
 	},
     data(){
         return{
-			// player: null,
 			stream: Object,
         }
     },
@@ -36,8 +30,6 @@ export default {
 			return this.$store.getters.getDataURLObtained;
 		},
 		streamOK(){
-			console.log("running data stream ok");
-			//return this.stream;
 			return this.$store.getters.getStream("data");
 
 		},
@@ -45,13 +37,13 @@ export default {
 			return this.$store.getters.getDataURL;
         },
         version(){
-            return this.remoteLabVersion;
+            return this.$store.getters.getRemoteLabVersion;
         },
         dataRecorder(){
-            return this.isDataRecorderOn;
+            return this.$store.getters.getIsDataRecorderOn;
         },
         tooltips(){
-            return this.disableTooltips;
+            return this.$store.getters.getDisableTooltips;
         }
 		
 	},
@@ -59,21 +51,11 @@ export default {
 		
 	},
 	mounted(){
-		// let canvas = document.getElementById("video-canvas");
-		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video0';		//for robot arm
-		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';		//for variable governor
-		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video2';		//for spinner
 		
-		//let player = new JSMpeg.Player(playerUrl, {canvas: canvas});
-
-		//new JSMpeg.Player(this.url, {canvas: canvas});
-
-			//this.connectPlayer();
 		},
 	watch:{
 		streamOK: function(is) {
 			if (is) {
-				console.log("DATA STREAM OK RUNNING");
 				this.stream = this.$store.getters.getStream("data");
 				var accessURL = this.stream.url;
 				var token = this.stream.token;

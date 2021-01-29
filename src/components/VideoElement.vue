@@ -33,6 +33,14 @@ export default {
         }
     },
   mounted() {
+    //only for debugging
+    //let canvas = document.getElementById("video-canvas");
+		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video0';		//for robot arm
+		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';		//for variable governor
+		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video2';		//for spinner
+		
+    // new JSMpeg.Player(playerUrl, {canvas: canvas});
+    
       //let canvas = document.getElementById("video-canvas");
       
       //this.player = new JSMpeg.Player(this.url, {canvas: canvas});

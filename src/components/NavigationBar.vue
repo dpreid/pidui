@@ -36,6 +36,9 @@
           <b-dropdown-item v-if='remoteLabVersion == "robot_arm"' @click='setExercise2v1'>Exercise 2.1</b-dropdown-item>
         </b-nav-item-dropdown>
 
+        <b-nav-item @click='clearWorkspace'>Clear Workspace</b-nav-item>
+
+
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
@@ -44,8 +47,8 @@
           <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
           <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
         </b-nav-form> -->
-        <b-nav-item @click='clearWorkspace'>Clear Workspace</b-nav-item>
-
+        
+        <b-nav-text><clock /></b-nav-text>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -56,6 +59,7 @@
 //import { store } from "../simplestore.js";
 import { eventBus } from "../main.js";
 //import userData from '../userDataStore';
+import Clock from "./Clock.vue";
 
 export default {
 
@@ -69,6 +73,9 @@ export default {
     }
   },
   components: {
+    Clock,
+  },
+  mounted(){
     
   },
   computed:{

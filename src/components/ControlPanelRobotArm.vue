@@ -60,11 +60,11 @@
 	
 
 		<div v-else-if="inputMode == 'step'">
-			<StepCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+			<StepCommand v-bind:mode='currentMode' :remoteLabVersion="version" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips"/>
 		</div>
 
 		<div v-else-if="inputMode == 'ramp'">
-			<RampCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+			<RampCommand v-bind:mode='currentMode' :remoteLabVersion="version" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips"/>
 			<!-- <h2> RAMP MODE </h2> -->
 		</div>
 	
@@ -124,6 +124,7 @@ export default {
 	},
     data(){
         return{
+			local_debug: false,
 			dataSocket: null,
 			angleParam: 0,			//always stores degrees, even in rad mode
 			kpParam: 1,
@@ -180,6 +181,15 @@ export default {
 		},
 		getUrl(){
             return this.$store.getters.getDataURL;
+		},
+		version(){
+            return this.$store.getters.getRemoteLabVersion;
+        },
+        dataRecorder(){
+            return this.$store.getters.getIsDataRecorderOn;
+        },
+        tooltips(){
+            return this.$store.getters.getDisableTooltips;
         }
 	},
 	watch:{
@@ -207,6 +217,11 @@ export default {
 		hasStopped(){
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
+				if(this.currentMode == 'zero'){
+					this.message = 'Hardware has been zeroed';
+				} else{
+					this.error = 'Hardware has timed out or position limit has been reached. You are best to zero the hardware before restart';
+				}
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
 				this.changingMode = false;
@@ -287,7 +302,7 @@ export default {
 			}
 		},
 		setParameters(){
-			this.clearMessages();
+			//this.clearMessages();
 			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0 && this.dtParam >= 0){
 				this.dataSocket.send(JSON.stringify({
 				set: "parameters",
@@ -347,9 +362,9 @@ export default {
 		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
 			return new Promise((resolve) => {
-				//let dataUrl = 'wss://video.practable.io:443/bi/dpr/pendulum0';
 				let dataUrl = this.url;
-		console.log(dataUrl)
+
+		console.log("data URL is =" + dataUrl);
 
 		// var wsOptions = {
 		// 	automaticOpen: true,

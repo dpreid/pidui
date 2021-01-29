@@ -22,9 +22,6 @@ import VideoElement from "./VideoElement.vue";
 
 export default {
 	name: "WebcamStream",
-	prop:{
-		//stream: Object,
-	},
 	components:{
 		VideoElement,
 	},
@@ -38,14 +35,12 @@ export default {
 		urlOK() {
 			return this.$store.getters.getVideoURLObtained;
 		},
-		streamOK(){
-			console.log("running stream ok");
-			//return this.stream;
+		streamOK(){			
 			return this.$store.getters.getStream("video");
-
 		},
 		url(){
 			return this.$store.getters.getVideoURL;
+			
 		},
 		
 	},
@@ -67,7 +62,6 @@ export default {
 	watch:{
 		streamOK: function(is) {
 			if (is) {
-				console.log("HELLO");
 				this.stream = this.$store.getters.getStream("video");
 				var accessURL = this.stream.url;
 				var token = this.stream.token;

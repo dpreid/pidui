@@ -42,7 +42,7 @@
 	<div v-if='inputMode == "free"'>
 
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
-			<div class="col-3  sliderlabel"> Speed ({{(speedParam*2*Math.PI/60).toFixed(2)}}rpm)</div>
+			<div class="col-3  sliderlabel"> Speed ({{(speedParam*2*Math.PI/60).toFixed(2)}}rad/s)</div>
 			<div class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
 		</div>
@@ -175,6 +175,15 @@ export default {
 		},
 		getUrl(){
             return this.$store.getters.getDataURL;
+		},
+		version(){
+            return this.$store.getters.getRemoteLabVersion;
+        },
+        dataRecorder(){
+            return this.$store.getters.getIsDataRecorderOn;
+        },
+        tooltips(){
+            return this.$store.getters.getDisableTooltips;
         }
 	},
 	watch:{
@@ -314,10 +323,9 @@ export default {
 		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
 			return new Promise((resolve) => {
-				// let dataUrl = 'wss://video.practable.io:443/bi/dpr/spinner0';
 				let dataUrl = this.url;
+
 		console.log("data URL is =" + dataUrl);
-		console.log("kk");
 
 		// var wsOptions = {
 		// 	automaticOpen: true,
@@ -345,7 +353,7 @@ export default {
 		let responsiveSmoothie = true;
 		let thisTime;
 
-		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:1000,minValue:-1000,labels:{fillStyle:'#0024ff',precision:2}});
+		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:220,minValue:-220,labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_omega = document.getElementById("smoothie-chart_omega");
 		let series_omega = new TimeSeries();
 		chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#0024ff'});
@@ -400,16 +408,15 @@ export default {
 				
 				messageCount += 1
 
-				if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
-					store.state.current_ang_vel = enc_ang_vel;
-				}
+				store.state.current_ang_vel = enc_ang_vel;
 
 				thisTime = msgTime + delay
 				
 				if (!isNaN(thisTime)){
 					
 					if(!isNaN(enc_ang_vel)){
-						series_omega.append(msgTime + delay, enc_ang_vel)	
+						let ang_vel_rad = enc_ang_vel*2*Math.PI/60;
+						series_omega.append(msgTime + delay, ang_vel_rad);	
 						
 					}
 					

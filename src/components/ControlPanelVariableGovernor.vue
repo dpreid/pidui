@@ -71,11 +71,11 @@
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+		<StepCommand v-bind:mode='currentMode' :remoteLabVersion="version" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips"/>
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='currentMode' :remoteLabVersion="remoteLabVersion" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
+		<RampCommand v-bind:mode='currentMode' :remoteLabVersion="version" v-bind:dataSocket='getDataSocket' :isDataRecorderOn="dataRecorder" :disableTooltips="tooltips"/>
 		<!-- <h2> RAMP MODE </h2> -->
 	</div>
 
@@ -143,6 +143,7 @@ export default {
 	},
     data(){
         return{
+			local_debug: false,			//NEED FALSE FOR DEPLOYMENT
 			dataSocket: null,
 			speedParam: 0,			//in rpm as this is what the arduino accepts.
 			heightParam: 0,
@@ -210,6 +211,15 @@ export default {
 		},
 		getUrl(){
             return this.$store.getters.getDataURL;
+		},
+		version(){
+            return this.$store.getters.getRemoteLabVersion;
+        },
+        dataRecorder(){
+            return this.$store.getters.getIsDataRecorderOn;
+        },
+        tooltips(){
+            return this.$store.getters.getDisableTooltips;
         }
 	},
 	watch:{
@@ -246,6 +256,7 @@ export default {
 		hasStopped(){
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
+				this.error = 'Hardware has automatically stopped. Timed out or reached position limit';
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
 				this.changingMode = false;
@@ -442,10 +453,9 @@ export default {
 		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
 			return new Promise((resolve) => {
-				//let dataUrl = 'wss://video.practable.io:443/bi/dpr/governor0';
 				let dataUrl = this.url;
 
-		console.log(dataUrl)
+		console.log("data URL is =" + dataUrl);
 
 		// var wsOptions = {
 		// 	automaticOpen: true,

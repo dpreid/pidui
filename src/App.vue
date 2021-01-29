@@ -9,12 +9,8 @@
         <div class='row'>
           <!-- LEFT HAND COLUMN -->
           <div class='col-sm-6'> 
-            <streams :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/>
-            <!-- <div><webcam-stream /></div>
-            <div v-if="remoteLabVersion == 'variable_governor'"><control-panel-variable-governor :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
-            <div v-else-if="remoteLabVersion == 'spinning_disk'"><control-panel-spinning-disk :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div>
-            <div v-else-if="remoteLabVersion == 'robot_arm'"><control-panel-robot-arm :remoteLabVersion="remoteLabVersion" :isDataRecorderOn="isDataRecorderOn" :disableTooltips="disableTooltips"/></div> -->
-             
+            <streams />
+           
             <div class='col-sm-12' v-if='isTableOn'><table-output :remoteLabVersion="remoteLabVersion"/></div>
           </div>
 
@@ -90,7 +86,7 @@ export default {
   },
   data() {
    return {
-      remoteLabVersion: 'spinning_disk', //'robot_arm', //, 'variable_governor',
+      remoteLabVersion: 'robot_arm', //'variable_governor', //'spinning_disk', //, //'robot_arm', 
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,
@@ -119,6 +115,9 @@ export default {
     eventBus.$on('setexercise1v3', this.setExercise1v3Interface);
     eventBus.$on('setexercise2v1', this.setExercise2v1Interface);
 
+    this.$store.dispatch('setRemoteLabVersion', this.remoteLabVersion);     //NEW
+    this.$store.dispatch('setDataRecorder', this.isDataRecorderOn);     //NEW
+    this.$store.dispatch('setDisableTooltips', this.disableTooltips);     //NEW
   },
   methods: {
     addWorkspace(){
@@ -128,14 +127,21 @@ export default {
       this.isGraphOn = !this.isGraphOn;
       //graph requires the data recorder in order to plot data so automatically add it when graph added - don't automatically remove it.
       if(this.isGraphOn){
-        this.isDataRecorderOn = true;
+        this.toggleDataRecorder();
       }
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
     },
     toggleDataRecorder(){
+      console.log('data recorder toggled');
       this.isDataRecorderOn = !this.isDataRecorderOn;
+      if(this.isDataRecorderOn){
+        this.$store.dispatch('setDataRecorder', true);
+      } else{
+        this.$store.dispatch('setDataRecorder', false);
+      }
+      
     },
     toggleStopwatch(){
       this.isStopwatchOn = !this.isStopwatchOn;

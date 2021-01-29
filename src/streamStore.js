@@ -11,6 +11,10 @@ const store = new Vuex.Store({
         videoURLObtained: false,
         dataURL: "",
         dataURLObtained: false,
+        remoteLabVersion: '',
+        isDataRecorderOn: false,
+        disableTooltips: false,
+        expiryTime: '',
       },
       mutations:{
         DELETE_STREAMS(state) {
@@ -37,6 +41,18 @@ const store = new Vuex.Store({
             state.dataURL = "";
             state.dataURLObtained = false;
           },
+          SET_REMOTE_LAB_VERSION(state, version){
+              state.remoteLabVersion = version;
+          },
+          SET_DATA_RECORDER(state, set){
+              state.isDataRecorderOn = set;
+          },
+          SET_DISABLE_TOOLTIPS(state, set){
+            state.disableTooltips = set;
+          },
+          SET_EXPIRY_TIME(state, time){
+            state.expiryTime = time;
+          }
       },
       actions:{
            deleteStreams(context){
@@ -56,7 +72,19 @@ const store = new Vuex.Store({
            },
            deleteDataURL(context){
                context.commit("DELETE_DATA_URL");
-           }
+           },
+           setRemoteLabVersion(context, version){
+               context.commit("SET_REMOTE_LAB_VERSION", version);
+            },
+           setDataRecorder(context, set){
+            context.commit("SET_DATA_RECORDER", set);
+        },
+            setDisableTooltips(context, set){
+                context.commit("SET_DISABLE_TOOLTIPS", set);
+            },
+            setExpiryTime(context, time){
+                context.commit("SET_EXPIRY_TIME", time);
+            },
            
         },
       getters:{
@@ -94,7 +122,20 @@ const store = new Vuex.Store({
         },
         getDataURLObtained(state){
             return state.dataURLObtained;
+        },
+        getRemoteLabVersion(state){
+            return state.remoteLabVersion;
+        },
+        getIsDataRecorderOn(state){
+            return state.isDataRecorderOn;
+        },
+        getDisableTooltips(state){
+            return state.disableTooltips;
+        },
+        getExpiryTime(state){
+            return state.expiryTime;
         }
+        
         
  
       },
