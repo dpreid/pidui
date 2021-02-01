@@ -75,6 +75,7 @@ export default {
   },
   methods: {
      async runCommand(){
+         eventBus.$emit('showinputtype', false);
          this.step_size = Math.abs(this.step_size);     //only positive steps
          //set store state for access by graph input component
         //  store.state.step.step_time = this.time_to_step;

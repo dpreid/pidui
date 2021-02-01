@@ -5,7 +5,6 @@ export const store = {
        current_enc_pos: 0,
         current_angle: 0,     //in rad
         current_ang_vel: 0,   //in rpm
-        previous_unwrap_angle: 0,
         previous_ang_vels: [],
         values_in_average: 100,
         average_count: 0,
@@ -25,7 +24,7 @@ export const store = {
          ramp_gradient: 1,
          ramp_start_time: 0,
          max_voltage: 6,
-         max_rpm: 1000,
+         max_rad_s: 110,
         },
         pid_parameters:{
          Kp: 1,
@@ -88,7 +87,64 @@ export const store = {
            });
   
            return time_min;
-        }
+        },
+        hasStorage(){
+         try {
+            window.localStorage.setItem('test', 'storage');
+            window.localStorage.removeItem('test');
+            return true;
+         } catch (exception) {
+            return false;
+         }
+        },
+        hasDataToLoad(){
+         if(window.localStorage.getItem('savedData')){
+            return true;
+         } else{
+            return false;
+         }
+        },
+        saveDataToLocalStorage(){
+           if(this.hasStorage()){
+              if(this.getNumData() > 0){
+                  let data_string = JSON.stringify(this.state.data);
+                  console.log(data_string);
+                  window.localStorage.setItem('savedData', data_string);
+                  let date = JSON.stringify(new Date());
+                  window.localStorage.setItem('dateSaved', date);
+
+                  return true;
+              } else{
+               return false;
+              }
+              
+           } else{
+              console.log('no localStorage allowed');
+              return false;
+           }
+            
+        },
+        loadDataFromLocalStorage(){
+           if(this.hasStorage()){
+            if(window.localStorage.getItem('savedData')){
+               let data = window.localStorage.getItem('savedData');
+               data = JSON.parse(data)
+               this.clearAllData();
+               for(let i=0; i<data.length;i++){
+                  this.addData(data[i]);
+               }
+
+               return true;
+            } else {
+               console.log('no saved data');
+               return false;
+            }
+           } else{
+              console.log('no saved data');
+              return false;
+           }
+            
+        },
   
   }
       

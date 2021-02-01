@@ -27,13 +27,15 @@
 				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" @click="changingMode = true">Set Mode</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
-
-				<label class='m-2' for="inputSelect">Input type:</label>
-				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
-					<option value="free">Free</option>
-					<option value="step">Step</option>
-					<option v-if='remoteLabVersion != "robot_arm"' value="ramp">Ramp</option>
-				</select> 
+				
+				<div v-show='showInputType'>
+					<label class='m-2' for="inputSelect">Input type:</label>
+					<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
+						<option value="free">Free</option>
+						<option value="step">Step</option>
+						<option v-if='remoteLabVersion != "robot_arm"' value="ramp">Ramp</option>
+					</select> 
+				</div>
 			</div>
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
@@ -166,6 +168,7 @@ export default {
 			angle_min: -3.14,
 			timerParam: 30,			//hardware stop timer in seconds
 			tooltip_delay: 2000,
+			showInputType: true,
 			max_parameter_values:{		//default values, but setMaxParameters function changes these depending on mode.
 				kp: 10,
 				ki: 20,
@@ -188,7 +191,7 @@ export default {
 		eventBus.$on('setdcmotormode', this.speedRaw);	
 		eventBus.$on('setpidspeedmode', this.speedPid);	
 		eventBus.$on('hardwarestop', this.hasStopped);	
-		
+		eventBus.$on('showinputtype', (on) => {this.showInputType = on});
 	},
         
     async mounted(){
@@ -244,6 +247,7 @@ export default {
 			if(this.inputMode == 'ramp'){
 				eventBus.$emit('stopramp');
 			}
+			this.showInputType = true;
 			this.speedParam = 0;
 			this.currentMode = 'stopped';
 			this.dataSocket.send(JSON.stringify({
@@ -328,6 +332,7 @@ export default {
 		},
 		setSpeed(){
 			this.clearMessages();
+			this.showInputType = false;
 			if(!isNaN(this.speedParam)){
 				if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
 					this.dataSocket.send(JSON.stringify({
@@ -362,6 +367,7 @@ export default {
 		},
 		setPosition(){
 			this.clearMessages();
+			this.showInputType = false;
 			if(!isNaN(this.angleParam)){
 				if(this.currentMode == 'positionPid'){
 					let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
@@ -449,6 +455,10 @@ export default {
 			this.kdParam = 0.0;
 			this.dtParam = 10.0;
 			this.setParameters();
+		},
+		toggleInputType(on){
+			console.log("event emitted");
+			this.showInputType = on;
 		},
 		async connect(){
 			//dataUrl =  scheme + host + ':' + port + '/' + data;
@@ -544,10 +554,6 @@ export default {
 				}
 				
 				messageCount += 1
-
-				// if(enc_ang_vel >= -1000 && enc_ang_vel <= 1000){					//DON'T REALLY WANT THESE VALUES IN HERE
-				// 		store.state.current_ang_vel = enc_ang_vel;
-				// 	}
 
 				store.state.current_ang_vel = enc_ang_vel;
 

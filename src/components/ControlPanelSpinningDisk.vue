@@ -20,12 +20,14 @@
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 
-				<label class='m-2' for="inputSelect">Input type:</label>
-				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
-					<option value="free">Free</option>
-					<option value="step">Step</option>
-					<option value="ramp">Ramp</option>
-				</select> 
+				<div v-show='showInputType'>
+					<label class='m-2' for="inputSelect">Input type:</label>
+					<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
+						<option value="free">Free</option>
+						<option value="step">Step</option>
+						<option value="ramp">Ramp</option>
+					</select> 
+				</div>
 			</div>
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
@@ -135,6 +137,7 @@ export default {
             ang_vel_min: -1000,
 			timerParam: 30,			//hardware stop timer in seconds
 			tooltip_delay: 2000,
+			showInputType: true,
 			max_parameter_values:{
 				kp: 2,
 				ki: 10,
@@ -158,6 +161,7 @@ export default {
 		eventBus.$on('setpidpositionmode', this.positionPid);	
 		eventBus.$on('setpidspeedmode', this.speedPid);		
 		eventBus.$on('hardwarestop', this.hasStopped);
+		eventBus.$on('showinputtype', (on) => {this.showInputType = on});
 	},
         
     async mounted(){
@@ -200,6 +204,10 @@ export default {
 	methods:{
 		stop(){
 			this.clearMessages();
+			this.showInputType = true;
+			if(this.inputMode == 'ramp'){
+				eventBus.$emit('stopramp');
+			}
 			this.speedParam = 0;
 			this.currentMode = 'stopped';
 			this.dataSocket.send(JSON.stringify({
@@ -247,6 +255,7 @@ export default {
 		},
 		setSpeed(){
 			this.clearMessages();
+			this.showInputType = false;
 			if(!isNaN(this.speedParam)){
 				if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
 					this.dataSocket.send(JSON.stringify({

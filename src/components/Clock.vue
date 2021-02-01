@@ -1,8 +1,8 @@
 <template>
 <div id='row'>
     <!-- <div id='italic'>{{current_time}} Session ends at: {{sessionEndTime}} in: {{current_time_left}}</div> -->
-    <div id='sessionTime'> {{current_time}}</div>
-    <b-tooltip triggers='hover' :delay="{show:0,hide:0}" target="sessionTime"><p>Session ends:</p> <p>{{sessionEndTime}}</p> <p>{{current_time_left}}</p></b-tooltip>
+    <div id='sessionTime'> Session ends in: {{current_time_left}}</div>
+    <b-tooltip triggers='hover' :delay="{show:0,hide:0}" target="sessionTime"><p>{{current_time}} Session ends:</p> <p>{{sessionEndTime}}</p></b-tooltip>
 
 </div>
 </template>

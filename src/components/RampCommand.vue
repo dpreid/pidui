@@ -79,6 +79,7 @@ export default {
   methods: {
      async runCommand(){
          if(!this.isRampRunning){
+             eventBus.$emit('hideinputtype');
              this.time = 0;
             this.time_interval = parseFloat(this.time_interval);
             this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients

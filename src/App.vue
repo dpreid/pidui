@@ -2,10 +2,21 @@
   <div id="app" class='container-fluid-sm m-0'>
     <navigation-bar :remoteLabVersion="remoteLabVersion"/>
 
-    <!-- <div v-if='!getLoggedIn'>
-        <login  />
-    </div> -->
-    <!-- <div v-else> -->
+    
+      <b-modal id="load-data-modal" title='Load data' v-model='showLoadDataModal' @ok="loadData">
+              <p>Previously recorded data was saved on {{ saved_date }}. Do you want to load this previous data?</p>
+          
+              <template #modal-footer="{ ok, cancel }">
+              <b-button size="sm" variant="success" @click="ok()">
+                Load
+              </b-button>
+              <b-button size="sm" variant="danger" @click="cancel()">
+                Cancel
+              </b-button>
+            </template>
+          </b-modal>
+
+
         <div class='row'>
           <!-- LEFT HAND COLUMN -->
           <div class='col-sm-6'> 
@@ -48,19 +59,14 @@ import GraphOutput from "./components/GraphOutput.vue";
 import TableOutput from "./components/TableOutput.vue";
 import Stopwatch from "./components/Stopwatch.vue";
 import Workspace from "./components/Workspace.vue";
-// import WebcamStream from "./components/WebcamStream.vue";
-// import ControlPanelVariableGovernor from "./components/ControlPanelVariableGovernor.vue";
-// import ControlPanelRobotArm from './components/ControlPanelRobotArm.vue';
-// import ControlPanelSpinningDisk from './components/ControlPanelSpinningDisk.vue';
 import DataRecorder from "./components/DataRecorder.vue";
-//import AutoCommand from "./components/AutoCommand.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
 import GraphInput from "./components/GraphInput.vue";
-//import Login from "./components/Login.vue";
 import SystemDiagrams from "./components/SystemDiagrams.vue";
 
 import { eventBus } from "./main.js";
-//import userData from './userDataStore';
+import { store } from "./simplestore.js";
+
 import Simulation from './components/Simulation.vue';
 import Streams from './components/Streams.vue';
 
@@ -97,6 +103,8 @@ export default {
       isSystemDiagramsOn: false,
       isSimulationOn: false,
       disableTooltips: false,             //global tooltip setting
+      showLoadDataModal: false,
+      saved_date: '',
     }
   },
   created(){
@@ -118,6 +126,16 @@ export default {
     this.$store.dispatch('setRemoteLabVersion', this.remoteLabVersion);     //NEW
     this.$store.dispatch('setDataRecorder', this.isDataRecorderOn);     //NEW
     this.$store.dispatch('setDisableTooltips', this.disableTooltips);     //NEW
+  },
+  mounted(){
+    if(store.hasDataToLoad()){
+      this.saved_date = JSON.parse(window.localStorage.getItem('dateSaved'));
+      this.showLoadDataModal = true;
+    } else{
+      this.showLoadDataModal = false;
+    }
+      window.addEventListener('pagehide', () => {store.saveDataToLocalStorage()});				//closing window
+      window.addEventListener('beforeunload', () => {store.saveDataToLocalStorage()});			//refreshing page, changing URL
   },
   methods: {
     addWorkspace(){
@@ -210,13 +228,11 @@ export default {
       eventBus.$emit('setpidpositionmode');
       eventBus.$emit('setstepinput');
     },
+    loadData(){
+      store.loadDataFromLocalStorage();
+      this.showLoadDataModal = false;
+    },
   },
-  computed: {
-    // getLoggedIn(){
-    //   return userData.getters.isLoggedIn;
-    // }
-    
-  }
 }
 
 
