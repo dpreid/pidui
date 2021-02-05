@@ -1,18 +1,26 @@
 <template>
+<div v-if='hasSessionEnded'>
+    <img src='https://assets.practable.io/images/common/thank-you-screen.svg' alt='session ended'>
+</div>
+<div v-else>
     <canvas id="video-canvas"></canvas>
+</div>    
+    
+    
     <!-- <div id='videoWrapper'></div> -->
 </template>
 
 <script>
 import JSMpeg from "@cycjimmy/jsmpeg-player";
-
+import { eventBus } from "../main.js";
 
 export default {
   name: "VideoElement",
   props: ["url"],
   data(){
         return{
-			player: null,
+          player: null,
+          hasSessionEnded: false,
         }
     },
     computed:{
@@ -23,7 +31,6 @@ export default {
     watch:{
         getUrl(){
             let canvas = document.getElementById("video-canvas");
-            console.log("url attempt to stream = " + this.url);
             this.player = new JSMpeg.Player(this.url, {canvas: canvas});
             // let url = this.$store.getters.getVideoURL;
             // this.player = new JSMpeg.VideoElement("#videoWrapper", url, {
@@ -31,6 +38,9 @@ export default {
             //     chunkSize: 10 * 1024 * 1024,
             // });
         }
+    },
+    created(){
+      eventBus.$on('sessionended', (ended) => {this.hasSessionEnded = ended});
     },
   mounted() {
     //only for debugging

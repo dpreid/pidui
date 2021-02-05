@@ -97,33 +97,39 @@ export const store = {
             return false;
          }
         },
-        hasDataToLoad(){
+        hasDataToLoad(remoteLabVersion){
          if(window.localStorage.getItem('savedData')){
-            return true;
+            if(window.localStorage.getItem('remoteLabVersion') == remoteLabVersion){
+               return true;
+            } else {
+               return false;
+            }
          } else{
             return false;
          }
         },
-        saveDataToLocalStorage(){
-           if(this.hasStorage()){
-              if(this.getNumData() > 0){
-                  let data_string = JSON.stringify(this.state.data);
-                  console.log(data_string);
-                  window.localStorage.setItem('savedData', data_string);
-                  let date = JSON.stringify(new Date());
-                  window.localStorage.setItem('dateSaved', date);
+        saveDataToLocalStorage(remoteLabVersion){
+         if(this.hasStorage()){
+            if(this.getNumData() > 0){
+                let data_string = JSON.stringify(this.state.data);
+                console.log(data_string);
+                window.localStorage.setItem('savedData', data_string);
+                let date = JSON.stringify(new Date());
+                window.localStorage.setItem('dateSaved', date);
+                window.localStorage.setItem('remoteLabVersion', remoteLabVersion);
 
-                  return true;
-              } else{
-               return false;
-              }
-              
-           } else{
-              console.log('no localStorage allowed');
-              return false;
-           }
+                return true;
+            } else{
+             console.log('no data to save');
+             return false;
+            }
             
-        },
+         } else{
+            console.log('no localStorage allowed');
+            return false;
+         }
+          
+      },
         loadDataFromLocalStorage(){
            if(this.hasStorage()){
             if(window.localStorage.getItem('savedData')){

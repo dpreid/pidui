@@ -16,9 +16,10 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" @click="changingMode = true">Set Mode</button>
+				<button v-if='currentMode == "stopped"' id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
-				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
+				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" @click="changingMode = true">Calibrate</button>
+				
 
 				<label class='m-2' for="inputSelect">Input type:</label>
 				<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
@@ -30,10 +31,10 @@
 			</div>
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
-			<div class='col-sm'>
-				<button id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>		
+			<div class='col-sm'>	
 				<button id="armposition" class="btn btn-default btn-lg" @click="changeArm">Set Arm</button>		
 				<button id="zero" class="btn btn-default btn-lg" @click="zero">Zero</button>
+				<button id="initialise" class="btn btn-default btn-lg" @click="initialise">Initialise</button>
 			</div>
 		</div>
 
@@ -92,7 +93,8 @@
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='getTooltipTitle("dt", dtParam)'></b-tooltip>
         </div>
 
-		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
+		<button id="set" class="btn btn-default btn-sm mr-2" @click="setParameters">Set</button>
+		<button id="reset" class="btn btn-default btn-sm" @click="resetParameters">Reset</button>
 	</div>
 
 
@@ -217,10 +219,11 @@ export default {
 		hasStopped(){
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
+				this.showInputType = true;
 				if(this.currentMode == 'zero'){
 					this.message = 'Hardware has been zeroed';
 				} else{
-					this.error = 'Hardware has timed out or position limit has been reached. You are best to zero the hardware before restart';
+					this.error = 'Hardware has automatically stopped. You are best to zero the hardware before restart';
 				}
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
@@ -273,6 +276,20 @@ export default {
 			} else {
 				this.error = 'Angle parameter is NaN';
 			}
+		},
+		initialise(){
+			this.clearMessages();
+			if(this.currentMode == 'stopped'){
+				this.currentMode = 'initialise';
+				this.dataSocket.send(JSON.stringify({
+				set: "mode",
+				to: "initialise"
+				}));
+			} else{
+				this.error = 'Must STOP before entering initialise mode';
+			}
+			this.changingMode = false;
+			this.updateStore();
 		},
 		changeArm(){
 			this.clearMessages();
@@ -637,8 +654,8 @@ export default {
 #setmode       {background-color: rgb(3, 248, 12);}
 #setmode:hover {background-color: #3e8e41} 
 
-#reset       {background-color: rgb(3, 248, 12);}
-#reset:hover {background-color: #3e8e41} 
+#reset       {background-color: rgba(248, 72, 3, 0.658);}
+#reset:hover {background-color: #5f0f04} 
 
 #stop       {background-color: rgb(255, 0, 0);}
 #stop:hover {background-color: #cc1e1eff;}
@@ -656,5 +673,7 @@ export default {
 #set         {background-color: rgb(30, 250, 1);}
 #set:hover   {background-color: rgb(30, 172, 2);}
 
+#initialise         {background-color: rgb(208, 1, 250);}
+#initialise:hover   {background-color: rgb(84, 3, 109);}
 
 </style>

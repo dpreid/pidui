@@ -24,9 +24,11 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" @click="changingMode = true">Set Mode</button>
+				<button v-if='currentMode == "stopped"' id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
+				<button v-if='currentMode == "stopped"' id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>	
+				<button v-if='currentMode == "stopped"' id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
+				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" @click="changingMode = true">Calibrate</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
-				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
 				
 				<div v-show='showInputType'>
 					<label class='m-2' for="inputSelect">Input type:</label>
@@ -40,11 +42,8 @@
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
 			<div class='col-sm'>		
-				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
-				<button id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>	
-				<button id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
-				<button id="resetHeight" class="btn btn-default btn-lg" @click="resetHeight">Calibrate</button>
-				<button id="configure" class="btn btn-default btn-lg" @click="configure">Configure</button>
+				<button id="resetHeight" class="btn btn-default btn-lg" @click="resetHeight">Zero</button>
+				<button id="configure" class="btn btn-default btn-lg" @click="configure">Set height</button>
 			</div>
 		</div>
 
@@ -113,7 +112,8 @@
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='getTooltipTitle("dt", dtParam)'></b-tooltip>
         </div>
 
-		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
+		<button id="set" class="btn btn-default btn-sm mr-2" @click="setParameters">Set</button>
+		<button id="reset" class="btn btn-default btn-sm" @click="resetParameters">Reset</button>
 	</div>
 
 
@@ -260,7 +260,15 @@ export default {
 		hasStopped(){
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
-				this.error = 'Hardware has automatically stopped. Timed out or reached position limit';
+				this.showInputType = true;
+				if(this.currentMode == 'resetHeight'){
+					this.message = 'Height reset';
+				} else if(this.currentMode == 'positionPid'){
+					this.error = 'Hardware has automatically stopped. Try reducing the PID parameters or step size';
+				} else{
+					this.error = 'Hardware has timed out and automatically stopped';
+				}
+				
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
 				this.changingMode = false;
@@ -555,7 +563,7 @@ export default {
 				
 				messageCount += 1
 
-				store.state.current_ang_vel = enc_ang_vel;
+				
 
 				//encoder position in radians
 				enc = enc * 2* Math.PI / encoderPPR;
@@ -576,7 +584,8 @@ export default {
 						series_theta.append(msgTime + delay, enc)	
 					}
 					
-					if(!isNaN(enc_ang_vel)){
+					if(!isNaN(enc_ang_vel) && enc_ang_vel < 2000){		//rpm should not be higher than this
+						store.state.current_ang_vel = enc_ang_vel;
 						//display in rad/s
 						let ang_vel_rad = enc_ang_vel*2*Math.PI/60;
 						series_omega.append(msgTime + delay, ang_vel_rad);	
@@ -765,8 +774,8 @@ export default {
 #setmode       {background-color: rgb(3, 248, 12);}
 #setmode:hover {background-color: #3e8e41} 
 
-#reset       {background-color: rgb(3, 248, 12);}
-#reset:hover {background-color: #3e8e41} 
+#reset       {background-color: rgba(248, 72, 3, 0.658);}
+#reset:hover {background-color: #5f0f04} 
 
 #stop       {background-color: rgb(255, 0, 0);}
 #stop:hover {background-color: #cc1e1eff;}

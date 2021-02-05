@@ -33,14 +33,14 @@
 <script>
 import { store } from "../simplestore.js";
 //import { eventBus } from "../main.js";
-import ReconnectingWebSocket from 'reconnecting-websocket';
+//import ReconnectingWebSocket from 'reconnecting-websocket';
 import AnalogueOutput from "./AnalogueOutput.vue";
 
 export default {
 
   name: 'DCMotorPanel',
   props: {
-      dataSocket: ReconnectingWebSocket,
+      dataSocket: WebSocket,
   },
   data () {
     return {

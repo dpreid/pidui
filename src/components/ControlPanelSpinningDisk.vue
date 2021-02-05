@@ -16,9 +16,11 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" v-b-tooltip.hover="{delay: {'show':3000, 'hide':0}}" title="Change hardware mode" @click="changingMode = true">Set Mode</button>
+				<!-- <button v-if='currentMode == "stopped"' id="setmode" class="btn btn-default btn-lg" @click="changingMode = true">Set Mode</button> -->
+				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
+				<button id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
-				<button id="reset" class="btn btn-default btn-lg" @click="resetParameters">Reset</button>
+				
 
 				<div v-show='showInputType'>
 					<label class='m-2' for="inputSelect">Input type:</label>
@@ -32,8 +34,7 @@
 		</div>
 		<div class='row align-content-center m-1 btn-group' v-if="changingMode">
 			<div class='col-sm'>		
-				<button id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
-				<button id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
+				
 			</div>
 		</div>
 
@@ -88,7 +89,8 @@
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='getTooltipTitle("dt", dtParam)'></b-tooltip>
         </div>
 
-		<button id="set" class="btn btn-default btn-lg col-2" @click="setParameters">Set</button>
+		<button id="set" class="btn btn-default btn-sm mr-2" @click="setParameters">Set</button>
+		<button id="reset" class="btn btn-default btn-sm" @click="resetParameters">Reset</button>
 	</div>
 
 
@@ -219,6 +221,7 @@ export default {
 		},
 		hasStopped(){
 			this.clearMessages();
+			this.showInputType = true;
 			this.speedParam = 0;
 			this.currentMode = 'stopped';
 			this.changingMode = false;
@@ -417,13 +420,14 @@ export default {
 				
 				messageCount += 1
 
-				store.state.current_ang_vel = enc_ang_vel;
+				
 
 				thisTime = msgTime + delay
 				
 				if (!isNaN(thisTime)){
 					
-					if(!isNaN(enc_ang_vel)){
+					if(!isNaN(enc_ang_vel) && enc_ang_vel < 2000){
+						store.state.current_ang_vel = enc_ang_vel;
 						let ang_vel_rad = enc_ang_vel*2*Math.PI/60;
 						series_omega.append(msgTime + delay, ang_vel_rad);	
 						
@@ -591,8 +595,8 @@ export default {
 #setmode       {background-color: rgb(3, 248, 12);}
 #setmode:hover {background-color: #3e8e41} 
 
-#reset       {background-color: rgb(3, 248, 12);}
-#reset:hover {background-color: #3e8e41} 
+#reset       {background-color: rgba(248, 72, 3, 0.658);}
+#reset:hover {background-color: #5f0f04} 
 
 #stop       {background-color: rgb(255, 0, 0);}
 #stop:hover {background-color: #cc1e1eff;}

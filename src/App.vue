@@ -92,7 +92,7 @@ export default {
   },
   data() {
    return {
-      remoteLabVersion: 'robot_arm', //'variable_governor', //'spinning_disk', //, //'robot_arm', 
+      remoteLabVersion: 'spinning_disk', //'robot_arm', //'variable_governor', //, //, //, //, //,
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,
@@ -128,14 +128,14 @@ export default {
     this.$store.dispatch('setDisableTooltips', this.disableTooltips);     //NEW
   },
   mounted(){
-    if(store.hasDataToLoad()){
+    if(store.hasDataToLoad(this.remoteLabVersion)){
       this.saved_date = JSON.parse(window.localStorage.getItem('dateSaved'));
       this.showLoadDataModal = true;
     } else{
       this.showLoadDataModal = false;
     }
-      window.addEventListener('pagehide', () => {store.saveDataToLocalStorage()});				//closing window
-      window.addEventListener('beforeunload', () => {store.saveDataToLocalStorage()});			//refreshing page, changing URL
+      window.addEventListener('pagehide', () => {store.saveDataToLocalStorage(this.remoteLabVersion)});				//closing window
+      window.addEventListener('beforeunload', () => {store.saveDataToLocalStorage(this.remoteLabVersion)});			//refreshing page, changing URL
   },
   methods: {
     addWorkspace(){
@@ -145,7 +145,10 @@ export default {
       this.isGraphOn = !this.isGraphOn;
       //graph requires the data recorder in order to plot data so automatically add it when graph added - don't automatically remove it.
       if(this.isGraphOn){
-        this.toggleDataRecorder();
+        if(!this.isDataRecorderOn){
+          this.toggleDataRecorder();
+        }
+        
       }
     },
     clearWorkspace(){
@@ -167,7 +170,9 @@ export default {
     toggleTable(){
       this.isTableOn = !this.isTableOn;
       if(this.isTableOn){
-        this.isDataRecorderOn = true;
+        if(!this.isDataRecorderOn){
+            this.toggleDataRecorder();
+        }
       }
     },
     toggleInputGraph(){
