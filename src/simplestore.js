@@ -23,7 +23,7 @@ export const store = {
            ramp_start: 0,
          ramp_gradient: 1,
          ramp_start_time: 0,
-         max_voltage: 6,
+         max_voltage: 2.5,
          max_rad_s: 110,
         },
         pid_parameters:{

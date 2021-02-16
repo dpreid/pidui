@@ -47,25 +47,34 @@ export default {
         }
 		
 	},
-	methods:{
-		
-	},
 	mounted(){
-		
-		},
-	watch:{
-		streamOK: function(is) {
-			if (is) {
-				this.stream = this.$store.getters.getStream("data");
+		var _this = this;
+		var reconnect = function () {
+			_this.getWebsocketConnection();
+		};
+		//make second and subsequent connections
+		document.addEventListener("streams:dropped", reconnect);
+	},
+	methods:{
+		getWebsocketConnection(){
+			this.stream = this.$store.getters.getStream("data");
 				var accessURL = this.stream.url;
 				var token = this.stream.token;
 				var store = this.$store;
+				store.dispatch("deleteDataURL");		//NEWLY ADDED
 				axios
 				.post(accessURL, {}, { headers: { Authorization: token } })
 				.then((response) => {
 					store.dispatch("setDataURL", response.data.uri);
 				})
 				.catch((err) => console.log(err));
+		}
+	},
+	
+	watch:{
+		streamOK: function(is) {
+			if (is) {
+				this.getWebsocketConnection();
 			} else{
 				console.log("no stream");
 			}

@@ -147,6 +147,39 @@ export default {
             unit: '',
         }
     },
+    computed:{
+            getCurrentMode(){
+                console.log(this.dataStore.state.currentMode);
+                let data = this.dataStore.state.currentMode;
+                return data;
+            },
+            getGraphParameter(){
+                return store.state.graphDataParameter;
+            },
+            newData(){
+                return this.dataStore.state.data;
+            }
+
+      },
+      mounted() {
+        this.createChart();
+        this.getData();
+
+        //set default unit
+        if(store.state.graphDataParameter == 'theta'){
+            this.unit = 'rad';
+        } else{
+            this.unit = 'rad/s';
+        }
+      },
+      created(){
+        //eventBus.$on('updateGraph', this.getData );
+        //eventBus.$on('updateGraph', this.getLatestData );
+        eventBus.$on('newgraphadded', this.chartAdded);
+        eventBus.$on('clearalldata', this.clearData )
+        
+
+      },
     watch:{
         getGraphParameter(){
             if(store.state.graphDataParameter == 'theta'){
@@ -154,6 +187,9 @@ export default {
             } else{
                 this.unit = 'rad/s';
             }
+        },
+        newData(){
+            this.getLatestData();
         }
     },
     methods: {
@@ -313,7 +349,7 @@ export default {
                         }
                         this.addDataToChart({x: x_data, y: y_data});
                     } else{
-                        console.log("no data");
+                        //console.log("no data");
                     }
                 
             },
@@ -453,35 +489,7 @@ export default {
             
 
       },
-      computed:{
-            getCurrentMode(){
-                console.log(this.dataStore.state.currentMode);
-                let data = this.dataStore.state.currentMode;
-                return data;
-            },
-            getGraphParameter(){
-                return store.state.graphDataParameter;
-            },
-      },
-      mounted() {
-        this.createChart();
-        this.getData();
-
-        //set default unit
-        if(store.state.graphDataParameter == 'theta'){
-            this.unit = 'rad';
-        } else{
-            this.unit = 'rad/s';
-        }
-      },
-      created(){
-        //eventBus.$on('updateGraph', this.getData );
-        eventBus.$on('updateGraph', this.getLatestData );
-        eventBus.$on('newgraphadded', this.chartAdded);
-        eventBus.$on('clearalldata', this.clearData )
-        
-
-      }
+      
 }
 </script>
 

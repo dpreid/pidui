@@ -66,7 +66,7 @@
 		</div>
 
 		<div v-if='currentMode == "speedRaw"'>
-			<DCMotorPanel v-bind:dataSocket="getDataSocket" />
+			<DCMotorPanel v-bind:dataSocket="getDataSocket" :maxV="6" />
 		</div>
 	
 	</div>
@@ -106,11 +106,11 @@
 			<input type='text' :class="checkInputValid('kd', kdParam)" id="kd" v-model="kdParam">
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='getTooltipTitle("kd", kdParam)'></b-tooltip>
         </div>
-		<div class='form-group col-2'>
+		<!-- <div class='form-group col-2'>
 			<label for="dt">dt:</label>
 			<input type='text' :class="checkInputValid('dt', dtParam)" id="dt" v-model="dtParam">
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='getTooltipTitle("dt", dtParam)'></b-tooltip>
-        </div>
+        </div> -->
 
 		<button id="set" class="btn btn-default btn-sm mr-2" @click="setParameters">Set</button>
 		<button id="reset" class="btn btn-default btn-sm" @click="resetParameters">Reset</button>
@@ -412,7 +412,6 @@ export default {
 				kp: this.kpParam,
 				ki: this.kiParam,
 				kd: this.kdParam,
-				dt: this.dtParam,
 			}));
 			this.updateStore();
 			} else{
@@ -461,7 +460,7 @@ export default {
 			this.kpParam = 1.0;
 			this.kiParam = 0.0;
 			this.kdParam = 0.0;
-			this.dtParam = 10.0;
+			this.dtParam = 20.0;
 			this.setParameters();
 		},
 		toggleInputType(on){
@@ -594,7 +593,8 @@ export default {
 					}
 					
 					//this.$store.dispatch('setCurrentTime', msgTime + delay);			//for output graph
-					store.state.current_time = msgTime + delay;
+					//store.state.current_time = msgTime + delay;
+					store.state.current_time = msgTime;
 					if(debug) {
 						console.log(delay,thisDelay,msgTime, enc_ang_vel)
 					}

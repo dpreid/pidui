@@ -44,34 +44,33 @@ export default {
 		},
 		
 	},
-	methods:{
-		
-	},
 	mounted(){
-		// let canvas = document.getElementById("video-canvas");
-		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video0';		//for robot arm
-		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video1';		//for variable governor
-		//let playerUrl = 'wss://video.practable.io:443/out/dpr/video2';		//for spinner
-		
-		//let player = new JSMpeg.Player(playerUrl, {canvas: canvas});
-
-		//new JSMpeg.Player(this.url, {canvas: canvas});
-
-			//this.connectPlayer();
-		},
-	watch:{
-		streamOK: function(is) {
-			if (is) {
-				this.stream = this.$store.getters.getStream("video");
+		var _this = this;
+		var reconnect = function () {
+			_this.accessVideo();
+		};
+		//make second and subsequent connections
+		document.addEventListener("streams:dropped", reconnect);
+	},
+	methods:{
+		accessVideo(){
+			this.stream = this.$store.getters.getStream("video");
 				var accessURL = this.stream.url;
 				var token = this.stream.token;
 				var store = this.$store;
+				store.dispatch("deleteVideoURL");		////THIS HAS BEEN ADDED
 				axios
 				.post(accessURL, {}, { headers: { Authorization: token } })
 				.then((response) => {
 					store.dispatch("setVideoURL", response.data.uri);
 				})
 				.catch((err) => console.log(err));
+		}
+	},
+	watch:{
+		streamOK: function(is) {
+			if (is) {
+				this.accessVideo();
 			} else{
 				console.log("no stream");
 			}

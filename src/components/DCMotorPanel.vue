@@ -2,26 +2,12 @@
 <div class='m-2 p-2 bg-white border rounded'>
    <div class="form-group row justify-content-center align-items-center pb-2">
         <label class="col-sm-2 col-form-label" for="voltage">Input voltage ({{voltage}}V)</label>
-        <div class="col-4"><input type="range" min="-6" max="6" step="0.5" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
-            <datalist id="tickmarks">
-                <option value="0"></option>
-                <option value="0.5"></option>
-                <option value="1.0"></option>
-                <option value="1.5"></option>
-                <option value="2.0"></option>
-                <option value="2.5"></option>
-                <option value="3.0"></option>
-                <option value="3.5"></option>
-                <option value="4.0"></option>
-                <option value="4.5"></option>
-                <option value="5.0"></option>
-                <option value="5.5"></option>
-                <option value="6.0"></option>
-            </datalist>
+        <div class="col-4"><input type="range" :min="-maxV" :max="maxV" step="0.5" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
+            
         <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rad/s)</label>
 
         <div class='col-sm-4' v-if='isAnalogueOutput'>
-            <analogue-output :outputValue="angVel" :minValue="0" :maxValue="200" :intervalValue="20" :minorIntervalValue="10"></analogue-output>
+            <analogue-output :outputValue="angVel" :minValue="0" :maxValue="300" :intervalValue="20" :minorIntervalValue="10"></analogue-output>
         </div>
         <div v-else class='col-sm-4'><input type='text' class='form-control' id="ang_velocity" :value='avgAngVel'></div>
 
@@ -41,6 +27,7 @@ export default {
   name: 'DCMotorPanel',
   props: {
       dataSocket: WebSocket,
+      maxV: Number,
   },
   data () {
     return {

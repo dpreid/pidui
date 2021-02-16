@@ -54,7 +54,7 @@ export default {
         tooltip_delay: 2000,
         max_position_step: Math.PI, 
         max_speed_step: 100,
-        max_voltage_step: 6,
+        max_voltage_step: 2.5,
     }
   },
   components: {

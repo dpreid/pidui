@@ -5,6 +5,10 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
    state: {
+        connectionDroppedAt: 0,
+        connectionIsDropped: false,
+        lastVideoCheck: 0,
+        lastVideoWrite: 0,
         streams: [],
         streamsObtained: false,
         videoURL: "",
@@ -17,6 +21,18 @@ const store = new Vuex.Store({
         expiryTime: '',
       },
       mutations:{
+          SET_CONNECTION_DROPPED_AT(state, when){
+            state.connectionDroppedAt = when;
+          },
+          SET_CONNECTION_IS_DROPPED(state, isDropped){
+            state.connectionIsDropped = isDropped;
+          },
+          SET_LAST_VIDEO_CHECK(state, when){
+            state.lastVideoCheck = when;
+          },
+          SET_LAST_VIDEO_WRITE(state, when){
+            state.lastVideoWrite = when;
+          },
         DELETE_STREAMS(state) {
             state.streams = {};
             state.streamsObtained = false;
@@ -55,6 +71,18 @@ const store = new Vuex.Store({
           }
       },
       actions:{
+          setConnectionDroppedAt(context, when){
+            context.commit("SET_CONNECTION_DROPPED_AT", when);
+          },
+          setConnectionIsDropped(context, isDropped){
+            context.commit("SET_CONNECTION_IS_DROPPED", isDropped);
+          },
+          setLastVideoCheck(context, when){
+            context.commit("SET_LAST_VIDEO_CHECK", when);
+          },
+          setLastVideoWrite(context, when){
+            context.commit("SET_LAST_VIDEO_WRITE", when);
+          },
            deleteStreams(context){
                context.commit("DELETE_STREAMS");
            },
@@ -134,6 +162,18 @@ const store = new Vuex.Store({
         },
         getExpiryTime(state){
             return state.expiryTime;
+        },
+        getConnectionDroppedAt(state){
+          return state.connectionDroppedAt;
+        },
+        getConnectionIsDropped(state){
+          return state.connectionIsDropped;
+        },
+        getLastVideoCheck(state){
+          return state.lastVideoCheck;
+        },
+        getLastVideoWrite(state){
+          return state.lastVideoWrite;
         }
         
         

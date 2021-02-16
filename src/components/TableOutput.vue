@@ -9,12 +9,18 @@
             <th scope="col">Time/s</th>
             <th v-if='getMode() == "positionPid"' scope="col">Angle/rad</th>
             <th v-else scope="col">Angular Velocity/rad/s</th>
+            <th scope='col'>P</th>
+            <th scope='col'>I</th>
+            <th scope='col'>D</th>
         </tr>
         <tr v-for="row in tableData" :id="row.id" :key="row.id" v-bind:class="[row.id == selected_row_id ? 'selected-row' : '']" @click="changeSelected(row.id)">
             <!-- <td>{{row.id}}</td> -->
             <td>{{row.t}}</td>
             <td v-if='getMode() == "positionPid"'>{{row.theta.toFixed(2)}}</td>
             <td v-else>{{row.omega_rad.toFixed(2)}}</td>
+            <td>{{row.p}}</td>
+            <td>{{row.i}}</td>
+            <td>{{row.d}}</td>
         </tr>
                             
     </table> 
@@ -34,25 +40,15 @@ export default {
   },
     data(){
         return{
-            //tableData: this.$store.getters.getData,     //will update table data whenever store data updates
             tableData: store.state.data,
             searchData:[],
             search_field:"",
             selected_row_id: "0",
         }
     },
-    computed:{
-        
-    },
-    
     methods: {
         getMode(){
             return store.state.currentMode;
-        },
-        getData(){
-            //this.tableData = this.$store.getters.getData;
-            //this.searchData = data;
-            this.tableData = store.state.data;
         },
         
         search(){
@@ -88,7 +84,7 @@ export default {
         
       },
       created(){
-          eventBus.$on('updatetable', this.getData);                  
+          //eventBus.$on('updatetable', this.getData);                  
             eventBus.$on('newselectedobject', this.changeSelected)
             eventBus.$on('clearalldata', this.getData);
       }

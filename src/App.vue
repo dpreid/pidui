@@ -55,6 +55,7 @@
 </template>
 
 <script>
+
 import GraphOutput from "./components/GraphOutput.vue";
 import TableOutput from "./components/TableOutput.vue";
 import Stopwatch from "./components/Stopwatch.vue";
@@ -92,7 +93,7 @@ export default {
   },
   data() {
    return {
-      remoteLabVersion: 'spinning_disk', //'robot_arm', //'variable_governor', //, //, //, //, //,
+      remoteLabVersion: 'robot_arm', //'spinning_disk', //'variable_governor', //, //, 
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,

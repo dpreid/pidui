@@ -6,12 +6,12 @@
         <button class="btn btn-default btn-xs" id="clearButton" @click="clearGraph">Reset</button>
         <button class="btn btn-default btn-xs" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
     </div>
-   <div class="form-group row justify-content-center p-2">
+   <!-- <div class="form-group row justify-content-center p-2">
         <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
         <div class='col-sm-4 mr-4'><input type='text' :class="[{'error': hasError}, 'form-control']" id="time_interval" v-model="time_interval"></div>
         <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="time_interval" :title='checkValueRange(time_interval)'></b-tooltip>
         <label class="col-sm-2 col-form-label" for="time_interval">seconds</label>
-    </div>
+    </div> -->
     
 </div>
 </template>
@@ -29,6 +29,7 @@ export default {
   data () {
     return {
         //store: this.$store,
+        data_store: store,
         isRecording: false,
         time_interval: 0.05,
         time_interval_min: 0.01,
@@ -58,7 +59,18 @@ export default {
         } else { 
           return true;
         }
+      },
+      newTime(){
+        return this.data_store.state.current_time;
       }
+  },
+  watch:{
+    newTime(){
+      if(this.isRecording){
+        this.plot();
+      }
+      
+    }
   },
   methods: {
       record(){
@@ -71,28 +83,33 @@ export default {
             store.state.start_time = store.state.current_time;
             this.data_points_count = 0;
             this.isRecording = true;
-            this.interval_id = setInterval(() => {
-                  this.plot()
-              }, parseFloat(this.time_interval)*1000);
+            // this.interval_id = setInterval(() => {
+            //       this.plot()
+            //   }, parseFloat(this.time_interval)*1000);
           } 
           
       },
       stopRecording(){
           this.isRecording = false;
           this.wrap_index = 0;
-          console.log("stop recording");
-          clearInterval(this.interval_id);
+          //clearInterval(this.interval_id);
       },
       plot(){
           this.data_points_count++;
           let angle = parseFloat(store.state.current_angle);
           let time = store.getTime();
           let ang_vel = parseFloat(store.state.current_ang_vel);
-          console.log("angle = " + angle);
           
+
           //in step and ramp mode, angle value should start from 0 no matter the initial position of encoder.   NEW
           if(store.state.inputMode == 'ramp' || store.state.inputMode == 'step'){
             angle = angle - this.starting_angle;
+          }
+
+          if(store.state.inputMode == 'step'){
+            if(angle < -Math.PI/2.0){
+              angle = angle + 2*Math.PI;
+            }
           }
 
 
@@ -112,6 +129,8 @@ export default {
             
           }
 
+          
+
           //==================================================
 
           //get values in different units
@@ -121,11 +140,11 @@ export default {
           let ang_vel_rad = 2*Math.PI*ang_vel/60.0;
 
           
-          let data_object = {id: store.getNumData(), t: parseFloat(time), theta: angle, omega: ang_vel, theta_deg:angle_deg, omega_rad: ang_vel_rad};
+          let data_object = {id: store.getNumData(), t: parseFloat(time), theta: angle, omega: ang_vel, theta_deg:angle_deg, omega_rad: ang_vel_rad, p: store.state.current_p_value, i: store.state.current_i_value, d: store.state.current_d_value};
           //this.$store.dispatch('addData', data_object);
           store.addData(data_object);
-          eventBus.$emit('updateGraph');
-          eventBus.$emit('updatetable');
+          //eventBus.$emit('updateGraph');
+          //eventBus.$emit('updatetable');
           this.hasPlotted = true;
           
 
@@ -160,6 +179,12 @@ export default {
                 csv += d.t.toString();
                 csv += ",";
                 csv += d.theta.toString();
+                csv += ",";
+                csv += d.p.toString();
+                csv += ",";
+                csv += d.i.toString();
+                csv += ",";
+                csv += d.d.toString();
                 csv += "\n";
             });
           } else if(store.state.graphDataParameter == 'omega'){
@@ -170,7 +195,13 @@ export default {
             data.forEach(function(d){
                 csv += d.t.toString();
                 csv += ",";
-                csv += d.omega.toString();
+                csv += d.omega_rad.toString();
+                csv += ",";
+                csv += d.p.toString();
+                csv += ",";
+                csv += d.i.toString();
+                csv += ",";
+                csv += d.d.toString();
                 csv += "\n";
             });
           } else{
@@ -182,7 +213,13 @@ export default {
                 csv += ",";
                 csv += d.theta.toString();
                 csv += ',';
-                csv += d.omega.toString();
+                csv += d.omega_rad.toString();
+                csv += ",";
+                csv += d.p.toString();
+                csv += ",";
+                csv += d.i.toString();
+                csv += ",";
+                csv += d.d.toString();
                 csv += "\n";
             });
           }
