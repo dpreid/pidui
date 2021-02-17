@@ -172,7 +172,7 @@ export default {
             filename = date.getDate().toString() + (date.getMonth() + 1).toString() + date.getFullYear().toString();
           if(store.state.graphDataParameter == 'theta'){
               filename += 'Position';
-              csv = 'Time/s,Angle/rad\n';
+              csv = 'Time/s,Angle/rad,p,i,d\n';
             //let data = this.$store.getters.getData;
             let data = store.state.data;
             data.forEach(function(d){
@@ -189,7 +189,7 @@ export default {
             });
           } else if(store.state.graphDataParameter == 'omega'){
               filename += 'AngularVelocity';
-              csv = 'Time/s,AngVel/rad/s\n';
+              csv = 'Time/s,AngVel/rad/s,p,i,d\n';
             //let data = this.$store.getters.getData;
             let data = store.state.data;
             data.forEach(function(d){
@@ -205,7 +205,7 @@ export default {
                 csv += "\n";
             });
           } else{
-              csv = 'Time/s,Angle/rad,AngVel/rad/s\n';
+              csv = 'Time/s,Angle/rad,AngVel/rad/s,p,i,d\n';
             //let data = this.$store.getters.getData;
             let data = store.state.data;
             data.forEach(function(d){

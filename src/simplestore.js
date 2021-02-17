@@ -14,6 +14,7 @@ export const store = {
         inputMode: '',
         graphDataParameter: 'omega',   //'theta'
         data: [],
+        unityDataObject: null,     //NEW FOR SIMULATION
         step:{
            step_time: 0,      //seconds
            step_start: 0,
@@ -32,6 +33,9 @@ export const store = {
          Kd:0,
          dt:3,
         },
+       },
+       addUnityData(data){
+         this.state.unityDataObject = data;
        },
        setGraphDataParameter(param){
          this.state.graphDataParameter = param;
@@ -153,6 +157,8 @@ export const store = {
         },
   
   }
+ let s = store;
+  window.dataStore = s;    //global variable accessible by window
       
   //data object structure
   // {

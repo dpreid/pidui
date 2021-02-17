@@ -13,10 +13,11 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-    
+
 
 
 new Vue({
   store: store,
   render: h => h(App),
 }).$mount('#app')
+

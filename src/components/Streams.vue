@@ -76,9 +76,6 @@ export default {
        var lc = _this.$store.getters.getLastVideoCheck;
       var lw = _this.$store.getters.getLastVideoWrite;
 
-      console.log("lc = " + lc);
-      console.log("lw = " + lw);
-
       var dropped = function () {
         
         _this.$store.dispatch("setConnectionIsDropped", true);

@@ -20,7 +20,12 @@
         <div class='row'>
           <!-- LEFT HAND COLUMN -->
           <div class='col-sm-6'> 
-            <streams />
+            <div v-show='isSimulationOn'>
+                <simulation />
+            </div>
+            <div v-show='!isSimulationOn'>
+                <streams />
+            </div>
            
             <div class='col-sm-12' v-if='isTableOn'><table-output :remoteLabVersion="remoteLabVersion"/></div>
           </div>
@@ -31,18 +36,13 @@
               <system-diagrams :remoteLabVersion="remoteLabVersion"/>
             </div>
             <div class='row'>
-                <div class='col-sm-5' v-if='isDataRecorderOn'><data-recorder :disableTooltips="disableTooltips"/></div> 
+                <div class='col-sm-5' v-if='isDataRecorderOn && !isSimulationOn'><data-recorder :disableTooltips="disableTooltips"/></div> 
                 <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
             </div>
             
             <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
             <div v-if='isGraphOn'><graph-output type="graph" id="graph0" /></div> 
           </div>
-        </div>
-
-
-        <div v-if='isSimulationOn' class='row'>
-          <simulation />
         </div>
 
 
