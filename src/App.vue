@@ -20,12 +20,7 @@
         <div class='row'>
           <!-- LEFT HAND COLUMN -->
           <div class='col-sm-6'> 
-            <div v-show='isSimulationOn'>
-                <simulation />
-            </div>
-            <div v-show='!isSimulationOn'>
-                <streams />
-            </div>
+              <streams />
            
             <div class='col-sm-12' v-if='isTableOn'><table-output :remoteLabVersion="remoteLabVersion"/></div>
           </div>
@@ -68,7 +63,7 @@ import SystemDiagrams from "./components/SystemDiagrams.vue";
 import { eventBus } from "./main.js";
 import { store } from "./simplestore.js";
 
-import Simulation from './components/Simulation.vue';
+//import Simulation from './components/Simulation.vue';
 import Streams from './components/Streams.vue';
 
 export default {
@@ -88,7 +83,7 @@ export default {
     GraphInput,
     //Login,
     SystemDiagrams,
-    Simulation,
+    //Simulation,
     Streams,
   },
   data() {
