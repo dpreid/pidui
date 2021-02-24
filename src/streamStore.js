@@ -19,6 +19,7 @@ const store = new Vuex.Store({
         isDataRecorderOn: false,
         disableTooltips: false,
         expiryTime: '',
+        camera: '',
       },
       mutations:{
           SET_CONNECTION_DROPPED_AT(state, when){
@@ -68,6 +69,9 @@ const store = new Vuex.Store({
           },
           SET_EXPIRY_TIME(state, time){
             state.expiryTime = time;
+          },
+          SET_CAMERA(state,cam){
+            state.camera = cam;
           }
       },
       actions:{
@@ -113,6 +117,9 @@ const store = new Vuex.Store({
             setExpiryTime(context, time){
                 context.commit("SET_EXPIRY_TIME", time);
             },
+            setCamera(context, cam){
+              context.commit("SET_CAMERA", cam);
+            }
            
         },
       getters:{
@@ -174,6 +181,9 @@ const store = new Vuex.Store({
         },
         getLastVideoWrite(state){
           return state.lastVideoWrite;
+        },
+        getCamera(state){
+          return state.camera;
         }
         
         

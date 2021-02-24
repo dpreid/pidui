@@ -62,6 +62,16 @@ export default {
       this.$store.dispatch("deleteStreams");
     }
 
+
+    //setting camera type
+    try{
+      let cam = query.get('v');
+      this.$store.dispatch('setCamera', cam);
+    } catch(e){
+      console.log("error accessing camera type");
+      this.$store.dispatch('setCamera', 0);   //default to logitech camera
+    }
+
     //reconnection code
     var _this = this;
     var cvb = function () {

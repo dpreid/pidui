@@ -47,22 +47,36 @@ export default {
             workspace_canvas_clickable: true,
             ruler_width: 800,
             ruler_height: 80,
+            ruler_video_width_ratio: 1.428,
+            ruler_ratio: 0.1,
+            video_canvas: null,
         }
     },
     created(){
         eventBus.$on('addprotractor', this.addProtractor);
         eventBus.$on('addruler', this.addRuler);
 
-        if(this.mode == 'robot_arm'){
-            this.ruler_width = 533;
-            this.ruler_height = 53.3;
-        } else if(this.mode == 'variable_governor'){
-            this.ruler_width = 640;
-            this.ruler_height = 64;
+        // if(this.mode == 'robot_arm'){
+        //     this.ruler_width = 533;
+        //     this.ruler_height = 53.3;
+        // } else if(this.mode == 'variable_governor'){
+        //     this.ruler_width = 640;
+        //     this.ruler_height = 64;
+        // } else{
+        //     this.ruler_width = 1100;
+        //     this.ruler_height = 110;
+        // }
+
+        let cam_type = this.$store.getters.getCamera;
+        if(cam_type == 0){  //logitech
+            this.ruler_video_width_ratio = 1.428;
         } else{
-            this.ruler_width = 1100;
-            this.ruler_height = 110;
+            this.ruler_video_width_ratio = 0.8556;     //need to get this ratio check this ratio on final boxes
         }
+
+
+
+        this.video_canvas = document.getElementById("video-canvas");
     },
     mounted(){
         
@@ -83,6 +97,9 @@ export default {
         //add a key press modifiers to the window
         window.addEventListener('keydown', this.updateMode, false);
         window.addEventListener('keyup', this.updateMode, false);
+        window.addEventListener('resize', () => {setTimeout(this.resizeRuler, 100)});
+
+        this.resizeRuler();
 
 
     },
@@ -95,6 +112,10 @@ export default {
                 ctx.save();
 
                 if(shapes[i].image != null){
+                    if(shapes[i].image == ruler){
+                        shapes[i].width = this.ruler_width;
+                        shapes[i].height = this.ruler_height;
+                    } 
                     ctx.translate(shapes[i].x,shapes[i].y);
                     ctx.translate(shapes[i].width/2, shapes[i].height/2)
                     ctx.rotate(shapes[i].angle);
@@ -265,6 +286,13 @@ export default {
         mouseUnclick(){
             this.isSelected = false;
             this.selected_index = null;
+        },
+        resizeRuler(){
+            //console.log('resizing');
+            this.ruler_width = this.video_canvas.clientWidth * this.ruler_video_width_ratio;
+            this.ruler_height = this.ruler_ratio*this.ruler_width;
+            this.draw();
+            
         },
         // outputData(){
         //         console.log("output data");
