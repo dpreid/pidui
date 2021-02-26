@@ -179,12 +179,15 @@ export default {
                 csv += d.t.toString();
                 csv += ",";
                 csv += d.theta.toString();
-                csv += ",";
+                if(d.p != null){
+                  csv += ",";
                 csv += d.p.toString();
                 csv += ",";
                 csv += d.i.toString();
                 csv += ",";
                 csv += d.d.toString();
+                }
+                
                 csv += "\n";
             });
           } else if(store.state.graphDataParameter == 'omega'){
@@ -196,12 +199,14 @@ export default {
                 csv += d.t.toString();
                 csv += ",";
                 csv += d.omega_rad.toString();
-                csv += ",";
+                if(d.p != null){
+                  csv += ",";
                 csv += d.p.toString();
                 csv += ",";
                 csv += d.i.toString();
                 csv += ",";
                 csv += d.d.toString();
+                }
                 csv += "\n";
             });
           } else{
@@ -214,12 +219,15 @@ export default {
                 csv += d.theta.toString();
                 csv += ',';
                 csv += d.omega_rad.toString();
-                csv += ",";
+                if(d.p != null){
+                  csv += ",";
                 csv += d.p.toString();
                 csv += ",";
                 csv += d.i.toString();
                 csv += ",";
                 csv += d.d.toString();
+                }
+                
                 csv += "\n";
             });
           }

@@ -46,6 +46,16 @@ export default {
             selected_row_id: "0",
         }
     },
+    computed:{
+        newData(){
+            return store.state.data;
+        }
+    },
+    watch:{
+        newData(){
+            this.tableData = store.state.data;
+        }
+    },
     methods: {
         getMode(){
             return store.state.currentMode;

@@ -19,7 +19,6 @@
             <b-dropdown-item @click='toggleComponent("stopwatch")'>Stopwatch</b-dropdown-item>
             <b-dropdown-item @click='toggleComponent("table")'>Table</b-dropdown-item>
             <b-dropdown-item @click='toggleComponent("systemdiagrams")'>System Diagrams</b-dropdown-item>
-            <b-dropdown-item @click='toggleComponent("simulation")'>Motor Model</b-dropdown-item>
             <b-dropdown-item @click='toggleComponent("graphinput")'>Graph Input</b-dropdown-item>
             
         </b-nav-item-dropdown>

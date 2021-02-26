@@ -104,35 +104,37 @@ export default {
              
      },
      sendCommand(){
-         console.log('sending command');
          if(this.mode == 'speedRaw'){
              //let signal = (this.step_size/this.motor_max_voltage) * 255;
-             let signal = this.step_size*100/6.0;        //signal is between 0-100% with 100% -> 6V.
+             //let signal = this.step_size*100/6.0;        //signal is between 0-100% with 100% -> 6V.
+             let signal = this.step_size;
              this.dataSocket.send(JSON.stringify({
-				set: "speed",
+				set: "volts",
 				to: signal
 			}));
          } else if(this.mode == 'positionPid'){
              let new_ang_rad = store.state.current_angle + this.step_size;
              //let current_enc_pos = store.state.current_enc_pos;
             //  let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
-            let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
+            //let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
 
-             if(new_enc_pos > 1000){
-                 new_enc_pos = -(1000 - (new_enc_pos - 1000));
-             } else if(new_enc_pos < -1000){
-                 new_enc_pos = 1000 - (Math.abs(new_enc_pos) - 1000);
-             }
+            //  if(new_enc_pos > 1000){
+            //      new_enc_pos = -(1000 - (new_enc_pos - 1000));
+            //  } else if(new_enc_pos < -1000){
+            //      new_enc_pos = 1000 - (Math.abs(new_enc_pos) - 1000);
+            //  }
+
              this.dataSocket.send(JSON.stringify({
 				set: "position",
-				to: new_enc_pos
+				to: new_ang_rad
 			}));
          } else if(this.mode == 'speedPid'){
-             let rpm = store.state.current_ang_vel + this.step_size*60/(2*Math.PI);         //current_ang_vel is in rpm, signal needs to be in rpm
+             //let rpm = store.state.current_ang_vel + this.step_size*60/(2*Math.PI);         //current_ang_vel is in rpm, signal needs to be in rpm
+             let rad_s = store.state.current_ang_vel*2*Math.PI/60.0 + this.step_size;           //needs to be in rad/s
              //let rpm = (signal / (2.0*Math.PI))*60;                             //convert to rpm
              this.dataSocket.send(JSON.stringify({
-				set: "speed",
-				to: rpm
+				set: "velocity",
+				to: rad_s
 			}));
          }
          

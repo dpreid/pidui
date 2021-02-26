@@ -288,7 +288,7 @@ export default {
             this.selected_index = null;
         },
         resizeRuler(){
-            //console.log('resizing');
+            console.log('resizing');
             this.ruler_width = this.video_canvas.clientWidth * this.ruler_video_width_ratio;
             this.ruler_height = this.ruler_ratio*this.ruler_width;
             this.draw();

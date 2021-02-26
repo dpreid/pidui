@@ -57,20 +57,16 @@ export default {
       let expire_time = query.get('exp');
       this.$store.dispatch('setExpiryTime', expire_time);
 
+      //setting camera type
+      let cam = query.get('v');
+      this.$store.dispatch('setCamera', cam);
+
     } catch (e) {
       console.log("error decoding streams");
       this.$store.dispatch("deleteStreams");
+      
     }
 
-
-    //setting camera type
-    try{
-      let cam = query.get('v');
-      this.$store.dispatch('setCamera', cam);
-    } catch(e){
-      console.log("error accessing camera type");
-      this.$store.dispatch('setCamera', 0);   //default to logitech camera
-    }
 
     //reconnection code
     var _this = this;

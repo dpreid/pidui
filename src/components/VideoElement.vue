@@ -1,9 +1,14 @@
 <template>
+
 <div v-if='hasSessionEnded'>
     <img src='https://assets.practable.io/images/common/thank-you-screen.svg' alt='session ended'>
 </div>
 <div v-else>
-    <canvas id="video-canvas"></canvas>
+  <div class='row'>
+      <div class='col-12'>
+        <canvas id="video-canvas"></canvas>
+      </div>
+    </div>
 </div>    
     
     
@@ -65,9 +70,8 @@ export default {
 </script>
 
 <style>
-    #videoWrapper {
-      margin: 20px auto;
-      width: 640px;
-      height: 480px;
+    #video-canvas {
+      width: 100%;
+      /* height: 100%; */
     }
 </style>

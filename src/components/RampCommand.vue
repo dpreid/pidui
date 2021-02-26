@@ -79,7 +79,7 @@ export default {
   methods: {
      async runCommand(){
          if(!this.isRampRunning){
-             eventBus.$emit('hideinputtype');
+             eventBus.$emit('showinputtype', false);
              this.time = 0;
             this.time_interval = parseFloat(this.time_interval);
             this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
@@ -117,43 +117,45 @@ export default {
 
          if(this.mode == 'speedRaw'){
              //let signal = ((ramp_value + parseFloat(this.ramp_start))/this.motor_max_voltage) * 255;
-             let signal = ((ramp_value + parseFloat(this.ramp_start))/this.max_value) * 100;    //percentage of max 6V
+            //  let signal = ((ramp_value + parseFloat(this.ramp_start))/this.max_value) * 100;    //percentage of max 6V
+            let signal = ramp_value + parseFloat(this.ramp_start);
              this.dataSocket.send(JSON.stringify({
-				set: "speed",
+				set: "volts",
 				to: signal
 			}));
          } else if(this.mode == 'speedPid'){
-             let rpm = ramp_value*60/(2*Math.PI) + this.ramp_start*60/(2*Math.PI);         
+            //  let rpm = ramp_value*60/(2*Math.PI) + this.ramp_start*60/(2*Math.PI);   
+            let rad_s = ramp_value + this.ramp_start;  
              this.dataSocket.send(JSON.stringify({
-				set: "speed",
-				to: rpm
+				set: "velocity",
+				to: rad_s
 			}));
          } else if(this.mode == 'positionPid'){
              let new_ang_rad = ramp_value + this.initial_angle;
-             let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
+             //let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
 
-             if(new_enc_pos > 1000){
-                 let half_rots = Math.floor(new_enc_pos / 1000);        //integer number of half rotations completed
-                 let remain = new_enc_pos % 1000;
-                 if(half_rots % 2 == 0){
-                     new_enc_pos = remain;
-                 } else{
-                     new_enc_pos = -(1000 - remain);
-                 }
-             } 
-             //only positive rotation possible so value should never be less than -1000, but included for completeness.
-             else if(new_enc_pos < -1000){
-                 let half_rots = Math.floor(Math.abs(new_enc_pos) / 1000);
-                 let remain = new_enc_pos % 1000;
-                 if(half_rots % 2 == 0){
-                     new_enc_pos = remain;
-                 } else{
-                     new_enc_pos = 1000 + remain;
-                 }
-             }
+            //  if(new_enc_pos > 1000){
+            //      let half_rots = Math.floor(new_enc_pos / 1000);        //integer number of half rotations completed
+            //      let remain = new_enc_pos % 1000;
+            //      if(half_rots % 2 == 0){
+            //          new_enc_pos = remain;
+            //      } else{
+            //          new_enc_pos = -(1000 - remain);
+            //      }
+            //  } 
+            //  //only positive rotation possible so value should never be less than -1000, but included for completeness.
+            //  else if(new_enc_pos < -1000){
+            //      let half_rots = Math.floor(Math.abs(new_enc_pos) / 1000);
+            //      let remain = new_enc_pos % 1000;
+            //      if(half_rots % 2 == 0){
+            //          new_enc_pos = remain;
+            //      } else{
+            //          new_enc_pos = 1000 + remain;
+            //      }
+            //  }
              this.dataSocket.send(JSON.stringify({
 				set: "position",
-				to: new_enc_pos
+				to: new_ang_rad
 			}));
          } else{
              this.stopCommand();
@@ -166,17 +168,27 @@ export default {
      },
      setStart(){
         //  let signal = 255*parseFloat(this.ramp_start)/this.motor_max_voltage;
-        let signal;
+        let signal = this.ramp_start;
+        // if(this.mode == 'speedRaw'){
+        //     // signal = 100*parseFloat(this.ramp_start)/this.max_value;
+        //     signal = this.ramp_start
+        // } else{
+        //     signal = this.ramp_start*60/(2*Math.PI);  
+        // }
+
         if(this.mode == 'speedRaw'){
-            signal = 100*parseFloat(this.ramp_start)/this.max_value;
-        } else{
-            signal = this.ramp_start*60/(2*Math.PI);  
-        }
-        
-         this.dataSocket.send(JSON.stringify({
-				set: "speed",
+            this.dataSocket.send(JSON.stringify({
+				set: "volts",
 				to: signal
             }));
+        } else {
+            this.dataSocket.send(JSON.stringify({
+				set: "velocity",
+				to: signal
+            }));
+        }
+        
+         
      },
      runRecord(){
          this.runCommand();

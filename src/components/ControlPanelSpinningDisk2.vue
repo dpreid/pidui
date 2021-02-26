@@ -47,19 +47,19 @@
 	<div v-if='inputMode == "free"'>
 
 		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
-			<div class="col-3 sliderlabel"> Angle ({{parseFloat(angleParam).toFixed(2)}}rad)</div>
-			<div class="col-7"><input type="range" min="-1.57" max="1.57" step="0.01" v-model="angleParam" class="slider" id="angleSlider"></div>
+			<div class="col-3 sliderlabel"> Angle ({{parseFloat(Math.PI * angleParam / 180).toFixed(2)}}rad)</div>
+			<div class="col-7"><input type="range" min="-180" max="180" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
 		</div>
 
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
-			<div class="col-3  sliderlabel"> Speed ({{parseFloat(speedParam).toFixed(2)}}rad/s)</div>
-			<div class="col-7"><input type="range" min="0" max="200" v-model="speedParam" class="slider" id="brakeSlider"></div>
+			<div class="col-3  sliderlabel"> Speed ({{(speedParam*2*Math.PI/60).toFixed(2)}}rad/s)</div>
+			<div class="col-7"><input type="range" min="0" max="1000" v-model="speedParam" class="slider" id="brakeSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
 		</div>
 
 		<div v-if='currentMode == "speedRaw"'>
-			<DCMotorPanel v-bind:dataSocket="getDataSocket" :maxV="12" />
+			<DCMotorPanel v-bind:dataSocket="getDataSocket" :maxV="2.5" />
 		</div>
 	
 	</div>
@@ -75,7 +75,7 @@
 </div>
 	
 
-	<div v-if='currentMode == "speedPid" || currentMode == "positionPid"' class="row justify-content-center m-1 align-items-center">
+	<div v-if='currentMode == "speedPid" || currentMode == "positionPid" || currentMode == "stopped"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
 			<input type='text' :class="checkInputValid('kp', kpParam)" id="kp" v-model="kpParam">
@@ -116,7 +116,7 @@ import StepCommand from './StepCommand.vue';
 import RampCommand from './RampCommand.vue';
 
 export default {
-	name: "ControlPanel",
+	name: "ControlPanelSpinningDisk2",
 	props:{
 		isDataRecorderOn: Boolean,
 		disableTooltips: Boolean,
@@ -131,8 +131,8 @@ export default {
     data(){
         return{
 			dataSocket: null,
-			speedParam: 0,			//in rad/sec FOR NEW FIRMWARE
-			angleParam: 0,			//in rads for new firmware
+			speedParam: 0,			//in rpm as this is what the arduino accepts.
+			angleParam: 0,			//in degrees
 			kpParam: 1,
 			kiParam: 0,
 			kdParam: 0,
@@ -245,7 +245,7 @@ export default {
 				this.currentMode = 'speedPid';
 				this.dataSocket.send(JSON.stringify({
 				set: "mode",
-				to: "velocity"
+				to: "speedPid"
 				}));
 			} else{
 				this.error = 'Must STOP before entering speedPid mode';
@@ -260,7 +260,7 @@ export default {
 				this.currentMode = 'speedRaw';
 				this.dataSocket.send(JSON.stringify({
 				set: "mode",
-				to: "motor"
+				to: "speedRaw"
 				}));
 			} else{
 				this.error = 'Must STOP before entering speedRaw mode';
@@ -273,18 +273,19 @@ export default {
 			this.clearMessages();
 			this.showInputType = false;
 			if(!isNaN(this.speedParam)){
-				if(this.currentMode == 'speedPid'){
-					let speed = parseFloat(this.speedParam);
+				if(this.currentMode == 'speedPid' || this.currentMode == 'speedRaw'){
 					this.dataSocket.send(JSON.stringify({
-						set: "velocity",
-						to: speed
-			}));
+					set: "speed",
+					to: this.speedParam
+					}));
 				} else{
-					this.error == 'Must be in speedPid mode';
+					this.error == 'Must be in speedPid or speedRaw mode';
 				}
 			} else {
 				this.error = 'Speed parameter is NaN';
 			}
+			
+			
 		},
 		positionPid(){
 			this.clearMessages();
@@ -294,7 +295,7 @@ export default {
 				this.currentMode = 'positionPid';
 				this.dataSocket.send(JSON.stringify({
 				set: "mode",
-				to: "position"
+				to: "positionPid"
 				}));
 			} else{
 				this.error = 'Must STOP before entering positionPid mode';
@@ -308,7 +309,7 @@ export default {
 			this.showInputType = false;
 			if(!isNaN(this.angleParam)){
 				if(this.currentMode == 'positionPid'){
-					let pos = this.angleParam			//anglParam in rad
+					let pos = 2000 * this.angleParam / 360.0			//2000 is PPR of encoder, angleParam is always in degrees.
 					this.dataSocket.send(JSON.stringify({
 					set: "position",
 					to: pos
@@ -324,15 +325,14 @@ export default {
 		},
 		setParameters(){
 			this.clearMessages();
-			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0){
+			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0 && this.dtParam >= 0){
 				this.dataSocket.send(JSON.stringify({
-				"set": "parameters",
-				"kp": parseFloat(this.kpParam),
-				"ki": parseFloat(this.kiParam),
-				"kd": parseFloat(this.kdParam),
+				set: "parameters",
+				kp: this.kpParam,
+				ki: this.kiParam,
+				kd: this.kdParam,
 			}));
 			this.updateStore();
-			console.log("parameters sent");
 			} else{
 				this.error = 'Cannot parse PID parameters';
 			}
@@ -406,8 +406,6 @@ export default {
 
 		//let dataOpen = false;
 		var delay = 0
-		let avg_delay = 0;
-		let delays = [];
 		var messageCount = 0
 		let a;
 		let b;
@@ -416,7 +414,7 @@ export default {
 
 		var initialSamplingCount = 1200 // 2 mins at 10Hz
 		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
-		//let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
+		let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
 
 		let responsiveSmoothie = true;
 		let thisTime;
@@ -449,41 +447,33 @@ export default {
 				var obj = JSON.parse(event.data);
 				
 				//NEW ADDITION OF PID VALUES
-				store.state.current_p_value = obj.ep;
-				store.state.current_i_value = obj.ei;
-				store.state.current_d_value = obj.ed;
+				store.state.current_p_value = obj.p_sig;
+				store.state.current_i_value = obj.i_sig;
+				store.state.current_d_value = obj.d_sig;
 				
-				if(obj.warn){
+				if(obj.awaiting_stop){
 					this.hasStopped();
-					console.log("awaiting stop");
+					//console.log("awaiting stop");
 					
 				} else{
-					var msgTime = obj.t;
+					var msgTime = obj.time
 					msgTime = parseFloat(msgTime);
 					var thisDelay = new Date().getTime() - msgTime
+					console.log("delay = " + delay);
+					console.log("thisDelay = " + thisDelay);
 				
-					var enc = obj.d;							//THIS IS NOW IN RADS
-					//store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
-					var enc_ang_vel = obj.v;			//RAD/S
-					let enc_ang_vel_rpm = enc_ang_vel*60.0/(2*Math.PI)
+					var enc = obj.enc
+					store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
+					var enc_ang_vel = obj.enc_ang_vel;			//encoder reports angular velocity in specific modes
+
 				
 
 
 					if (messageCount == 0){
 						delay = thisDelay
-						delays[0] = thisDelay;
-					} else {
-						delays[messageCount%10] = thisDelay;
 					}
 
-					avg_delay = 0;
-					for (let i=0; i<delays.length;i++){
-						avg_delay += delays[i];
-					}
 				
-					avg_delay /= delays.length;
-					//console.log(avg_delay);
-
 					a = 1 / delayWeightingFactor
 					b = 1 - a
 
@@ -506,23 +496,24 @@ export default {
 					if(!isNaN(enc)){
 						store.state.current_time = msgTime;				//time only stored if 
 						//encoder position in radians
-						//enc = enc * 2* Math.PI / encoderPPR;		//ALREADY IN RAD
+						enc = enc * 2* Math.PI / encoderPPR;
 
 						store.state.current_angle = enc;
 						//in degrees
-						// let enc_deg = enc*180.0/Math.PI;
-						// store.state.current_angle_deg = enc_deg;
+						let enc_deg = enc*180.0/Math.PI;
+						store.state.current_angle_deg = enc_deg;
 
-						series_theta.append(msgTime + avg_delay, enc);
+						series_theta.append(msgTime + thisDelay, enc);
 
 						
 					}
 					
 					if(!isNaN(enc_ang_vel)){		
 						store.state.current_time = msgTime;
-						store.state.current_ang_vel = enc_ang_vel_rpm;
-						
-						series_omega.append(msgTime + avg_delay, enc_ang_vel);	
+						store.state.current_ang_vel = enc_ang_vel;
+						//display in rad/s
+						let ang_vel_rad = enc_ang_vel*2*Math.PI/60;
+						series_omega.append(msgTime + thisDelay, ang_vel_rad);	
 						//series_omega.append(msgTime + delay, enc_ang_vel)	
 						
 					}

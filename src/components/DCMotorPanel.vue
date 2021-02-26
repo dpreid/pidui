@@ -61,9 +61,10 @@ export default {
   methods: {
       setVoltage(){
           //let signal = (this.voltage/this.motor_max_voltage) * 255;
-          let signal = this.voltage*100/6.0;        //signal is between 0-100% with 100% -> 6V.
+          //let signal = this.voltage*100/6.0;        //signal is between 0-100% with 100% -> 6V.
+          let signal = this.voltage;                //send raw voltage
           this.dataSocket.send(JSON.stringify({
-				set: "speed",
+				set: "volts",
 				to: signal
 			}));
       },
