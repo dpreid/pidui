@@ -63,7 +63,6 @@ import SystemDiagrams from "./components/SystemDiagrams.vue";
 import { eventBus } from "./main.js";
 import { store } from "./simplestore.js";
 
-//import Simulation from './components/Simulation.vue';
 import Streams from './components/Streams.vue';
 
 export default {
@@ -73,17 +72,10 @@ export default {
     TableOutput,
     Stopwatch,
     Workspace,
-    //WebcamStream,
-    //ControlPanelVariableGovernor,
-    //ControlPanelSpinningDisk,
-    //ControlPanelRobotArm,
     DataRecorder,
-    //AutoCommand,
     NavigationBar,
     GraphInput,
-    //Login,
     SystemDiagrams,
-    //Simulation,
     Streams,
   },
   data() {

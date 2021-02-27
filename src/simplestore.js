@@ -24,8 +24,8 @@ export const store = {
            ramp_start: 0,
          ramp_gradient: 1,
          ramp_start_time: 0,
-         max_voltage: 2.5,
-         max_rad_s: 110,
+         max_voltage: 12,
+         max_rad_s: 200,
         },
         pid_parameters:{
          Kp: 1,
@@ -33,6 +33,7 @@ export const store = {
          Kd:0,
          dt:3,
         },
+        isRecording: false,
        },
        addUnityData(data){
          this.state.unityDataObject = data;

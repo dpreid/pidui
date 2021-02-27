@@ -21,7 +21,7 @@
             <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_gradient" :title='checkValueRange(ramp_gradient)'></b-tooltip>
             
             <button id="run" v-if="mode != 'stopped'" @click="runCommand" :disabled="isRampRunning">Run</button>
-            <button v-if="isDataRecorderOn && mode != 'stopped'" id="runAndRecord" @click="runRecord" :disabled="isRampRunning">Run + Record</button>
+            <!-- <button v-if="isDataRecorderOn && mode != 'stopped'" id="runAndRecord" @click="runRecord" :disabled="isRampRunning">Run + Record</button> -->
 
         </div>
 
@@ -57,9 +57,9 @@ export default {
         max_value: 6,
         initial_angle: 0,
         tooltip_delay: 2000,
-        max_position_ramp: Math.PI,
-        max_speed_ramp: Math.PI,
-        max_voltage_ramp: 6,
+        max_position_ramp: 2*Math.PI,
+        max_speed_ramp: 50,
+        max_voltage_ramp: 12,
         isRampRunning: false,
     }
   },
@@ -77,8 +77,13 @@ export default {
       
   },
   methods: {
-     async runCommand(){
+     runCommand(){
          if(!this.isRampRunning){
+             if(this.isDataRecorderOn){
+                 store.state.isRecording = true;
+             }
+             
+
              eventBus.$emit('showinputtype', false);
              this.time = 0;
             this.time_interval = parseFloat(this.time_interval);
@@ -102,7 +107,9 @@ export default {
                 this.initial_angle = store.state.current_angle;         //new!!!!!!!!!!!!!!!!!!!!!!!!!
             
             this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
+            
             this.isRampRunning = true;
+            //this.sendCommand();
          }
          
         
@@ -111,27 +118,27 @@ export default {
      sendCommand(){
          this.time += this.time_interval;        //in seconds
          let ramp_value = this.ramp_gradient * this.time;
-         if(ramp_value >= this.max_value){
-             this.stopCommand();
-         }
+        //  if(ramp_value >= this.max_value){
+        //      this.stopCommand();
+        //  }
 
          if(this.mode == 'speedRaw'){
              //let signal = ((ramp_value + parseFloat(this.ramp_start))/this.motor_max_voltage) * 255;
             //  let signal = ((ramp_value + parseFloat(this.ramp_start))/this.max_value) * 100;    //percentage of max 6V
-            let signal = ramp_value + parseFloat(this.ramp_start);
+            let signal = parseFloat(ramp_value) + parseFloat(this.ramp_start);
              this.dataSocket.send(JSON.stringify({
 				set: "volts",
 				to: signal
 			}));
          } else if(this.mode == 'speedPid'){
             //  let rpm = ramp_value*60/(2*Math.PI) + this.ramp_start*60/(2*Math.PI);   
-            let rad_s = ramp_value + this.ramp_start;  
+            let rad_s = parseFloat(ramp_value) + parseFloat(this.ramp_start);  
              this.dataSocket.send(JSON.stringify({
 				set: "velocity",
 				to: rad_s
 			}));
          } else if(this.mode == 'positionPid'){
-             let new_ang_rad = ramp_value + this.initial_angle;
+             let new_ang_rad = parseFloat(ramp_value) + parseFloat(this.initial_angle);
              //let new_enc_pos = this.encoder_max*new_ang_rad/Math.PI;
 
             //  if(new_enc_pos > 1000){
@@ -165,10 +172,11 @@ export default {
      stopCommand(){
          clearInterval(this.interval_id);
          this.isRampRunning = false;
+         store.state.isRecording = false;
      },
      setStart(){
         //  let signal = 255*parseFloat(this.ramp_start)/this.motor_max_voltage;
-        let signal = this.ramp_start;
+        let signal = parseFloat(this.ramp_start);
         // if(this.mode == 'speedRaw'){
         //     // signal = 100*parseFloat(this.ramp_start)/this.max_value;
         //     signal = this.ramp_start
@@ -190,10 +198,10 @@ export default {
         
          
      },
-     runRecord(){
-         this.runCommand();
-         eventBus.$emit('runrecord');
-     },
+    //  runRecord(){
+    //      this.runCommand();
+    //      eventBus.$emit('runrecord');
+    //  },
      checkValueRange(value){
          if(isNaN(value) || value < 0){
              return 'Invalid ramp';

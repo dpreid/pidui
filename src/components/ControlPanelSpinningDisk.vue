@@ -34,7 +34,7 @@
 					<select name="inputSelect" id="inputSelect" v-model="inputMode" @change='updateStore'>
 						<option value="free">Free</option>
 						<option value="step">Step</option>
-						<option v-if='remoteLabVersion != "robot_arm" && currentMode != "speedRaw"' value="ramp">Ramp</option>
+						<option v-if='remoteLabVersion != "robot_arm"' value="ramp">Ramp</option>
 					</select> 
 				</div>
 			</div>
@@ -78,17 +78,17 @@
 	<div v-if='currentMode == "speedPid" || currentMode == "positionPid"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
 			<label for="kp">Kp:</label>
-			<input type='text' :class="checkInputValid('kp', kpParam)" id="kp" v-model="kpParam">
+			<input type='text' :class="checkInputValid('kp', kpParam)" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='getTooltipTitle("kp", kpParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="ki">Ki:</label>
-			<input type='text' :class="checkInputValid('ki', kiParam)" id="ki" v-model="kiParam">
+			<input type='text' :class="checkInputValid('ki', kiParam)" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='getTooltipTitle("ki", kiParam)'></b-tooltip>
         </div>
 		<div class='form-group col-2'>
 			<label for="kd">Kd:</label>
-			<input type='text' :class="checkInputValid('kd', kdParam)" id="kd" v-model="kdParam">
+			<input type='text' :class="checkInputValid('kd', kdParam)" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='getTooltipTitle("kd", kdParam)'></b-tooltip>
         </div>
 		<!-- <div class='form-group col-2'>
@@ -97,7 +97,7 @@
 			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="dt" :title='getTooltipTitle("dt", dtParam)'></b-tooltip>
         </div> -->
 
-		<button id="set" class="btn btn-default btn-sm mr-2" @click="setParameters">Set</button>
+		<!-- <button id="set" class="btn btn-default btn-sm mr-2" @click="setParameters">Set</button> -->
 		<button id="reset" class="btn btn-default btn-sm" @click="resetParameters">Reset</button>
 	</div>
 
@@ -140,7 +140,7 @@ export default {
 			isStopped: true,
 			changingMode: false,
 			currentMode: "stopped",		//"speedPid", "speedRaw"
-			inputMode: 'free',		//'step', 'ramp'
+			inputMode: 'step',		//'step', 'ramp'
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
 			canvas_omega: null,
@@ -154,7 +154,7 @@ export default {
 			showInputType: true,
 			max_parameter_values:{		//default values, but setMaxParameters function changes these depending on mode.
 				kp: 10,
-				ki: 20,
+				ki: 10,
 				kd: 5,
 				dt: 20,
 			},
@@ -323,6 +323,7 @@ export default {
 			
 		},
 		setParameters(){
+			console.log('setting');
 			this.clearMessages();
 			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0){
 				this.dataSocket.send(JSON.stringify({
@@ -422,14 +423,15 @@ export default {
 		let thisTime;
 		
 		//smoothie chart for displaying angular velocity data
-		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:200,minValue:-200,labels:{fillStyle:'#0024ff',precision:2}});
+		//maxValue:200,minValue:-200 removed
+		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_omega = document.getElementById("smoothie-chart_omega");
 		let series_omega = new TimeSeries();
 		chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#0024ff'});
 		chart_omega.streamTo(this.canvas_omega, 0);
 
 		//smoothie chart for displaying angle data
-		var chart_theta = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",maxValue:3.14,minValue:-3.14,labels:{fillStyle:'#0024ff',precision:2}});
+		var chart_theta = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_theta = document.getElementById("smoothie-chart_theta");
 		let series_theta = new TimeSeries();
 		chart_theta.addTimeSeries(series_theta, {lineWidth:2,strokeStyle:'#0024ff'});
@@ -561,13 +563,13 @@ export default {
 		setMaxParameters(mode){
 			if(mode == 'positionPid'){
 				this.max_parameter_values.kp = 10;
-				this.max_parameter_values.ki = 20;
+				this.max_parameter_values.ki = 10;
 				this.max_parameter_values.kd = 5;
 				this.max_parameter_values.dt = 20;
 			} else if(mode == 'speedPid'){
-				this.max_parameter_values.kp = 2;			//NEED TO TEST THESE
+				this.max_parameter_values.kp = 10;			//NEED TO TEST THESE
 				this.max_parameter_values.ki = 10;
-				this.max_parameter_values.kd = 1;
+				this.max_parameter_values.kd = 5;
 				this.max_parameter_values.dt = 20;
 			}
 		},

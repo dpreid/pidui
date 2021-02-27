@@ -46,11 +46,10 @@ export default {
     
   },
   created(){
-		eventBus.$on('runrecord', this.record);
+		//eventBus.$on('runrecord', this.record);
 	},
   computed:{
       hasData(){
-          //return this.$store.getters.getNumData !== 0;
             return store.getNumData !== 0;
       },
       hasError(){
@@ -62,20 +61,25 @@ export default {
       },
       newTime(){
         return this.data_store.state.current_time;
+      },
+      startRecord(){
+        return this.data_store.state.isRecording;
       }
   },
   watch:{
     newTime(){
       if(this.isRecording){
         this.plot();
-      }
-      
+      } 
+    },
+    startRecord(){
+      if(this.data_store.state.isRecording){
+        this.record();
+      } 
     }
   },
   methods: {
       record(){
-          //this.$store.dispatch('setStartTime', new Date().getTime());
-          //store.state.start_time = new Date().getTime();
           if(!this.hasError){
             this.wrap_index = 0;
             this.starting_angle = store.state.current_angle;    //in rad    NEW.
@@ -83,16 +87,13 @@ export default {
             store.state.start_time = store.state.current_time;
             this.data_points_count = 0;
             this.isRecording = true;
-            // this.interval_id = setInterval(() => {
-            //       this.plot()
-            //   }, parseFloat(this.time_interval)*1000);
           } 
           
       },
       stopRecording(){
           this.isRecording = false;
+          store.state.isRecording = false;
           this.wrap_index = 0;
-          //clearInterval(this.interval_id);
       },
       plot(){
           this.data_points_count++;
@@ -102,32 +103,32 @@ export default {
           
 
           //in step and ramp mode, angle value should start from 0 no matter the initial position of encoder.   NEW
-          if(store.state.inputMode == 'ramp' || store.state.inputMode == 'step'){
-            angle = angle - this.starting_angle;
-          }
+          // if(store.state.inputMode == 'ramp' || store.state.inputMode == 'step'){
+          //   angle = angle - this.starting_angle;
+          // }
 
-          if(store.state.inputMode == 'step'){
-            if(angle < -Math.PI/2.0){
-              angle = angle + 2*Math.PI;
-            }
-          }
+          // if(store.state.inputMode == 'step'){
+          //   if(angle < -Math.PI/2.0){
+          //     angle = angle + 2*Math.PI;
+          //   }
+          // }
 
 
           //=================================ramp mode needs to unwrap the angle=========
-          if(store.state.inputMode == 'ramp'){
-            // if(angle < 0){
-            //   angle = angle + 2*Math.PI;
-            // }
+          // if(store.state.inputMode == 'ramp'){
+          //   // if(angle < 0){
+          //   //   angle = angle + 2*Math.PI;
+          //   // }
 
-            if(Math.abs(angle - this.previous_angle) > (3/2)*Math.PI){
-              this.wrap_index++;
-            }
+          //   if(Math.abs(angle - this.previous_angle) > (3/2)*Math.PI){
+          //     this.wrap_index++;
+          //   }
             
-            this.previous_angle = angle;
+          //   this.previous_angle = angle;
 
-            angle = this.wrap_index*2*Math.PI + angle;
+          //   angle = this.wrap_index*2*Math.PI + angle;
             
-          }
+          // }
 
           
 
@@ -170,46 +171,46 @@ export default {
           let filename = '';
             let date = new Date();
             filename = date.getDate().toString() + (date.getMonth() + 1).toString() + date.getFullYear().toString();
-          if(store.state.graphDataParameter == 'theta'){
-              filename += 'Position';
-              csv = 'Time/s,Angle/rad,p,i,d\n';
-            //let data = this.$store.getters.getData;
-            let data = store.state.data;
-            data.forEach(function(d){
-                csv += d.t.toString();
-                csv += ",";
-                csv += d.theta.toString();
-                if(d.p != null){
-                  csv += ",";
-                csv += d.p.toString();
-                csv += ",";
-                csv += d.i.toString();
-                csv += ",";
-                csv += d.d.toString();
-                }
+          // if(store.state.graphDataParameter == 'theta'){
+          //     filename += 'Position';
+          //     csv = 'Time/s,Angle/rad,p,i,d\n';
+          //   //let data = this.$store.getters.getData;
+          //   let data = store.state.data;
+          //   data.forEach(function(d){
+          //       csv += d.t.toString();
+          //       csv += ",";
+          //       csv += d.theta.toString();
+          //       if(d.p != null){
+          //         csv += ",";
+          //       csv += d.p.toString();
+          //       csv += ",";
+          //       csv += d.i.toString();
+          //       csv += ",";
+          //       csv += d.d.toString();
+          //       }
                 
-                csv += "\n";
-            });
-          } else if(store.state.graphDataParameter == 'omega'){
-              filename += 'AngularVelocity';
-              csv = 'Time/s,AngVel/rad/s,p,i,d\n';
-            //let data = this.$store.getters.getData;
-            let data = store.state.data;
-            data.forEach(function(d){
-                csv += d.t.toString();
-                csv += ",";
-                csv += d.omega_rad.toString();
-                if(d.p != null){
-                  csv += ",";
-                csv += d.p.toString();
-                csv += ",";
-                csv += d.i.toString();
-                csv += ",";
-                csv += d.d.toString();
-                }
-                csv += "\n";
-            });
-          } else{
+          //       csv += "\n";
+          //   });
+          // } else if(store.state.graphDataParameter == 'omega'){
+          //     filename += 'AngularVelocity';
+          //     csv = 'Time/s,AngVel/rad/s,p,i,d\n';
+          //   //let data = this.$store.getters.getData;
+          //   let data = store.state.data;
+          //   data.forEach(function(d){
+          //       csv += d.t.toString();
+          //       csv += ",";
+          //       csv += d.omega_rad.toString();
+          //       if(d.p != null){
+          //         csv += ",";
+          //       csv += d.p.toString();
+          //       csv += ",";
+          //       csv += d.i.toString();
+          //       csv += ",";
+          //       csv += d.d.toString();
+          //       }
+          //       csv += "\n";
+          //   });
+          // } else{
               csv = 'Time/s,Angle/rad,AngVel/rad/s,p,i,d\n';
             //let data = this.$store.getters.getData;
             let data = store.state.data;
@@ -230,7 +231,7 @@ export default {
                 
                 csv += "\n";
             });
-          }
+          //}
             filename += '.csv';
           //console.log(csv);
           let hiddenElement = document.createElement('a');
