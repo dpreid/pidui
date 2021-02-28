@@ -5,17 +5,17 @@
         </div>
         <div class="row justify-content-center">    
 
-            <label v-if='mode == "speedRaw"' class='mr-2' for="step_raw">Step size (0 - {{max_voltage_step}}V)</label>
-            <label v-else-if='mode == "positionPid"' class='mr-2' for="step_speed">Step size (0 - {{max_position_step.toFixed(2)}} rad)</label>
-            <label v-else-if='mode == "speedPid"' class='mr-2' for="step_position">Step size (0 - {{max_speed_step}} rad/s)</label>
+            <label v-if='mode == "speedRaw"' class='m-2' for="step_raw">Step size (0 - {{max_voltage_step}}V)</label>
+            <label v-else-if='mode == "positionPid"' class='m-2' for="step_speed">Step size (0 - {{max_position_step.toFixed(2)}} rad)</label>
+            <label v-else-if='mode == "speedPid"' class='m-2' for="step_position">Step size (0 - {{max_speed_step}} rad/s)</label>
 
             <!-- NO NEED FOR ALL 3 OF THESE -->
             <input v-if='mode == "speedRaw"' :class='getInputClass(step_size)' id="step_raw" v-model="step_size" max='max_voltage_step' min='-max_voltage_step' @change='updateStore'>
             <input v-else-if='mode == "speedPid"' :class='getInputClass(step_size)' id="step_speed" v-model="step_size" max='max_speed_step' min='-max_speed_step' @change='updateStore'>
             <input v-else-if='mode == "positionPid"' :class='getInputClass(step_size)' id="step_position" v-model="step_size" max='max_position_step' min='-max_position_step' @change='updateStore'>
-            <b-tooltip v-if='mode == "speedRaw"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_raw" :title='checkValueRange(step_size)'></b-tooltip>
+            <!-- <b-tooltip v-if='mode == "speedRaw"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_raw" :title='checkValueRange(step_size)'></b-tooltip>
             <b-tooltip v-else-if='mode == "speedPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_speed" :title='checkValueRange(step_size)'></b-tooltip>
-            <b-tooltip v-else-if='mode == "positionPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_position" :title='checkValueRange(step_size)'></b-tooltip>
+            <b-tooltip v-else-if='mode == "positionPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="step_position" :title='checkValueRange(step_size)'></b-tooltip> -->
 <!-- 
             <label class='mr-2' for="time_interval">After</label>
             <input class='mr-2' id="time_interval" v-model="time_to_step" size="3" @change='updateStore'>
@@ -81,14 +81,9 @@ export default {
          eventBus.$emit('showinputtype', false);
          //this.step_size = Math.abs(this.step_size);     //only positive steps
          //set store state for access by graph input component
-        //  store.state.step.step_time = this.time_to_step;
-        //  if(this.mode == "pid_position"){
-        //      //store.state.step.step_start = store.state.current_angle * 180 / Math.PI;
-        //     store.state.step.step_start = 0;
-        //  } else{
-        //      store.state.step.step_start = 0;
-        //  }
-        //  store.state.step.step_size = this.step_size;
+         store.state.step.step_time = this.time_to_step;
+         store.state.step.step_start = 0;
+         store.state.step.step_size = this.step_size;
          
          if(this.mode == 'positionPid'){
              eventBus.$emit('addstepfunction', 'angle');
@@ -249,15 +244,17 @@ input{
     width: 10%;
 }
 .error{
-    border:thick solid red
+    /* border:thick solid red */
+    border: auto;
 }
 
 .error:focus{
-    border:thick solid red
+    /* border:thick solid red */
+    border: auto;
 }
 
-#run       {background-color: #4CAF50FF;}
-#run:hover {background-color: #3e8e41} 
+#run       {background-color:  rgb(74, 223, 37);}
+#run:hover {background-color: #0b7e0f} 
 
 
 </style>

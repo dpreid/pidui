@@ -15,6 +15,12 @@ export const store = {
         graphDataParameter: 'omega',   //'theta'
         data: [],
         unityDataObject: null,     //NEW FOR SIMULATION
+        current_p_value: 0,
+        current_i_value: 0,
+        current_d_value: 0,
+        current_error: 0,
+        current_drive: 0,
+        current_command_value: 0,
         step:{
            step_time: 0,      //seconds
            step_start: 0,

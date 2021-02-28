@@ -40,8 +40,8 @@
                 <label class='m-2' for="func_b">x + </label>
                 <input id="func_b" v-model="func_b" size="3"> 
                 <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(linear)">Plot</button>
-                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(linear)">Plot</button>
+                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
                 <div v-else-if="currentFunction === 'quadratic'">
@@ -50,8 +50,8 @@
                 <label class='m-2' for="func_b">x<sup>2</sup> + </label>
                 <input id="func_b" v-model="func_b" size="3"> 
                 <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(quadratic)">Plot</button>
-                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(quadratic)">Plot</button>
+                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
             <div v-else-if="currentFunction === 'trigonometric'">
@@ -63,8 +63,8 @@
                 <input id="func_c" v-model="func_c" size="2"> 
                 <label class='m-2'> ) </label>
                 <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(trigonometric)">Plot</button>
-                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(trigonometric)">Plot</button>
+                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
             <div v-else-if="currentFunction === 'exponential'">
@@ -74,8 +74,8 @@
                 <input id="func_b" v-model="func_b" size="3"> 
                 <label class='m-2' for="func_b"> t)</label>
                 <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(exponential)">Plot</button>
-                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(exponential)">Plot</button>
+                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
             <div v-else-if="currentFunction === 'step'">
@@ -89,8 +89,8 @@
                 <label class='m-2' for='func_c'> t0 = </label>
                 <input id="func_c" v-model="func_c" size="3"> 
                 <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
-                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
+                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
                 
             </div>
@@ -105,8 +105,8 @@
                 <label class='m-2' for='func_d'> w0 = </label>
                 <input id="func_d" v-model="func_d" size="3"> 
                 <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs" id="plotFunctionButton" @click="plotFunc(ramp)">Plot</button>
-                    <button class="btn btn-default btn-xs" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(ramp)">Plot</button>
+                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
         </div>

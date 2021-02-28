@@ -1,5 +1,5 @@
 <template>
-<div class='container-sm'>
+<div class='container-sm m-2 bg-white border rounded'>
 <div class='row' id="video">
 	<div class='col-12'>
 		<!-- <canvas id="video-canvas"></canvas> -->

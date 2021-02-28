@@ -28,12 +28,12 @@
           <b-dropdown-item @click='addTool("protractor")'>Protractor</b-dropdown-item>
         </b-nav-item-dropdown>
 
-        <b-nav-item-dropdown v-if='taskOptionsAvailable' text="Tasks" right>
+        <!-- <b-nav-item-dropdown v-if='taskOptionsAvailable' text="Tasks" right>
           <b-dropdown-item v-if='remoteLabVersion == "variable_governor" || remoteLabVersion == "spinning_disk"' @click='setExercise1v1'>Exercise 1.1</b-dropdown-item>
           <b-dropdown-item v-if='remoteLabVersion == "variable_governor"' @click='setExercise1v2'>Exercise 1.2</b-dropdown-item>
           <b-dropdown-item v-if='remoteLabVersion == "robot_arm"' @click='setExercise1v3'>Exercise 1.3</b-dropdown-item>
           <b-dropdown-item v-if='remoteLabVersion == "robot_arm"' @click='setExercise2v1'>Exercise 2.1</b-dropdown-item>
-        </b-nav-item-dropdown>
+        </b-nav-item-dropdown> -->
 
         <b-nav-item @click='clearWorkspace'>Clear Workspace</b-nav-item>
 

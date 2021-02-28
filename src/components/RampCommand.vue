@@ -7,18 +7,19 @@
         <div class="row justify-content-center">  
             <label class='m-2' v-if='mode == "speedRaw"' for="ramp_start">Start V</label>
             <label class='m-2' v-else-if='mode == "speedPid"' for="ramp_start">Start rad/s</label>
-            <input v-if='mode == "speedRaw" || mode == "speedPid"' id="ramp_start" v-model="ramp_start" size="3">
-            <b-tooltip v-if='mode == "speedRaw" || mode == "speedPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_start"> Set a starting value before ramp function begins.</b-tooltip>
+            <input v-if='mode == "speedRaw" || mode == "speedPid"' id="ramp_start" class='mr-2' v-model="ramp_start" size="3">
+            <!-- <b-tooltip v-if='mode == "speedRaw" || mode == "speedPid"' triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_start"> Set a starting value before ramp function begins.</b-tooltip> -->
             <button v-show="mode == 'speedRaw' || mode == 'speedPid'" id="set" @click="setStart">Set</button>
         </div>
-        <div class="row justify-content-center">    
 
-            <label v-if='mode == "speedRaw"' for="ramp_gradient">Ramp gradient (V/s)</label>
-            <label v-else-if='mode == "positionPid"' for="ramp_gradient">Ramp gradient (rad/s)</label>
-            <label v-else-if='mode == "speedPid"' for="ramp_gradient">Ramp gradient ((rad/s)/s)</label>
+        <div class="row justify-content-center m-2">    
+
+            <label v-if='mode == "speedRaw"' class='m-2' for="ramp_gradient">Ramp gradient (V/s)</label>
+            <label v-else-if='mode == "positionPid"' class='m-2' for="ramp_gradient">Ramp gradient (rad/s)</label>
+            <label v-else-if='mode == "speedPid"' class='m-2' for="ramp_gradient">Ramp gradient ((rad/s)/s)</label>
 
             <input :class='getInputClass(ramp_gradient)' id="ramp_gradient" v-model="ramp_gradient" size="3">
-            <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_gradient" :title='checkValueRange(ramp_gradient)'></b-tooltip>
+            <!-- <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ramp_gradient" :title='checkValueRange(ramp_gradient)'></b-tooltip> -->
             
             <button id="run" v-if="mode != 'stopped'" @click="runCommand" :disabled="isRampRunning">Run</button>
             <!-- <button v-if="isDataRecorderOn && mode != 'stopped'" id="runAndRecord" @click="runRecord" :disabled="isRampRunning">Run + Record</button> -->
@@ -274,16 +275,20 @@ input{
 }
 
 .error{
-    border:thick solid red
+    /* border:thick solid red */
+    border: auto;
 }
 
 .error:focus{
-    border:thick solid red
+    /* border:thick solid red */
+    border: auto;
 }
 
+#set       {background-color: rgb(74, 223, 37);}
+#set:hover {background-color: #0b7e0f} 
 
-#run       {background-color: #4CAF50FF;}
-#run:hover {background-color: #3e8e41} 
+#run       {background-color:  rgb(74, 223, 37);}
+#run:hover {background-color: #0b7e0f} 
 
 
 </style>

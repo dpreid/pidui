@@ -1,10 +1,10 @@
 <template>
 <div class='m-2 p-2 bg-white border rounded'>
-    <div class="row m-2 justify-content-center align-items-center">
-        <button class="btn btn-default btn-xs" v-if="!isRecording" id="recordButton" @click="record">Record</button>
-        <button class="btn btn-default btn-xs" v-if="isRecording" id="stopButton" @click="stopRecording">Stop</button>
-        <button class="btn btn-default btn-xs" id="clearButton" @click="clearGraph">Reset</button>
-        <button class="btn btn-default btn-xs" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
+    <div class="row justify-content-center align-items-center">
+        <button class="btn btn-default btn-xs m-1" v-if="!isRecording" id="recordButton" @click="record">Record</button>
+        <button class="btn btn-default btn-xs m-1" v-if="isRecording" id="stopButton" @click="stopRecording">Stop</button>
+        <button class="btn btn-default btn-xs m-1" id="clearButton" @click="clearGraph">Reset</button>
+        <button class="btn btn-default btn-xs m-1" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
     </div>
    <!-- <div class="form-group row justify-content-center p-2">
         <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
@@ -141,7 +141,8 @@ export default {
           let ang_vel_rad = 2*Math.PI*ang_vel/60.0;
 
           
-          let data_object = {id: store.getNumData(), t: parseFloat(time), theta: angle, omega: ang_vel, theta_deg:angle_deg, omega_rad: ang_vel_rad, p: store.state.current_p_value, i: store.state.current_i_value, d: store.state.current_d_value};
+          //let data_object = {id: store.getNumData(), t: parseFloat(time), theta: angle, omega: ang_vel, theta_deg:angle_deg, omega_rad: ang_vel_rad, p: store.state.current_p_value, i: store.state.current_i_value, d: store.state.current_d_value};
+          let data_object = {id: store.getNumData(), t: parseFloat(time), theta: angle, omega: ang_vel, theta_deg:angle_deg, omega_rad: ang_vel_rad, command: store.state.current_command_value, drive: store.state.current_drive, error: store.state.current_error};
           //this.$store.dispatch('addData', data_object);
           store.addData(data_object);
           //eventBus.$emit('updateGraph');
@@ -211,7 +212,7 @@ export default {
           //       csv += "\n";
           //   });
           // } else{
-              csv = 'Time/s,Angle/rad,AngVel/rad/s,p,i,d\n';
+              csv = 'Time/s,Angle/rad,AngVel/rad/s,Command,Drive,Error\n';
             //let data = this.$store.getters.getData;
             let data = store.state.data;
             data.forEach(function(d){
@@ -220,14 +221,31 @@ export default {
                 csv += d.theta.toString();
                 csv += ',';
                 csv += d.omega_rad.toString();
-                if(d.p != null){
+                if(d.command != null){
                   csv += ",";
-                csv += d.p.toString();
-                csv += ",";
-                csv += d.i.toString();
-                csv += ",";
-                csv += d.d.toString();
+                  csv += d.command.toString();
+                } else {
+                  csv += ",";
+                  csv += "";
                 }
+                if(d.drive != null){
+                  csv += ",";
+                  csv += d.drive.toString();
+                } else{
+                  csv += ",";
+                  csv += "";
+                }
+
+                if(d.error != null){
+                  csv += ",";
+                  csv += d.error.toString();
+                } else{
+                  csv += ",";
+                  csv += "";
+                }
+                
+                
+                
                 
                 csv += "\n";
             });

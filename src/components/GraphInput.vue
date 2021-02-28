@@ -32,6 +32,8 @@ export default {
             YAxisMin: 0,
             XAxisMax: 0,
             XAxisMin: 0,
+            previous_update_time: 0,
+            update_interval: 2000, //millseconds
 
         }
     },
@@ -187,8 +189,8 @@ export default {
         step(step_type){
             this.deleteFunctionDataset();       //remove previous plot if any
             this.chart.options.scales.yAxes[0].scaleLabel.labelString = step_type;
-            let min = 0;
-            let max = 2*store.state.step.step_time;
+            let min = -5;
+            let max = 5;
             let t_delta = max-min;
             let num_plots = t_delta/this.funcTimeStep;
             let new_data = [];
@@ -254,17 +256,22 @@ export default {
 
       },
       computed:{
-            
+          
+      },
+      watch:{
+          
       },
       mounted() {
         this.createChart();
         eventBus.$on('addstepfunction', this.step);
         eventBus.$on('addrampfunction', this.ramp);
+        eventBus.$on('clearalldata', this.deleteFunctionDataset )
+        
       },
       created(){
         //eventBus.$on('updateGraph', this.getData );
         //eventBus.$on('newgraphadded', this.chartAdded);
-        //eventBus.$on('clearalldata', this.clearData )
+        
         
         
       }

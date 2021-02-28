@@ -9,18 +9,18 @@
             <th scope="col">Time/s</th>
             <th v-if='getMode() == "positionPid"' scope="col">Angle/rad</th>
             <th v-else scope="col">Angular Velocity/rad/s</th>
-            <th scope='col'>P</th>
-            <th scope='col'>I</th>
-            <th scope='col'>D</th>
+            <th scope='col'>Command</th>
+            <th scope='col'>Drive</th>
+            <th scope='col'>Error</th>
         </tr>
         <tr v-for="row in tableData" :id="row.id" :key="row.id" v-bind:class="[row.id == selected_row_id ? 'selected-row' : '']" @click="changeSelected(row.id)">
             <!-- <td>{{row.id}}</td> -->
             <td>{{row.t}}</td>
             <td v-if='getMode() == "positionPid"'>{{row.theta.toFixed(2)}}</td>
             <td v-else>{{row.omega_rad.toFixed(2)}}</td>
-            <td>{{row.p}}</td>
-            <td>{{row.i}}</td>
-            <td>{{row.d}}</td>
+            <td>{{row.command}}</td>
+            <td>{{row.drive}}</td>
+            <td>{{row.error}}</td>
         </tr>
                             
     </table> 

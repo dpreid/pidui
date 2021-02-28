@@ -16,7 +16,7 @@
 	</div>
 
 	<div class="panel panel-default">
-		<div class='panel-heading'><h3>Current mode: {{this.currentMode}}</h3></div>
+		<div class='panel-heading'><h3>Current mode: {{getModeName}}</h3></div>
 		<div class='panel-body'>{{this.message}}</div>
 		<div class="panel-footer">{{this.error}}</div>
 	</div>
@@ -24,9 +24,9 @@
 	<div id="buttons">
 		<div class='row align-content-center m-1 btn-group'>
 			<div class='col-sm'>
-				<button v-if='currentMode == "stopped"' id="pidspeed" class="btn btn-default btn-lg" @click="speedPid">PID Speed</button>
-				<button v-if='currentMode == "stopped"' id="pidposition" class="btn btn-default btn-lg" @click="positionPid">PID Position</button>	
-				<button v-if='currentMode == "stopped"' id="dcmotor" class="btn btn-default btn-lg" @click="speedRaw">DC Motor</button>
+				<button v-if='currentMode == "stopped"' id="pidspeed" class="btn btn-default btn-lg mr-1" @click="speedPid">Velocity (PID)</button>
+				<button v-if='currentMode == "stopped"' id="pidposition" class="btn btn-default btn-lg mr-1" @click="positionPid">Position (PID)</button>	
+				<button v-if='currentMode == "stopped"' id="dcmotor" class="btn btn-default btn-lg mr-1" @click="speedRaw">Voltage (open loop)</button>
 				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
 
 				<div v-show='showInputType'>
@@ -77,19 +77,19 @@
 
 	<div v-if='currentMode == "speedPid" || currentMode == "positionPid"' class="row justify-content-center m-1 align-items-center">
 		<div class='form-group col-2'>
-			<label for="kp">Kp:</label>
+			<label for="kp">K<sub>p</sub>:</label>
 			<input type='text' :class="checkInputValid('kp', kpParam)" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
-			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='getTooltipTitle("kp", kpParam)'></b-tooltip>
+			<!-- <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kp" :title='getTooltipTitle("kp", kpParam)'></b-tooltip> -->
         </div>
 		<div class='form-group col-2'>
-			<label for="ki">Ki:</label>
+			<label for="ki">K<sub>i</sub>:</label>
 			<input type='text' :class="checkInputValid('ki', kiParam)" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
-			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='getTooltipTitle("ki", kiParam)'></b-tooltip>
+			<!-- <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="ki" :title='getTooltipTitle("ki", kiParam)'></b-tooltip> -->
         </div>
 		<div class='form-group col-2'>
-			<label for="kd">Kd:</label>
+			<label for="kd">K<sub>d</sub>:</label>
 			<input type='text' :class="checkInputValid('kd', kdParam)" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
-			<b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='getTooltipTitle("kd", kdParam)'></b-tooltip>
+			<!-- <b-tooltip triggers='hover' :delay="{show:tooltip_delay,hide:0}" :disabled.sync="disableTooltips" target="kd" :title='getTooltipTitle("kd", kdParam)'></b-tooltip> -->
         </div>
 		<!-- <div class='form-group col-2'>
 			<label for="dt">dt:</label>
@@ -98,7 +98,7 @@
         </div> -->
 
 		<!-- <button id="set" class="btn btn-default btn-sm mr-2" @click="setParameters">Set</button> -->
-		<button id="reset" class="btn btn-default btn-sm" @click="resetParameters">Reset</button>
+		<button id="reset" class="btn btn-default btn-sm mt-3" @click="resetParameters">Reset</button>
 	</div>
 
 
@@ -192,7 +192,18 @@ export default {
         },
         tooltips(){
             return this.$store.getters.getDisableTooltips;
-        }
+		},
+		getModeName(){
+			if(this.currentMode == 'positionPid'){
+				return 'position (PID)';
+			} else if (this.currentMode == 'speedPid'){
+				return 'velocity (PID)';
+			} else if(this.currentMode == 'speedRaw'){
+				return 'voltage (open loop)';
+			} else {
+				return this.currentMode;
+			}
+		}
 	},
 	watch:{
         async getUrl(){
@@ -221,15 +232,11 @@ export default {
 			this.changingMode = false;
 			this.updateStore();
 		},
-		hasStopped(){
+		hasStopped(message){
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
 				this.showInputType = true;
-				if(this.currentMode == 'positionPid'){
-					this.error = 'Hardware has automatically stopped. Try reducing the PID parameters or step size';
-				} else{
-					this.error = 'Hardware has timed out and automatically stopped';
-				}
+				this.error = 'Hardware has automatically stopped: ' + message;
 				
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
@@ -424,14 +431,14 @@ export default {
 		
 		//smoothie chart for displaying angular velocity data
 		//maxValue:200,minValue:-200 removed
-		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
+		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'},maxValue:200,minValue:-200, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_omega = document.getElementById("smoothie-chart_omega");
 		let series_omega = new TimeSeries();
 		chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#0024ff'});
 		chart_omega.streamTo(this.canvas_omega, 0);
 
 		//smoothie chart for displaying angle data
-		var chart_theta = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
+		var chart_theta = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'}, maxValue:6.28,minValue:-1, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_theta = document.getElementById("smoothie-chart_theta");
 		let series_theta = new TimeSeries();
 		chart_theta.addTimeSeries(series_theta, {lineWidth:2,strokeStyle:'#0024ff'});
@@ -451,15 +458,18 @@ export default {
 				var obj = JSON.parse(event.data);
 				
 				//NEW ADDITION OF PID VALUES
-				store.state.current_p_value = obj.ep;
-				store.state.current_i_value = obj.ei;
-				store.state.current_d_value = obj.ed;
+				store.state.current_p_value = obj.p_sig;
+				store.state.current_i_value = obj.i_sig;
+				store.state.current_d_value = obj.d_sig;
+				store.state.current_error = obj.e;
+				store.state.current_drive = obj.y;
+				store.state.current_command_value = obj.c;
 				
-				if(obj.warn){
-					this.hasStopped();
-					console.log("awaiting stop");
+				if(obj.error){
+					this.hasStopped(obj.error);
 					
-				} else{
+				} 
+				else{
 					var msgTime = obj.t;
 					msgTime = parseFloat(msgTime);
 					var thisDelay = new Date().getTime() - msgTime
@@ -506,7 +516,7 @@ export default {
 					//store.state.current_time = msgTime + delay;
 
 					if(!isNaN(enc)){
-						store.state.current_time = msgTime;				//time only stored if 
+						store.state.current_time = msgTime;				
 						//encoder position in radians
 						//enc = enc * 2* Math.PI / encoderPPR;		//ALREADY IN RAD
 
@@ -652,11 +662,13 @@ export default {
 <style scoped>
 
 .error{
-    border:thick solid red
+    /* border:thick solid red */
+	border: auto;
 }
 
 .error:focus{
-    border:thick solid red
+    /* border:thick solid red */
+	border: auto;
 }
 
 #smoothie-chart_omega{
