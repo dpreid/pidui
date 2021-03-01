@@ -180,7 +180,9 @@ export default {
 		eventBus.$on('maxdatapointsreached', () => {this.error = 'Max data points reached, graphing automatically stopped'});
 	},
 	mounted(){
-		this.resetParameters();
+		
+		
+		
 	},
 	computed: {
 		getDataSocket(){
@@ -221,12 +223,19 @@ export default {
         async getUrl(){
             await this.connect();
 			console.log('connection complete');
-			this.setParameters();			//resets the parameters to default settings on UI
-			console.log('params set');
+			//setTimeout(this.setParameters, 2000);
+			//this.setParameters();			//resets the parameters to default settings on UI
+			//console.log('params set');
 
 			//set the graph data parameter in store
 			store.setGraphDataParameter('omega');
-			}
+			},
+		// getDataSocket(){
+		// 	if(this.dataSocket != null){
+		// 		setTimeout(this.setParameters, 500);
+		// 	}
+			
+		// }
     },
 	methods:{
 		stop(){
@@ -248,7 +257,7 @@ export default {
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
 				this.showInputType = true;
-				this.error = 'Hardware has automatically stopped: ' + message;
+				this.error = 'Automatic stop: ' + message + ". Select a mode to continue.";
 				
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
@@ -271,6 +280,7 @@ export default {
 			}
 			this.changingMode = false;
 			this.updateStore();
+			setTimeout(this.setParameters, 500);					//when entering pid mode ensure parameters are set
 		},
 		speedRaw(){
 			this.clearMessages();
@@ -318,9 +328,9 @@ export default {
 			} else{
 				this.error = 'Must STOP before entering positionPid mode';
 			}
-			
 			this.changingMode = false;
 			this.updateStore();
+			setTimeout(this.setParameters, 500);			//when entering pid mode ensure parameters are set
 		},
 		setPosition(){
 			this.clearMessages();
@@ -342,9 +352,9 @@ export default {
 			
 		},
 		setParameters(){
-			console.log('setting');
 			this.clearMessages();
 			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && !isNaN(this.dtParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0){
+				console.log('Kp set = ' + parseFloat(this.kpParam));
 				this.dataSocket.send(JSON.stringify({
 				"set": "parameters",
 				"kp": parseFloat(this.kpParam),
@@ -456,8 +466,9 @@ export default {
 		chart_theta.addTimeSeries(series_theta, {lineWidth:2,strokeStyle:'#0024ff'});
 		chart_theta.streamTo(this.canvas_theta, 0);
 
-		this.dataSocket.onopen = function (event) {
+		this.dataSocket.onopen = (event) => {
 			console.log("dataSocket open" + event);
+
 			resolve(console.log('opened'));
 			//dataOpen = true; 
 			
