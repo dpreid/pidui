@@ -2,7 +2,7 @@
 <div class='m-2 p-2 bg-white border rounded'>
    <div class="form-group row justify-content-center align-items-center pb-2">
         <label class="col-sm-2 col-form-label" for="voltage">Input voltage ({{voltage}}V)</label>
-        <div class="col-4"><input type="range" :min="-maxV" :max="maxV" step="0.5" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
+        <div class="col-4"><input type="range" :min="-maxV" :max="maxV" step="0.1" v-model="voltage" class="slider" list='tickmarks' id="voltage" @change='setVoltage'></div>
             
         <label class="col-sm-2 col-form-label" for="ang_vel">Motor angular velocity (rad/s)</label>
 

@@ -27,6 +27,9 @@
 
           <!-- RIGHT HAND COLUMN -->
           <div class='col-sm-6' > 
+            <div v-if='isWorkspaceOn' class='row'>
+              <instructions :isWorkspaceOn="isWorkspaceOn"/>
+            </div>
             <div v-if='isSystemDiagramsOn' class='row'>
               <system-diagrams :remoteLabVersion="remoteLabVersion"/>
             </div>
@@ -34,9 +37,10 @@
                 <div class='col-sm-5' v-if='isDataRecorderOn && !isSimulationOn'><data-recorder :disableTooltips="disableTooltips"/></div> 
                 <div class='col-sm-5' v-if='isStopwatchOn'><stopwatch /></div>
             </div>
-            
+            <div v-if='isSnapshotOn'><motor-snapshot /></div>
             <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
             <div v-if='isGraphOn'><graph-output type="graph" id="graph0" /></div> 
+            
           </div>
         </div>
 
@@ -59,11 +63,13 @@ import DataRecorder from "./components/DataRecorder.vue";
 import NavigationBar from "./components/NavigationBar.vue"; 
 import GraphInput from "./components/GraphInput.vue";
 import SystemDiagrams from "./components/SystemDiagrams.vue";
-
+import MotorSnapshot from "./components/MotorSnapshot.vue";
+import Instructions from "./components/Instructions.vue";
 import { eventBus } from "./main.js";
 import { store } from "./simplestore.js";
 
 import Streams from './components/Streams.vue';
+
 
 export default {
   name: 'App',
@@ -77,6 +83,8 @@ export default {
     GraphInput,
     SystemDiagrams,
     Streams,
+    MotorSnapshot,
+    Instructions,
   },
   data() {
    return {
@@ -90,6 +98,7 @@ export default {
       isInputGraphOn: false,
       isSystemDiagramsOn: false,
       isSimulationOn: false,
+      isSnapshotOn: false,
       disableTooltips: false,             //global tooltip setting
       showLoadDataModal: false,
       saved_date: '',
@@ -105,6 +114,8 @@ export default {
     eventBus.$on('togglegraphinput', this.toggleInputGraph);
     eventBus.$on('togglesystemdiagrams', this.toggleSystemDiagrams);
     eventBus.$on('togglesimulation', this.toggleSimulation);
+     eventBus.$on('togglesnapshot', this.toggleSnapshot);
+
 
     eventBus.$on('setexercise1v1', this.setExercise1v1Interface);
     eventBus.$on('setexercise1v2', this.setExercise1v2Interface);
@@ -143,7 +154,6 @@ export default {
       this.isWorkspaceOn = false;
     },
     toggleDataRecorder(){
-      console.log('data recorder toggled');
       this.isDataRecorderOn = !this.isDataRecorderOn;
       if(this.isDataRecorderOn){
         this.$store.dispatch('setDataRecorder', true);
@@ -171,6 +181,15 @@ export default {
     },
     toggleSimulation(){
       this.isSimulationOn = !this.isSimulationOn;
+    },
+    toggleSnapshot(){
+      this.isSnapshotOn = !this.isSnapshotOn;
+      if(this.isSnapshotOn){
+        if(!this.isDataRecorderOn){
+          this.toggleDataRecorder();
+        }
+        
+      }
     },
     setExercise1v1Interface(){
       this.isGraphOn = false;

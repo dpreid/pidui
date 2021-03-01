@@ -145,6 +145,7 @@ export default {
             XAxisMax: 0,
             XAxisMin: 0,
             unit: '',
+            maxDataPoints: 1200,
         }
     },
     computed:{
@@ -189,7 +190,12 @@ export default {
             }
         },
         newData(){
-            this.getLatestData();
+            if(store.getNumData() <= this.maxDataPoints){
+                this.getLatestData();
+            } else{
+                eventBus.$emit('maxdatapointsreached');
+            }
+            
         }
     },
     methods: {
@@ -206,6 +212,8 @@ export default {
                 }]
             },
             options: {
+                animation: false,
+                parsing: false,
                 legend:{
                     display: false
                 },
@@ -222,8 +230,12 @@ export default {
                                 this.updateXAxisMax(value, index, values);
                                 this.updateXAxisMin(value, index);
                                 return value;
-                            }
+                            },
+                            
                         },
+                        minRotation: 20,
+                        maxRotation: 20,
+                        sampleSize: 2,
                     }],
                     yAxes: [{
                         scaleLabel:{
@@ -239,6 +251,7 @@ export default {
                                 return value;
                             }
                         },
+                        sampleSize: 2,
                     }],
                 },
                 responsive: true

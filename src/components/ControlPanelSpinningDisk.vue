@@ -18,7 +18,7 @@
 	<div class="panel panel-default">
 		<div class='panel-heading'><h3>Current mode: {{getModeName}}</h3></div>
 		<div class='panel-body'>{{this.message}}</div>
-		<div class="panel-footer">{{this.error}}</div>
+		<div :class='getErrorClass'><h3>{{this.error}}</h3></div>
 	</div>
 
 	<div id="buttons">
@@ -176,6 +176,11 @@ export default {
 		eventBus.$on('setpidpositionmode', this.positionPid);
 		eventBus.$on('hardwarestop', this.hasStopped);	
 		eventBus.$on('showinputtype', (on) => {this.showInputType = on});
+
+		eventBus.$on('maxdatapointsreached', () => {this.error = 'Max data points reached, graphing automatically stopped'});
+	},
+	mounted(){
+		this.resetParameters();
 	},
 	computed: {
 		getDataSocket(){
@@ -202,6 +207,13 @@ export default {
 				return 'voltage (open loop)';
 			} else {
 				return this.currentMode;
+			}
+		},
+		getErrorClass(){
+			if(this.error == ''){
+				return ""
+			} else {
+				return "error-message border border-danger";
 			}
 		}
 	},
@@ -467,8 +479,7 @@ export default {
 				
 				if(obj.error){
 					this.hasStopped(obj.error);
-					
-				} 
+				}
 				else{
 					var msgTime = obj.t;
 					msgTime = parseFloat(msgTime);
@@ -647,9 +658,7 @@ export default {
 				return 'Invalid input';
 			}
 			
-		}
-
-		
+		},
 
 	},
 }
@@ -660,6 +669,13 @@ export default {
 </script>
 
 <style scoped>
+
+.error-message{
+	color: red;
+	text-decoration: bold;
+	border: thin;
+	box-shadow: 0px 0px;
+}
 
 .error{
     /* border:thick solid red */

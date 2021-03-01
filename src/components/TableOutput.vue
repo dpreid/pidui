@@ -7,8 +7,8 @@
         <tr>
             <!-- <th scope="col">ID</th> -->
             <th scope="col">Time/s</th>
-            <th v-if='getMode() == "positionPid"' scope="col">Angle/rad</th>
-            <th v-else scope="col">Angular Velocity/rad/s</th>
+            <th scope="col">Angle/rad</th>
+            <th scope="col">Angular Velocity/rad/s</th>
             <th scope='col'>Command</th>
             <th scope='col'>Drive</th>
             <th scope='col'>Error</th>
@@ -16,8 +16,8 @@
         <tr v-for="row in tableData" :id="row.id" :key="row.id" v-bind:class="[row.id == selected_row_id ? 'selected-row' : '']" @click="changeSelected(row.id)">
             <!-- <td>{{row.id}}</td> -->
             <td>{{row.t}}</td>
-            <td v-if='getMode() == "positionPid"'>{{row.theta.toFixed(2)}}</td>
-            <td v-else>{{row.omega_rad.toFixed(2)}}</td>
+            <td>{{row.theta.toFixed(2)}}</td>
+            <td>{{row.omega_rad.toFixed(2)}}</td>
             <td>{{row.command}}</td>
             <td>{{row.drive}}</td>
             <td>{{row.error}}</td>
@@ -40,48 +40,25 @@ export default {
   },
     data(){
         return{
-            tableData: store.state.data,
+            tableData: [], //store.state.data,
             searchData:[],
             search_field:"",
             selected_row_id: "0",
         }
     },
     computed:{
-        newData(){
-            return store.state.data;
-        }
+        
     },
     watch:{
-        newData(){
-            this.tableData = store.state.data;
-        }
+        
     },
     methods: {
+        getData(){
+            console.log('updating table');
+            this.tableData = [...store.state.data];
+        },
         getMode(){
             return store.state.currentMode;
-        },
-        
-        search(){
-            if(this.search_field == ""){
-                this.searchData = Array.from(this.tableData);
-            } else{
-                this.searchData = [];
-                let d;
-                let string_data_row;
-                // Loop through all tableData, create a string of all elements in the table row, search if the current search_field text is contained and set hidden appropriately.
-                for (let i = 0; i < this.tableData.length; i++) {
-                    d = this.tableData[i];
-                    string_data_row = d.id + d.mass + d.name + d.reclat + d.reclong + d.recclass;
-
-                    if (string_data_row.toUpperCase().indexOf(this.search_field.toUpperCase()) > -1) {
-                        this.searchData.push(d);
-                }    else {
-                        //tr[i].style.display = "none";
-            }
-        
-    }
-            }
-            
         },
         changeSelected(id){
             this.selected_row_id = id;
@@ -90,11 +67,11 @@ export default {
         }
       },
       mounted() {
-        
+        this.tableData = [...store.state.data];
         
       },
       created(){
-          //eventBus.$on('updatetable', this.getData);                  
+          eventBus.$on('updatetable', this.getData);                  
             eventBus.$on('newselectedobject', this.changeSelected)
             eventBus.$on('clearalldata', this.getData);
       }

@@ -46,7 +46,7 @@ export default {
     
   },
   created(){
-		//eventBus.$on('runrecord', this.record);
+		eventBus.$on('maxdatapointsreached', this.stopRecording);
 	},
   computed:{
       hasData(){
@@ -94,6 +94,7 @@ export default {
           this.isRecording = false;
           store.state.isRecording = false;
           this.wrap_index = 0;
+          eventBus.$emit('updatetable');
       },
       plot(){
           this.data_points_count++;
