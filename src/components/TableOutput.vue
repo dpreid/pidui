@@ -54,7 +54,7 @@ export default {
     },
     methods: {
         getData(){
-            console.log('updating table');
+            //console.log('updating table');
             this.tableData = [...store.state.data];
         },
         getMode(){

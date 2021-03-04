@@ -69,9 +69,9 @@ export default {
 
         let cam_type = this.$store.getters.getCamera;
         if(cam_type == 0){  //logitech
-            this.ruler_video_width_ratio = 1.428;
+            this.ruler_video_width_ratio = 1.29;       //1.428
         } else{
-            this.ruler_video_width_ratio = 0.8556;     //need to get this ratio check this ratio on final boxes
+            this.ruler_video_width_ratio = 0.77;     //0.7432, 0.8556need to get this ratio check this ratio on final boxes
         }
 
 
