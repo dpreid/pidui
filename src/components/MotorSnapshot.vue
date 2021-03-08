@@ -81,6 +81,7 @@
     <div class='row justify-content-center align-items-center'>
         <button id="snapshot" class="btn btn-default btn-sm m-3" @click="takeSnapshot">Record Snapshot</button>
         <button id="reset_snaps" class="btn btn-default btn-sm m-3" @click="resetSnaps">Reset</button>
+        <button id="download_snaps" class="btn btn-default btn-sm m-3" @click="outputToCSV">Download Snapshots</button>
     </div>
     
 
@@ -175,15 +176,60 @@ export default {
         },
         resetSnaps(){
             this.snaps = [];
-        }
-      },
-      mounted() {
-        
-        
-      },
-      created(){
+        },
+        outputToCSV(){
+          let csv = '';
+          let filename = '';
+            let date = new Date();
+            filename = 'SNAPSHOTs_' + date.getDate().toString() + (date.getMonth() + 1).toString() + date.getFullYear().toString();
           
-      }
+              csv = 'Time/s,Angle/rad,AngVel/rad/s,Command,Drive,Error\n';
+            
+            this.snaps.forEach(function(d){
+                csv += d.time.toString();
+                csv += ",";
+                csv += d.position.toString();
+                csv += ',';
+                csv += d.velocity.toString();
+                if(d.command != null){
+                  csv += ",";
+                  csv += d.command.toString();
+                } else {
+                  csv += ",";
+                  csv += "";
+                }
+                if(d.drive != null){
+                  csv += ",";
+                  csv += d.drive.toString();
+                } else{
+                  csv += ",";
+                  csv += "";
+                }
+
+                if(d.error != null){
+                  csv += ",";
+                  csv += d.error.toString();
+                } else{
+                  csv += ",";
+                  csv += "";
+                }
+                
+                
+                
+                
+                csv += "\n";
+            });
+          //}
+            filename += '.csv';
+          //console.log(csv);
+          let hiddenElement = document.createElement('a');
+          hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+          hiddenElement.target = '_blank';
+          hiddenElement.download = filename;
+          hiddenElement.click();
+      },
+      },
+      
 }
 </script>
 
@@ -192,6 +238,9 @@ export default {
 #snapshot:hover  {background-color: rgb(190, 187, 2);}
 #reset_snaps        {background-color: rgb(243, 117, 44);}
 #reset_snaps:hover  {background-color: rgb(243, 7, 7);}
+#download_snaps        {background-color: rgb(44, 243, 200);}
+#download_snaps:hover  {background-color: rgb(7, 82, 243);}
+
 
 .current{
     border: thin;
