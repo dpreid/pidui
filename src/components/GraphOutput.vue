@@ -183,6 +183,11 @@
                         <label class='m-2' for="func_c">&tau;</label>
                         <input id="func_c" v-model="func_c" size="3">                
                     </div>
+
+                    <div>
+                        <label class='m-2' for="func_d">t<sub>0</sub></label>
+                        <input id="func_d" v-model="func_d" size="3">                
+                    </div>
                 </div>
                 <!-- <label class='m-2' for="func_a">Y(s)=</label>
                 <input id="func_a" v-model="func_a" size="3">
@@ -594,8 +599,8 @@ export default {
             },
             step(t){
                 //let A = parseFloat(store.state.step.step_size);
-                //let t0 = parseFloat(this.func_c);
-                let t0 = 0.0;
+                let t0 = parseFloat(this.func_d);
+                //let t0 = 0.0;
                 //let w0 = -parseFloat(this.func_a)*A*(1-Math.exp(t0/parseFloat(this.func_b)));
                 //let t0 = 0;
                 let expterm = 1 - Math.exp(-(t-t0)/parseFloat(this.func_c));
