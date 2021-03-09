@@ -19,7 +19,7 @@
             <div class='current border border-right-0 border-left-0'>
                     <p>{{position.toFixed(2)}}</p>
             </div>
-            <p v-for='row in snaps' :id="row.position" :key="row.position">
+            <p v-for='row in snaps' :id="row.time + 'pos'" :key="row.time + 'pos'">
                 {{row.position}}
             </p>
             <!-- <p>{{snapshot_position}}</p> -->
@@ -29,7 +29,7 @@
 			<div class='current border border-right-0 border-left-0'>
                     <p>{{velocity.toFixed(2)}}</p>
             </div>
-            <p v-for='row in snaps' :id="row.velocity" :key="row.velocity">
+            <p v-for='row in snaps' :id="row.time + 'vel'" :key="row.time + 'vel'">
                 {{row.velocity}}
             </p>
             <!-- <p>{{snapshot_velocity}}</p> -->
@@ -39,7 +39,7 @@
 			<div class='current border border-right-0 border-left-0'>
                     <p>{{command.toFixed(2)}}</p>
             </div>
-            <p v-for='row in snaps' :id="row.command" :key="row.command">
+            <p v-for='row in snaps' :id="row.time + 'com'" :key="row.time + 'com'">
                 {{row.command}}
             </p>
             <!-- <p>{{snapshot_command}}</p> -->
@@ -49,7 +49,7 @@
 			<div class='current border border-right-0 border-left-0'>
                     <p>{{drive.toFixed(2)}}</p>
             </div>
-             <p v-for='row in snaps' :id="row.drive" :key="row.drive">
+             <p v-for='row in snaps' :id="row.time + 'drive'" :key="row.time + 'drive'">
                 {{row.drive}}
             </p>
             <!-- <p>{{snapshot_drive}}</p> -->
@@ -59,7 +59,7 @@
 			<div class='current border border-left-0'>
                     <p>{{error.toFixed(2)}}</p>
             </div>
-            <p v-for='row in snaps' :id="row.error" :key="row.error">
+            <p v-for='row in snaps' :id="row.time + 'error'" :key="row.time + 'error'">
                 {{row.error}}
             </p>
             <!-- <p>{{snapshot_error}}</p> -->
@@ -79,7 +79,7 @@
     </table>  -->
 
     <div class='row justify-content-center align-items-center'>
-        <button id="snapshot" class="btn btn-default btn-sm m-3" @click="takeSnapshot">Record Snapshot</button>
+        <button id="snapshot" class="btn btn-default btn-sm m-3" v-if='showRecordButton' @click="takeSnapshot">Record Snapshot</button>
         <button id="reset_snaps" class="btn btn-default btn-sm m-3" @click="resetSnaps">Reset</button>
         <button id="download_snaps" class="btn btn-default btn-sm m-3" @click="outputToCSV">Download Snapshots</button>
     </div>
@@ -119,6 +119,15 @@ export default {
     computed:{
         newData(){
             return this.dataStore.state.current_angle;
+        },
+        showRecordButton(){
+            if(this.dataStore.state.inputMode != 'free'){
+                return true;
+            } else if(this.dataStore.getNumData() > 0){
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     watch:{
@@ -147,6 +156,9 @@ export default {
             
             
         }
+    },
+    mounted(){
+        
     },
     methods: {
         takeSnapshot(){
