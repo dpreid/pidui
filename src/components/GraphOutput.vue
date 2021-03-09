@@ -30,8 +30,9 @@
                 <option value="quadratic">Quadratic</option>
                 <option value="trigonometric">Trigonometric</option>
                 <option value="exponential">Exponential</option>
-                <option v-if='getGraphParameter == "omega"' value="step">Step</option>
-                <option v-if='getGraphParameter == "omega"' value="ramp">Ramp</option>
+                <option v-if='getGraphParameter == "omega"' value="step">Step (1st Order)</option>
+                <option v-if='getGraphParameter == "omega"' value="ramp">Ramp (1st Order)</option>
+                <option v-if='getGraphParameter == "theta"' value="step2nd">Step (2nd Order)</option>
             </select> 
 
             <div v-if="currentFunction === 'linear'">
@@ -199,6 +200,42 @@
                 <input id="func_c" v-model="func_c" size="3">  -->
                 <div class="row-sm justify-content-center">
                     <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
+                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                </div>
+                
+            </div>
+            <div v-else-if="currentFunction === 'step2nd'">
+                
+                 <div class='row justify-content-center'>
+                    <label class='m-2' for="func_a">Step size, A</label>
+                    <input id="func_a" v-model="func_a" size="3">
+                </div>
+
+                <div class='row justify-content-center'>
+                    <img id='second_order_transfer_function' src='../../public/images/TransferFunction2ndOrder.png'>
+                </div>
+
+
+                <div class='row justify-content-center'>
+                    <div>
+                        <label class='m-2' for="func_b">&zeta;</label>
+                        <input id="func_b" v-model="func_b" size="3">
+                    </div>
+                    
+
+                    <div>
+                        <label class='m-2' for="func_c">&omega;<sub>n</sub></label>
+                        <input id="func_c" v-model="func_c" size="3">                
+                    </div>
+
+                    <div>
+                        <label class='m-2' for="func_d">t<sub>0</sub></label>
+                        <input id="func_d" v-model="func_d" size="3">                
+                    </div>
+                </div>
+               
+                <div class="row-sm justify-content-center">
+                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(stepSecondOrder)">Plot</button>
                     <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
                 
@@ -612,6 +649,25 @@ export default {
                 }
                 
             },
+            stepSecondOrder(t){
+                let t0 = parseFloat(this.func_d);
+                let t_norm = t - t0;
+                let zeta = parseFloat(this.func_b);
+                let omega = parseFloat(this.func_c);
+                let step = parseFloat(this.func_a);
+                let phi = Math.acos(zeta);
+
+                let root_term = Math.sqrt(1-zeta*zeta);
+                let exp_term = Math.exp(-zeta*omega*t_norm);
+                let sin_term = Math.sin(root_term*omega*t_norm + phi);
+
+                if(t < t0){
+                    return 0;
+                } else{
+                    return step*(1 - exp_term*sin_term/root_term);
+                }
+                
+            },
             ramp(t){
                 //let A = parseFloat(store.state.ramp.ramp_gradient);
                 let tau = parseFloat(this.func_c);
@@ -652,6 +708,11 @@ export default {
 
 #transfer_function{
     width: 120px;
+    height: 50px;
+}
+
+#second_order_transfer_function{
+    width: 160px;
     height: 50px;
 }
 

@@ -118,7 +118,7 @@ export default {
     },
     computed:{
         newData(){
-            return this.dataStore.state.data;
+            return this.dataStore.state.current_angle;
         }
     },
     watch:{

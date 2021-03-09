@@ -1,7 +1,7 @@
 <template>
 <div class='m-2 p-2 bg-white border rounded'>
     <div class="row justify-content-center align-items-center">
-        <button class="btn btn-default btn-xs m-1" v-if="!isRecording" id="recordButton" @click="record">Record</button>
+        <button class="btn btn-default btn-xs m-1" v-if="!isRecording && inputMode == 'free'" id="recordButton" @click="record">Record</button>
         <button class="btn btn-default btn-xs m-1" v-if="isRecording" id="stopButton" @click="stopRecording">Stop</button>
         <button class="btn btn-default btn-xs m-1" id="clearButton" @click="clearGraph">Reset</button>
         <button class="btn btn-default btn-xs m-1" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
@@ -64,6 +64,9 @@ export default {
       },
       startRecord(){
         return this.data_store.state.isRecording;
+      },
+      inputMode(){
+        return this.data_store.state.inputMode;
       }
   },
   watch:{
