@@ -321,6 +321,8 @@ export default {
             XAxisMin: 0,
             unit: '',
             maxDataPoints: 1200,
+            current_data_index: 0,
+            data_index_interval: 1,
         }
     },
     computed:{
@@ -477,11 +479,48 @@ export default {
             //this.chart.reset();
             this.chart.update();
         },
-        getData(){
-                this.clearData();
+        // getData(){
+        //         this.clearData();
+                
+        //         //for(let i=0; i<this.$store.getters.getNumData;i++){
+        //         for(let i=0; i<store.state.data.length;i++){
+        //             //let data = this.$store.getters.getData[i];
+        //             let x_data = store.state.data[i].t;
+        //             let y_data;
+        //             //let x_data = data.t;
+        //             switch(store.state.graphDataParameter){
+        //                 case 'theta':
+        //                     if(this.unit == 'deg'){
+        //                         y_data = store.state.data[i].theta_deg;
+        //                     } else {
+        //                         y_data = store.state.data[i].theta;
+        //                     }
+        //                     break;
+        //                 case 'omega':
+        //                     if(this.unit == 'rpm'){
+        //                         y_data = store.state.data[i].omega;
+        //                     } else{
+        //                         y_data = store.state.data[i].omega_rad;
+                                
+        //                     }
+        //                     break;
+
+        //             }
+        //             this.addDataToChart({x: x_data, y: y_data});
+                    
+        //         }
+                
+        //     },
+            getData(){
+                if(this.current_data_index == 0){
+                    this.clearData();
+                    
+                }
+                
                 
                 //for(let i=0; i<this.$store.getters.getNumData;i++){
-                for(let i=0; i<store.state.data.length;i++){
+                for(let i=this.current_data_index; i<store.getNumData();i++){
+                    //console.log('loop');
                     //let data = this.$store.getters.getData[i];
                     let x_data = store.state.data[i].t;
                     let y_data;
@@ -505,8 +544,29 @@ export default {
 
                     }
                     this.addDataToChart({x: x_data, y: y_data});
+
+                    if(i >= this.current_data_index + this.data_index_interval || i == store.getNumData() - 1){
+                        this.current_data_index = i + 1;
+                        //console.log("broke from get data");
+                        break;
+                    }
                     
                 }
+
+                    
+                    //console.log('index = ' + this.current_data_index);
+                    //console.log('num data = ' + store.getNumData());
+                    if(this.current_data_index < store.getNumData() && this.current_data_index <= this.maxDataPoints){
+                        setTimeout(this.getData, 1);
+                    } else{
+                        if(this.current_data_index > this.maxDataPoints){
+                            eventBus.$emit('maxdatapointsreached');
+                        }
+                        console.log('finished loading graph data');
+                        this.count = 0;
+                        this.current_data_index = 0;
+                    }
+                    
                 
             },
             getLatestData(){
