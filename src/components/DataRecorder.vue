@@ -90,11 +90,13 @@ export default {
             store.state.start_time = store.state.current_time;
             this.data_points_count = 0;
             this.isRecording = true;
+            this.data_store.state.isRecording = true;    //NEW, SET THE DATA STORE RECORD IN HERE TOO.
           } 
           
       },
       stopRecording(){
           this.isRecording = false;
+          //this.data_store.state.isRecording = false;    //NEW, SET THE DATA STORE RECORD IN HERE TOO.
           store.state.isRecording = false;
           this.wrap_index = 0;
           eventBus.$emit('updatetable');

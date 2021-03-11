@@ -120,19 +120,25 @@ export default {
         newData(){
             return this.dataStore.state.current_angle;
         },
+        // showRecordButton(){
+        //     if(this.dataStore.state.inputMode != 'free'){
+        //         return true;
+        //     } else if(this.dataStore.state.isRecording){
+        //         return true;
+        //     } else {
+        //         console.log("not recording");
+        //         return false;
+        //     }
+        // }
         showRecordButton(){
-            if(this.dataStore.state.inputMode != 'free'){
-                return true;
-            } else if(this.dataStore.getNumData() > 0){
-                return true;
-            } else {
-                return false;
-            }
+            return this.dataStore.state.isRecording;
         }
     },
     watch:{
         newData(){
             this.time = store.getTime();
+            // console.log("current time = " + store.state.current_time);
+            // console.log("start time = " + store.state.start_time);
             this.position = store.state.current_angle;
             this.velocity = store.state.current_ang_vel * 2* Math.PI/60.0;
             if(store.state.current_error != null){

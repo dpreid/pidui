@@ -76,8 +76,13 @@ export const store = {
        deleteData (dataId) {
           this.state.data.splice(dataId, 1);
         },
-        getTime(){
-           return (this.state.current_time - this.state.start_time)/1000;    //in seconds
+        getTime(){ 
+           if(this.state.current_time - this.state.start_time >= 0){
+              return (this.state.current_time - this.state.start_time)/1000;  //in seconds
+           } else{
+              this.state.start_time = this.state.current_time;
+              return 0.0;
+           }
         },
         getMaxTime(){
            let time_max = -Infinity;
