@@ -6,6 +6,14 @@
         <button class="btn btn-default btn-xs m-1" id="clearButton" @click="clearGraph">Reset</button>
         <button class="btn btn-default btn-xs m-1" v-if="hasData" id="outputButton" @click="outputToCSV">Download CSV</button>
     </div>
+    <div class='row m-2 justify-content-center'>
+      <div v-if='isRecording' class='col-2'>
+        <img id='red-light' src='../../public/images/red-light.png' width='20' height='20' :hidden='!showRedLight'>
+      </div>
+      <div class='col-10'>  
+        <p class='ml-2'>Recorded: {{numData}} data points</p>
+      </div>
+    </div>
    <!-- <div class="form-group row justify-content-center p-2">
         <label class="col-sm-2 col-form-label" for="time_interval">Every</label>
         <div class='col-sm-4 mr-4'><input type='text' :class="[{'error': hasError}, 'form-control']" id="time_interval" v-model="time_interval"></div>
@@ -67,6 +75,12 @@ export default {
       },
       inputMode(){
         return this.data_store.state.inputMode;
+      },
+      numData(){
+        return this.data_store.getNumData();
+      },
+      showRedLight(){
+        return this.data_store.getNumData() % 20 > 10 ? true : false;
       }
   },
   watch:{
@@ -90,6 +104,7 @@ export default {
             store.state.start_time = store.state.current_time;
             this.data_points_count = 0;
             this.isRecording = true;
+            this.data_store.state.isRecording = true;    //NEW, SET THE DATA STORE RECORD IN HERE TOO.
           } 
           
       },

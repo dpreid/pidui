@@ -173,7 +173,7 @@ export default {
      stopCommand(){
          clearInterval(this.interval_id);
          this.isRampRunning = false;
-         store.state.isRecording = false;
+         //store.state.isRecording = false;
      },
      setStart(){
         //  let signal = 255*parseFloat(this.ramp_start)/this.motor_max_voltage;
