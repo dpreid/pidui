@@ -118,7 +118,7 @@ export default {
     },
     computed:{
         newData(){
-            return this.dataStore.state.current_angle;
+            return this.dataStore.state.current_time;
         },
         // showRecordButton(){
         //     if(this.dataStore.state.inputMode != 'free'){
@@ -136,28 +136,31 @@ export default {
     },
     watch:{
         newData(){
-            this.time = store.getTime();
-            // console.log("current time = " + store.state.current_time);
-            // console.log("start time = " + store.state.start_time);
-            this.position = store.state.current_angle;
-            this.velocity = store.state.current_ang_vel * 2* Math.PI/60.0;
-            if(store.state.current_error != null){
-                this.error = store.state.current_error;
-            } else{
-                this.error = 0;
-            }
+            if(this.dataStore.state.isRecording){
+                this.time = store.getTime();
+                // console.log("current time = " + store.state.current_time);
+                // console.log("start time = " + store.state.start_time);
+                this.position = store.state.current_angle;
+                this.velocity = store.state.current_ang_vel * 2* Math.PI/60.0;
+                if(store.state.current_error != null){
+                    this.error = store.state.current_error;
+                } else{
+                    this.error = 0;
+                }
 
-            if(store.state.current_drive != null){
-                this.drive = store.state.current_drive;
-            } else{
-                this.drive = 0;
-            }
+                if(store.state.current_drive != null){
+                    this.drive = store.state.current_drive;
+                } else{
+                    this.drive = 0;
+                }
 
-            if(store.state.current_command_value != null){
-                this.command = store.state.current_command_value;
-            } else{
-                this.command = 0;
+                if(store.state.current_command_value != null){
+                    this.command = store.state.current_command_value;
+                } else{
+                    this.command = 0;
+                }
             }
+            
             
             
             
