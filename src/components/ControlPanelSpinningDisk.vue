@@ -453,7 +453,7 @@ export default {
 		
 		//smoothie chart for displaying angular velocity data
 		//maxValue:200,minValue:-200 removed
-		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'},maxValue:200,minValue:-200, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
+		var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:10,grid:{fillStyle:'#ffffff'},maxValue:400,minValue:-400, interpolation:"linear",labels:{fillStyle:'#0024ff',precision:2}});
 		this.canvas_omega = document.getElementById("smoothie-chart_omega");
 		let series_omega = new TimeSeries();
 		chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#0024ff'});
