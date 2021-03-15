@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 import App from './App.vue'
 import store from "./streamStore.js";
-import "bootstrap/dist/css/bootstrap.min.css";
+//import "bootstrap/dist/css/bootstrap.min.css";
 import BootstrapVue from 'bootstrap-vue';
 
 export const eventBus = new Vue();
