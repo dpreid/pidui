@@ -27,7 +27,7 @@
 				<button v-if='currentMode == "stopped"' id="pidspeed" class="btn btn-default btn-lg mr-1" @click="speedPid">Velocity (PID)</button>
 				<button v-if='currentMode == "stopped"' id="pidposition" class="btn btn-default btn-lg mr-1" @click="positionPid">Position (PID)</button>	
 				<button v-if='currentMode == "stopped"' id="dcmotor" class="btn btn-default btn-lg mr-1" @click="speedRaw">Voltage (open loop)</button>
-				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
+				<button id="stop" class="btn btn-default btn-lg" @click="stop">Exit mode</button>
 
 				<div v-show='showInputType'>
 					<label class='m-2' for="inputSelect">Input type:</label>
@@ -49,7 +49,8 @@
 		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
 			<div class="col-3 sliderlabel"> Angle ({{parseFloat(angleParam).toFixed(2)}}rad)</div>
 			<div class="col-7"><input type="range" min="-1.57" max="1.57" step="0.01" v-model="angleParam" class="slider" id="angleSlider"></div>
-			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+			<button v-if='!position_running' id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+			<button v-if='position_running' id="wait" class="btn btn-default btn-lg col-2" @click="wait">Stop</button>
 		</div>
 
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
@@ -164,6 +165,7 @@ export default {
 				kd: 0,
 				dt: 0.01,
 			},
+			position_running: false,
         }
     },
     created(){
@@ -240,6 +242,7 @@ export default {
 	methods:{
 		stop(){
 			this.clearMessages();
+			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			if(this.inputMode == 'ramp'){
 				eventBus.$emit('stopramp');
 			}
@@ -256,6 +259,7 @@ export default {
 		hasStopped(message){
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
+				this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				this.showInputType = true;
 				this.error = 'Automatic stop: ' + message + ". Select a mode to continue.";
 				
@@ -264,6 +268,14 @@ export default {
 				this.changingMode = false;
 				this.updateStore();
 			}
+		},
+		wait(){
+			//this is an internal mode in the firmware and does not need to be reflected in the UI.
+			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			this.dataSocket.send(JSON.stringify({
+				set: "mode",
+				to: "wait"
+				}));
 		},
 		speedPid(){
 			this.clearMessages();
@@ -317,6 +329,7 @@ export default {
 		},
 		positionPid(){
 			this.clearMessages();
+			this.position_running = false;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			this.setMaxParameters('positionPid');
 			if(this.currentMode == 'stopped'){
 				store.setGraphDataParameter('theta');
@@ -335,6 +348,8 @@ export default {
 		setPosition(){
 			this.clearMessages();
 			this.showInputType = false;
+			this.position_running = true;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			console.log(this.position_running);
 			if(!isNaN(this.angleParam)){
 				if(this.currentMode == 'positionPid'){
 					let pos = this.angleParam			//anglParam in rad
@@ -776,5 +791,6 @@ export default {
 #set         {background-color: rgb(30, 250, 1);}
 #set:hover   {background-color: rgb(30, 172, 2);}
 
-
+#wait       {background-color:  rgb(255, 30, 0);}
+#wait:hover {background-color: #520303} 
 </style>
