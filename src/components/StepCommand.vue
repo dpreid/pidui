@@ -144,6 +144,7 @@ export default {
      wait(){
             //this is an internal mode in the firmware and does not need to be reflected in the UI.
             this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            eventBus.$emit('datarecorderstop');
 			this.dataSocket.send(JSON.stringify({
 				set: "mode",
 				to: "wait"

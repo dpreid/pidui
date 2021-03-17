@@ -166,6 +166,8 @@ export default {
 				dt: 0.01,
 			},
 			position_running: false,
+			// avg_delay: 0,
+			// delays: [],
         }
     },
     created(){
@@ -262,7 +264,10 @@ export default {
 				this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				this.showInputType = true;
 				this.error = 'Automatic stop: ' + message + ". Select a mode to continue.";
-				
+				if(this.inputMode == 'ramp'){
+					eventBus.$emit('stopramp');
+					eventBus.$emit('datarecorderstop');
+				}
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
 				this.changingMode = false;
@@ -272,6 +277,7 @@ export default {
 		wait(){
 			//this is an internal mode in the firmware and does not need to be reflected in the UI.
 			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			eventBus.$emit('datarecorderstop');
 			this.dataSocket.send(JSON.stringify({
 				set: "mode",
 				to: "wait"
@@ -451,8 +457,10 @@ export default {
 
 		//let dataOpen = false;
 		var delay = 0
-		let avg_delay = 0;
-		let delays = [];
+		//var fixed_delay = 0.1;
+		//let delay_sum = 0;
+		//let avg_delay = 0;
+		//let delays = [];
 		var messageCount = 0
 		let a;
 		let b;
@@ -516,21 +524,25 @@ export default {
 					var enc_ang_vel = obj.v;			//RAD/S
 					let enc_ang_vel_rpm = enc_ang_vel*60.0/(2*Math.PI)
 				
-
-
 					if (messageCount == 0){
 						delay = thisDelay
-						delays[0] = thisDelay;
-					} else {
-						delays[messageCount%10] = thisDelay;
-					}
+					} 
 
-					avg_delay = 0;
-					for (let i=0; i<delays.length;i++){
-						avg_delay += delays[i];
-					}
+					// if (messageCount == 0){
+					// 	delay = thisDelay
+					// 	delays[0] = thisDelay;
+					// } else {
+					// 	delays[messageCount%10] = thisDelay;
+					// }
+					//delay_sum += thisDelay;
+
+					// avg_delay = 0;
+					// for (let i=0; i<delays.length;i++){
+					// 	avg_delay += delays[i];
+					// }
 				
-					avg_delay /= delays.length;
+					//avg_delay /= delays.length;
+					//avg_delay = delay_sum/messageCount;
 					//console.log(avg_delay);
 
 					a = 1 / delayWeightingFactor
@@ -542,14 +554,15 @@ export default {
 					} else {
 						thisDelay = (delay * b) + (thisDelay * a)
 					}
-				
+					
+					
 					messageCount += 1
 
 
-					thisTime = msgTime + thisDelay
+					thisTime = msgTime + thisDelay;
+
 				
 				if (!isNaN(thisTime)){
-
 					//store.state.current_time = msgTime + delay;
 
 					if(!isNaN(enc)){
@@ -561,8 +574,8 @@ export default {
 						//in degrees
 						// let enc_deg = enc*180.0/Math.PI;
 						// store.state.current_angle_deg = enc_deg;
-
-						series_theta.append(msgTime + avg_delay, enc);
+						//console.log(msgTime + avg_delay);
+						series_theta.append(msgTime + thisDelay, enc);
 
 						
 					}
@@ -571,7 +584,7 @@ export default {
 						store.state.current_time = msgTime;
 						store.state.current_ang_vel = enc_ang_vel_rpm;
 						
-						series_omega.append(msgTime + avg_delay, enc_ang_vel);	
+						series_omega.append(msgTime + thisDelay, enc_ang_vel);	
 						//series_omega.append(msgTime + delay, enc_ang_vel)	
 						
 					}

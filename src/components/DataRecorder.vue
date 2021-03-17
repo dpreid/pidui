@@ -54,6 +54,7 @@ export default {
     
   },
   created(){
+    eventBus.$on('datarecorderstop', this.stopRecording);
 		eventBus.$on('maxdatapointsreached', this.stopRecording);
 	},
   computed:{
