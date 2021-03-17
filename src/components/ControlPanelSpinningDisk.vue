@@ -458,7 +458,7 @@ export default {
 		//let dataOpen = false;
 		var delay = 0
 		//var fixed_delay = 0.1;
-		//let delay_sum = 0;
+		let delay_sum = 0;
 		//let avg_delay = 0;
 		//let delays = [];
 		var messageCount = 0
@@ -467,7 +467,7 @@ export default {
 		let debug = false;
 		//let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
 
-		var initialSamplingCount = 1200 // 2 mins at 10Hz
+		var initialSamplingCount = 1200 // 2 mins at 10Hz, 1200
 		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
 		//let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
 
@@ -517,23 +517,25 @@ export default {
 				else{
 					var msgTime = obj.t;
 					msgTime = parseFloat(msgTime);
-					var thisDelay = new Date().getTime() - msgTime
+					var thisDelay = new Date().getTime() - msgTime;
 				
 					var enc = obj.d;							//THIS IS NOW IN RADS
 					//store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
 					var enc_ang_vel = obj.v;			//RAD/S
 					let enc_ang_vel_rpm = enc_ang_vel*60.0/(2*Math.PI)
 				
-					if (messageCount == 0){
-						delay = thisDelay
-					} 
-
 					// if (messageCount == 0){
 					// 	delay = thisDelay
-					// 	delays[0] = thisDelay;
-					// } else {
-					// 	delays[messageCount%10] = thisDelay;
-					// }
+					// } 
+
+					if (messageCount < 100){
+						if(messageCount == 0){
+							delay = thisDelay
+						}
+						delay_sum += thisDelay;
+					} else if(messageCount == 100){
+						delay = delay_sum / 100;
+					}
 					//delay_sum += thisDelay;
 
 					// avg_delay = 0;
