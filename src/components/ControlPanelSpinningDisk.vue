@@ -468,7 +468,7 @@ export default {
 		//let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
 
 		var initialSamplingCount = 1200 // 2 mins at 10Hz, 1200
-		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
+		var delayWeightingFactor = 30  // 
 		//let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
 
 		let responsiveSmoothie = true;
@@ -528,24 +528,32 @@ export default {
 					// 	delay = thisDelay
 					// } 
 
-					if (messageCount < 100){
-						if(messageCount == 0){
-							delay = thisDelay
-						}
-						delay_sum += thisDelay;
-					} else if(messageCount == 100){
-						delay = delay_sum / 100;
-					}
-					//delay_sum += thisDelay;
-
-					// avg_delay = 0;
-					// for (let i=0; i<delays.length;i++){
-					// 	avg_delay += delays[i];
+					// if (messageCount < 100){
+					// 	if(messageCount == 0){
+					// 		delay = thisDelay
+					// 	}
+					// 	delay_sum += thisDelay;
+					// } else if(messageCount == 100){
+					// 	delay = delay_sum / 100;
 					// }
-				
-					//avg_delay /= delays.length;
-					//avg_delay = delay_sum/messageCount;
-					//console.log(avg_delay);
+
+					if(messageCount == 0){
+						delay = thisDelay
+						delay_sum += thisDelay;
+					} else{
+						if(!isNaN(thisDelay)){
+							delay_sum += thisDelay;
+							delay = delay_sum / (messageCount + 1);
+						} else{
+							delay_sum += delay;
+							delay = delay_sum / (messageCount + 1);
+							
+						}
+						
+					}
+
+					
+					
 
 					a = 1 / delayWeightingFactor
 					b = 1 - a
