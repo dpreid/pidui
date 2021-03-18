@@ -11,7 +11,7 @@
         <img id='red-light' src='../../public/images/red-light.png' width='20' height='20' :hidden='!showRedLight'>
       </div>
       <div class='col-10'>  
-        <p class='ml-2'>Recorded: {{numData}} data points</p>
+        <p class='m-1'>Recorded: {{numData}}/{{max_data_points}} data points</p>
       </div>
     </div>
    <!-- <div class="form-group row justify-content-center p-2">
