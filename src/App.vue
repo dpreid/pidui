@@ -39,7 +39,7 @@
             </div>
             <div v-if='isSnapshotOn'><motor-snapshot /></div>
             <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
-            <div v-if='isGraphOn'><graph-output type="graph" id="graph0" /></div> 
+            <div v-if='isGraphOn'><graph-output   /></div> 
             
           </div>
         </div>
@@ -56,6 +56,7 @@
 <script>
 
 import GraphOutput from "./components/GraphOutput.vue";
+//import GraphOutputV2 from "./components/GraphOutputV2.vue";
 import TableOutput from "./components/TableOutput.vue";
 import Stopwatch from "./components/Stopwatch.vue";
 import Workspace from "./components/Workspace.vue";
@@ -75,6 +76,8 @@ export default {
   name: 'App',
   components: {
     GraphOutput,
+    //GraphOutputV2,
+    //graphtest,
     TableOutput,
     Stopwatch,
     Workspace,

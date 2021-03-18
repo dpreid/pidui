@@ -334,14 +334,15 @@ export default {
             getGraphParameter(){
                 return store.state.graphDataParameter;
             },
-            newData(){
-                return this.dataStore.state.data;
-            }
+            // newData(){
+            //     return this.dataStore.state.data;
+            // }
 
       },
       mounted() {
         this.createChart();
         this.getData();
+        setInterval(this.getLatestData, 20);                //TESTING
 
         //set default unit
         if(store.state.graphDataParameter == 'theta'){
@@ -366,14 +367,14 @@ export default {
                 this.unit = 'rad/s';
             }
         },
-        newData(){
-            if(store.getNumData() <= this.maxDataPoints){
-                this.getLatestData();
-            } else{
-                eventBus.$emit('maxdatapointsreached');
-            }
+        // newData(){
+        //     if(store.getNumData() <= this.maxDataPoints){
+        //         this.getLatestData();
+        //     } else{
+        //         eventBus.$emit('maxdatapointsreached');
+        //     }
             
-        }
+        // }
     },
     methods: {
         createChart() {
