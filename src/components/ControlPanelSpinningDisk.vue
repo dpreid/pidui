@@ -260,6 +260,7 @@ export default {
 		},
 		hasStopped(message){
 			if(this.currentMode != 'stopped'){
+				this.stop();								//firmware does not automatically stop
 				this.clearMessages();
 				this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				this.showInputType = true;
