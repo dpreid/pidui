@@ -48,6 +48,7 @@ export default {
         wrap_index: 0,
         tooltip_delay: 2000,
         starting_angle: 0,
+        max_data_points: 5000,
     }
   },
   components: {
@@ -86,7 +87,7 @@ export default {
   },
   watch:{
     newTime(){
-      if(this.isRecording){
+      if(this.isRecording && store.getNumData() < this.max_data_points){
         this.plot();
       } 
     },

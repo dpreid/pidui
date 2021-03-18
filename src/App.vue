@@ -39,7 +39,8 @@
             </div>
             <div v-if='isSnapshotOn'><motor-snapshot /></div>
             <div v-if='isInputGraphOn'><graph-input type="graphinput" id="input0" /></div> 
-            <div v-if='isGraphOn'><graph-output   /></div> 
+            <div v-if='isGraphOn'><graph-output type="graph" id="graph0" /></div> 
+            <!-- <div v-if='isGraphOn'><graph-output-v-2   /></div>  -->
             
           </div>
         </div>

@@ -9,7 +9,7 @@
     <div class="row mb-2 justify-content-center align-items-center" id="chart-functions">
         <div class='form-group col-3'>
             <label class='m-2' for="unitSelect">Units:</label>
-            <select class='col-sm' name="unitSelect" id="unitSelect" v-model="unit" @change="getData">
+            <select class='col-sm' name="unitSelect" id="unitSelect" v-model="unit" @change="getAllData">
                 <option v-if='getGraphParameter == "theta"' value="rad">rad</option>
                 <option v-if='getGraphParameter == "theta"' value="deg">deg</option>
                 <option v-if='getGraphParameter == "omega"' value="rpm">RPM</option>
@@ -320,9 +320,10 @@ export default {
             XAxisMax: 0,
             XAxisMin: 0,
             unit: '',
-            maxDataPoints: 1200,
+            maxDataPoints: 5000,
             current_data_index: 0,
             data_index_interval: 1,
+            latest_index: 0,
         }
     },
     computed:{
@@ -341,8 +342,9 @@ export default {
       },
       mounted() {
         this.createChart();
-        this.getData();
-        setInterval(this.getLatestData, 20);                //TESTING
+        this.getAllData();
+
+        setInterval(this.updateChart, 20);                //TESTING
 
         //set default unit
         if(store.state.graphDataParameter == 'theta'){
@@ -352,8 +354,6 @@ export default {
         }
       },
       created(){
-        //eventBus.$on('updateGraph', this.getData );
-        //eventBus.$on('updateGraph', this.getLatestData );
         eventBus.$on('newgraphadded', this.chartAdded);
         eventBus.$on('clearalldata', this.clearData )
         
@@ -377,6 +377,17 @@ export default {
         // }
     },
     methods: {
+        updateChart(){
+            let max_index = store.getNumData() - 1;
+            if(max_index <= this.maxDataPoints){
+                if(this.latest_index < max_index){
+                    this.getLatestData();
+                    this.latest_index = max_index;
+                } 
+            } else{
+                eventBus.$emit('maxdatapointsreached');
+            }
+        },
         createChart() {
             const canvas = document.getElementById(this.id);
             const ctx = canvas.getContext('2d');
@@ -475,6 +486,7 @@ export default {
             this.chart.options.scales.yAxes[0].scaleLabel.labelString = store.state.graphDataParameter;
         },
         clearData(){
+            this.latest_index = 0;
             this.chartData = [];
             this.chart.data.datasets[0].data = this.chartData;
             //this.chart.reset();
@@ -512,7 +524,7 @@ export default {
         //         }
                 
         //     },
-            getData(){
+            getAllData(){
                 if(this.current_data_index == 0){
                     this.clearData();
                     
@@ -521,11 +533,9 @@ export default {
                 
                 //for(let i=0; i<this.$store.getters.getNumData;i++){
                 for(let i=this.current_data_index; i<store.getNumData();i++){
-                    //console.log('loop');
-                    //let data = this.$store.getters.getData[i];
+                    
                     let x_data = store.state.data[i].t;
                     let y_data;
-                    //let x_data = data.t;
                     switch(store.state.graphDataParameter){
                         case 'theta':
                             if(this.unit == 'deg'){
@@ -554,11 +564,8 @@ export default {
                     
                 }
 
-                    
-                    //console.log('index = ' + this.current_data_index);
-                    //console.log('num data = ' + store.getNumData());
                     if(this.current_data_index < store.getNumData() && this.current_data_index <= this.maxDataPoints){
-                        setTimeout(this.getData, 1);
+                        setTimeout(this.getAllData, 1);
                     } else{
                         if(this.current_data_index > this.maxDataPoints){
                             eventBus.$emit('maxdatapointsreached');
@@ -571,13 +578,12 @@ export default {
                 
             },
             getLatestData(){
-                //let index = this.$store.getters.getNumData - 1;
                 let index = store.getNumData() - 1;
                 let y_data;
                 if(index >= 0){
-                    //let data = this.$store.getters.getData[index];
+                    
                     let x_data = store.state.data[index].t;
-                    //let x_data = data.t;
+    
                     switch(store.state.graphDataParameter){
                             case 'theta':
                             if(this.unit == 'deg'){
@@ -601,6 +607,35 @@ export default {
                         //console.log("no data");
                     }
                 
+            },
+            getDataAtIndex(index){
+                let y_data;
+                if(index >= 0){
+                   
+                    let x_data = store.state.data[index].t;
+                
+                    switch(store.state.graphDataParameter){
+                            case 'theta':
+                            if(this.unit == 'deg'){
+                                y_data = store.state.data[index].theta_deg;
+                            } else {
+                                y_data = store.state.data[index].theta;
+                                
+                            }
+                            break;
+                        case 'omega':
+                            if(this.unit == 'rpm'){
+                                y_data = store.state.data[index].omega;
+                            } else{
+                                y_data = store.state.data[index].omega_rad;
+                            }
+                            break;
+
+                        }
+                        this.addDataToChart({x: x_data, y: y_data});
+                    } else{
+                        //console.log("no data");
+                    }
             },
             removeChart(){
                 this.chart.destroy();
