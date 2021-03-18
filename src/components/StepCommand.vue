@@ -21,7 +21,8 @@
             <input class='mr-2' id="time_interval" v-model="time_to_step" size="3" @change='updateStore'>
             <label class='mr-2' for="time_interval">seconds</label> -->
 
-            <button id="run" @click="runCommand">Run</button>
+            <button v-if='!position_running' id="run" @click="runCommand">Run</button>
+            <button v-if='position_running' id="wait" @click="wait">Stop</button>
             <!-- <button v-if="isDataRecorderOn && mode != 'stopped'" id="run" @click="runRecord">Run+Record</button> -->
 
         </div>
@@ -55,6 +56,7 @@ export default {
         max_position_step: 2*Math.PI, 
         max_speed_step: 100,
         max_voltage_step: 12,
+        position_running: false,
     }
   },
   components: {
@@ -71,7 +73,7 @@ export default {
         }
 	},
   mounted(){
-      
+      this.position_running = false;            //NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   },
   methods: {
      runCommand(){
@@ -112,6 +114,7 @@ export default {
 				to: signal
 			}));
          } else if(this.mode == 'positionPid'){
+             this.position_running = true;                      //NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              let new_ang_rad = store.state.current_angle + parseFloat(this.step_size);
              //let current_enc_pos = store.state.current_enc_pos;
             //  let new_enc_pos = current_enc_pos + this.encoder_max*new_ang_rad/Math.PI;
@@ -138,6 +141,15 @@ export default {
          }
          
      },
+     wait(){
+            //this is an internal mode in the firmware and does not need to be reflected in the UI.
+            this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            eventBus.$emit('datarecorderstop');
+			this.dataSocket.send(JSON.stringify({
+				set: "mode",
+				to: "wait"
+				}));
+		},
      //not fully useful at the moment....
      updateStore(){
          store.state.step.step_time = this.time_to_step;
@@ -255,6 +267,8 @@ input{
 
 #run       {background-color:  rgb(74, 223, 37);}
 #run:hover {background-color: #0b7e0f} 
+#wait       {background-color:  rgb(255, 30, 0);}
+#wait:hover {background-color: #520303} 
 
 
 </style>

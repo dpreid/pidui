@@ -27,7 +27,7 @@
 				<button v-if='currentMode == "stopped"' id="pidspeed" class="btn btn-default btn-lg mr-1" @click="speedPid">Velocity (PID)</button>
 				<button v-if='currentMode == "stopped"' id="pidposition" class="btn btn-default btn-lg mr-1" @click="positionPid">Position (PID)</button>	
 				<button v-if='currentMode == "stopped"' id="dcmotor" class="btn btn-default btn-lg mr-1" @click="speedRaw">Voltage (open loop)</button>
-				<button id="stop" class="btn btn-default btn-lg" @click="stop">Stop</button>
+				<button id="stop" class="btn btn-default btn-lg" @click="stop">Exit mode</button>
 
 				<div v-show='showInputType'>
 					<label class='m-2' for="inputSelect">Input type:</label>
@@ -49,7 +49,8 @@
 		<div v-if='currentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
 			<div class="col-3 sliderlabel"> Angle ({{parseFloat(angleParam).toFixed(2)}}rad)</div>
 			<div class="col-7"><input type="range" min="-1.57" max="1.57" step="0.01" v-model="angleParam" class="slider" id="angleSlider"></div>
-			<button id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+			<button v-if='!position_running' id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
+			<button v-if='position_running' id="wait" class="btn btn-default btn-lg col-2" @click="wait">Stop</button>
 		</div>
 
 		<div v-if='currentMode == "speedPid"' class="row justify-content-center m-1 align-items-center">
@@ -164,6 +165,9 @@ export default {
 				kd: 0,
 				dt: 0.01,
 			},
+			position_running: false,
+			// avg_delay: 0,
+			// delays: [],
         }
     },
     created(){
@@ -240,6 +244,7 @@ export default {
 	methods:{
 		stop(){
 			this.clearMessages();
+			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			if(this.inputMode == 'ramp'){
 				eventBus.$emit('stopramp');
 			}
@@ -256,14 +261,27 @@ export default {
 		hasStopped(message){
 			if(this.currentMode != 'stopped'){
 				this.clearMessages();
+				this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				this.showInputType = true;
 				this.error = 'Automatic stop: ' + message + ". Select a mode to continue.";
-				
+				if(this.inputMode == 'ramp'){
+					eventBus.$emit('stopramp');
+					eventBus.$emit('datarecorderstop');
+				}
 				this.speedParam = 0;
 				this.currentMode = 'stopped';
 				this.changingMode = false;
 				this.updateStore();
 			}
+		},
+		wait(){
+			//this is an internal mode in the firmware and does not need to be reflected in the UI.
+			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			eventBus.$emit('datarecorderstop');
+			this.dataSocket.send(JSON.stringify({
+				set: "mode",
+				to: "wait"
+				}));
 		},
 		speedPid(){
 			this.clearMessages();
@@ -317,6 +335,7 @@ export default {
 		},
 		positionPid(){
 			this.clearMessages();
+			this.position_running = false;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			this.setMaxParameters('positionPid');
 			if(this.currentMode == 'stopped'){
 				store.setGraphDataParameter('theta');
@@ -335,6 +354,8 @@ export default {
 		setPosition(){
 			this.clearMessages();
 			this.showInputType = false;
+			this.position_running = true;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			console.log(this.position_running);
 			if(!isNaN(this.angleParam)){
 				if(this.currentMode == 'positionPid'){
 					let pos = this.angleParam			//anglParam in rad
@@ -436,15 +457,17 @@ export default {
 
 		//let dataOpen = false;
 		var delay = 0
-		let avg_delay = 0;
-		let delays = [];
+		//var fixed_delay = 0.1;
+		let delay_sum = 0;
+		//let avg_delay = 0;
+		//let delays = [];
 		var messageCount = 0
 		let a;
 		let b;
 		let debug = false;
 		//let wrapEncoder = false;			//NO WRAPPING OF ENCODER?
 
-		var initialSamplingCount = 1200 // 2 mins at 10Hz
+		var initialSamplingCount = 1200 // 2 mins at 10Hz, 1200
 		var delayWeightingFactor = 60  // 1 minute drift in 1 hour
 		//let encoderPPR = 2000			//500 counts per revolution, becomes 2000 pulses per revolution with encoder A and B pins
 
@@ -494,28 +517,34 @@ export default {
 				else{
 					var msgTime = obj.t;
 					msgTime = parseFloat(msgTime);
-					var thisDelay = new Date().getTime() - msgTime
+					var thisDelay = new Date().getTime() - msgTime;
 				
 					var enc = obj.d;							//THIS IS NOW IN RADS
 					//store.state.current_enc_pos = enc;			//store as a position between -1000 and 1000
 					var enc_ang_vel = obj.v;			//RAD/S
 					let enc_ang_vel_rpm = enc_ang_vel*60.0/(2*Math.PI)
 				
+					// if (messageCount == 0){
+					// 	delay = thisDelay
+					// } 
 
-
-					if (messageCount == 0){
-						delay = thisDelay
-						delays[0] = thisDelay;
-					} else {
-						delays[messageCount%10] = thisDelay;
+					if (messageCount < 100){
+						if(messageCount == 0){
+							delay = thisDelay
+						}
+						delay_sum += thisDelay;
+					} else if(messageCount == 100){
+						delay = delay_sum / 100;
 					}
+					//delay_sum += thisDelay;
 
-					avg_delay = 0;
-					for (let i=0; i<delays.length;i++){
-						avg_delay += delays[i];
-					}
+					// avg_delay = 0;
+					// for (let i=0; i<delays.length;i++){
+					// 	avg_delay += delays[i];
+					// }
 				
-					avg_delay /= delays.length;
+					//avg_delay /= delays.length;
+					//avg_delay = delay_sum/messageCount;
 					//console.log(avg_delay);
 
 					a = 1 / delayWeightingFactor
@@ -527,14 +556,15 @@ export default {
 					} else {
 						thisDelay = (delay * b) + (thisDelay * a)
 					}
-				
+					
+					
 					messageCount += 1
 
 
-					thisTime = msgTime + thisDelay
+					thisTime = msgTime + thisDelay;
+
 				
 				if (!isNaN(thisTime)){
-
 					//store.state.current_time = msgTime + delay;
 
 					if(!isNaN(enc)){
@@ -546,8 +576,8 @@ export default {
 						//in degrees
 						// let enc_deg = enc*180.0/Math.PI;
 						// store.state.current_angle_deg = enc_deg;
-
-						series_theta.append(msgTime + avg_delay, enc);
+						//console.log(msgTime + avg_delay);
+						series_theta.append(msgTime + thisDelay, enc);
 
 						
 					}
@@ -556,7 +586,7 @@ export default {
 						store.state.current_time = msgTime;
 						store.state.current_ang_vel = enc_ang_vel_rpm;
 						
-						series_omega.append(msgTime + avg_delay, enc_ang_vel);	
+						series_omega.append(msgTime + thisDelay, enc_ang_vel);	
 						//series_omega.append(msgTime + delay, enc_ang_vel)	
 						
 					}
@@ -776,5 +806,6 @@ export default {
 #set         {background-color: rgb(30, 250, 1);}
 #set:hover   {background-color: rgb(30, 172, 2);}
 
-
+#wait       {background-color:  rgb(255, 30, 0);}
+#wait:hover {background-color: #520303} 
 </style>

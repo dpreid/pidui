@@ -171,6 +171,7 @@ export default {
          
      },
      stopCommand(){
+         console.log('ramp cleared');
          clearInterval(this.interval_id);
          this.isRampRunning = false;
          //store.state.isRecording = false;
