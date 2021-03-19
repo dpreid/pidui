@@ -322,7 +322,7 @@ export default {
             unit: '',
             maxDataPoints: 1200,
             current_data_index: 0,
-            data_index_interval: 1,
+            data_index_interval: 100,
             latest_index: 0,
             max_reached: false,
         }
@@ -594,11 +594,13 @@ export default {
                 }
 
                     if(this.current_data_index < store.getNumData() && this.current_data_index <= this.maxDataPoints){
-                        setTimeout(this.getAllData, 1);
+                        setTimeout(this.getAllData, 20);
+                        this.chart.update(0);
                     } else{
                         if(this.current_data_index > this.maxDataPoints){
                             eventBus.$emit('maxdatapointsreached');
                         }
+                        this.chart.update(0);
                         console.log('finished loading graph data');
                         this.count = 0;
                         this.current_data_index = 0;
