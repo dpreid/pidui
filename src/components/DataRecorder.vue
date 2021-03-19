@@ -49,6 +49,7 @@ export default {
         tooltip_delay: 2000,
         starting_angle: 0,
         max_data_points: 5000,
+        max_reached: false,
     }
   },
   components: {
@@ -56,7 +57,7 @@ export default {
   },
   created(){
     eventBus.$on('datarecorderstop', this.stopRecording);
-		eventBus.$on('maxdatapointsreached', this.stopRecording);
+		//eventBus.$on('maxdatapointsreached', this.stopRecording);
 	},
   computed:{
       hasData(){
@@ -89,7 +90,10 @@ export default {
     newTime(){
       if(this.isRecording && store.getNumData() < this.max_data_points){
         this.plot();
-      } 
+      } else if(store.getNumData() == this.max_data_points && !this.max_reached){
+          this.stopRecording();
+          this.max_reached = true;
+      }
     },
     startRecord(){
       if(this.data_store.state.isRecording){
@@ -178,6 +182,7 @@ export default {
       clearGraph(){
           //this.$store.dispatch('clearAllData');
           store.clearAllData();
+          this.max_reached = false;
           eventBus.$emit('clearalldata');
           this.hasPlotted = false;
           this.wrap_index = 0;

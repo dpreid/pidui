@@ -320,15 +320,16 @@ export default {
             XAxisMax: 0,
             XAxisMin: 0,
             unit: '',
-            maxDataPoints: 5000,
+            maxDataPoints: 1200,
             current_data_index: 0,
             data_index_interval: 1,
             latest_index: 0,
+            max_reached: false,
         }
     },
     computed:{
             getCurrentMode(){
-                console.log(this.dataStore.state.currentMode);
+                //console.log(this.dataStore.state.currentMode);
                 let data = this.dataStore.state.currentMode;
                 return data;
             },
@@ -344,7 +345,8 @@ export default {
         this.createChart();
         this.getAllData();
 
-        setInterval(this.updateChart, 20);                //TESTING
+        this.updateChart();
+        //setInterval(this.updateChart, 20);                //TESTING
 
         //set default unit
         if(store.state.graphDataParameter == 'theta'){
@@ -377,16 +379,41 @@ export default {
         // }
     },
     methods: {
-        updateChart(){
+        // updateChart(){
+        //     let max_index = store.getNumData() - 1;
+        //     if(max_index < this.maxDataPoints){
+        //         if(this.latest_index < max_index && store.state.isRecording){
+        //             this.getLatestData();
+        //             //this.getDataAtIndex(this.latest_index);
+        //             this.latest_index = max_index;
+        //             //this.latest_index++;
+        //         } 
+        //     } else if(!this.max_reached){
+        //         eventBus.$emit('maxdatapointsreached');
+        //         console.log('max reached');
+        //         this.max_reached = true;
+        //     }
+
+        //     setTimeout(this.updateChart, 20);
+        // },
+         updateChart(){
             let max_index = store.getNumData() - 1;
-            if(max_index <= this.maxDataPoints){
-                if(this.latest_index < max_index){
-                    this.getLatestData();
+            if(max_index < this.maxDataPoints){
+                if(this.latest_index < max_index && store.state.isRecording){
+                    for(let i=this.latest_index; i < max_index; i++){
+                        this.getDataAtIndex(i);
+                    }
                     this.latest_index = max_index;
+                    this.chart.update(0);                       //actually updating the chart moved to here!
+                    this.chart.options.scales.yAxes[0].scaleLabel.labelString = store.state.graphDataParameter;
                 } 
-            } else{
+            } else if(!this.max_reached){
                 eventBus.$emit('maxdatapointsreached');
+                console.log('max reached');
+                this.max_reached = true;
             }
+
+            setTimeout(this.updateChart, 20);
         },
         createChart() {
             const canvas = document.getElementById(this.id);
@@ -479,14 +506,16 @@ export default {
             }
         },
         addDataToChart(data) {
-            this.chart.data.datasets.forEach((dataset) => {
-                dataset.data.push(data);
-            });
-            this.chart.update(0);       //instantly update with 0 parameter, no animation
-            this.chart.options.scales.yAxes[0].scaleLabel.labelString = store.state.graphDataParameter;
+            // this.chart.data.datasets.forEach((dataset) => {
+            //     dataset.data.push(data);
+            // });
+            this.chart.data.datasets[0].data.push(data);
+            //this.chart.update(0);       //instantly update with 0 parameter, no animation - moved from here to the chart update
+            // this.chart.options.scales.yAxes[0].scaleLabel.labelString = store.state.graphDataParameter;
         },
         clearData(){
-            this.latest_index = 0;
+            this.latest_index = 0;          //NEW
+            this.max_reached = false;          //NEW
             this.chartData = [];
             this.chart.data.datasets[0].data = this.chartData;
             //this.chart.reset();

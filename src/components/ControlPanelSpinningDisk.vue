@@ -181,7 +181,7 @@ export default {
 		eventBus.$on('hardwarestop', this.hasStopped);	
 		eventBus.$on('showinputtype', (on) => {this.showInputType = on});
 
-		eventBus.$on('maxdatapointsreached', () => {this.error = 'Max data points reached, recording automatically stopped'});
+		eventBus.$on('maxdatapointsreached', () => {this.error = 'Max graph points reached, graphing automatically stopped'});
 	},
 	mounted(){
 		
