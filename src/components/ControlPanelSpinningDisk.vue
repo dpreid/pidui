@@ -17,8 +17,8 @@
 
 	<div class="panel panel-default">
 		<div class='panel-heading'><h3>Current mode: {{getModeName}}</h3></div>
-		<div class='panel-body'>{{this.message}}</div>
-		<div :class='getErrorClass'><h3>{{this.error}}</h3></div>
+		<div class='panel-body'>{{message}}</div>
+		<div :class='getErrorClass'><h3>{{error}}</h3></div>
 	</div>
 
 	<div id="buttons">
