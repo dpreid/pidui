@@ -1,5 +1,7 @@
 //vue3 update
 
+
+
 <template>
     <div class='m-2 p-2'>
         <div class="row justify-content-center" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">    
@@ -85,35 +87,28 @@ export default {
      },
      sendCommand(){
          if(this.mode == 'speedRaw'){
+
              let signal = parseFloat(this.step_size);
-             this.dataSocket.send(JSON.stringify({
-				set: "volts",
-				to: signal
-			}));
+             this.$store.dispatch('setVoltage', signal);
+
          } else if(this.mode == 'positionPid'){
+
              this.position_running = true;                      //NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              let new_ang_rad = this.$store.getters.getCurrentAngle + parseFloat(this.step_size);
+             this.$store.dispatch('setPosition', new_ang_rad);
 
-             this.dataSocket.send(JSON.stringify({
-				set: "position",
-				to: new_ang_rad
-			}));
          } else if(this.mode == 'speedPid'){
-             let rad_s = this.$store.getters.getCurrentAngularVelocity*2*Math.PI/60.0 + parseFloat(this.step_size);           //needs to be in rad/s
-             this.dataSocket.send(JSON.stringify({
-				set: "velocity",
-				to: rad_s
-			}));
+
+             let rad_s = this.$store.getters.getCurrentAngularVelocity + parseFloat(this.step_size);           //needs to be in rad/s
+             this.$store.dispatch('setSpeed', rad_s);
+
          }
          
      },
      wait(){
             //this is an internal mode in the firmware and does not need to be reflected in the UI.
             this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "wait"
-				}));
+			this.$store.dispatch('wait');
 		},
      
   }

@@ -70,12 +70,12 @@ const dataStore = {
          ADD_PREVIOUS_ANGULAR_VELOCITY(state, velocity){
             state.previous_ang_vels.push(velocity);
          },
-         SET_VALUES_IN_AVERAGE(state, num){
-            state.values_in_average = num;
-         },
-         SET_AVERAGE_COUNT(state, count){
-            state.average_count = count;
-         },
+         // SET_VALUES_IN_AVERAGE(state, num){
+         //    state.values_in_average = num;
+         // },
+         // SET_AVERAGE_COUNT(state, count){
+         //    state.average_count = count;
+         // },
          // SET_CURRENT_TIME(state, time){
          //    state.current_time = time;
          // },
@@ -167,15 +167,15 @@ const dataStore = {
          setCurrentAngularVelocityArray(context, array){
             context.commit("SET_CURRENT_ANGULAR_VELOCITY_ARRAY", array);
          },
-         addPreviousAngularVelocity(context, velocity){
-            context.commit("ADD_PREVIOUS_ANGULAR_VELOCITY", velocity);
-         },
-         setValuesInAverage(context, num){
-            context.commit("SET_VALUES_IN_AVERAGE", num);
-         },
-         setAverageCount(context, count){
-            context.commit("SET_AVERAGE_COUNT", count);
-         },
+         // addPreviousAngularVelocity(context, velocity){
+         //    context.commit("ADD_PREVIOUS_ANGULAR_VELOCITY", velocity);
+         // },
+         // setValuesInAverage(context, num){
+         //    context.commit("SET_VALUES_IN_AVERAGE", num);
+         // },
+         // setAverageCount(context, count){
+         //    context.commit("SET_AVERAGE_COUNT", count);
+         // },
          // setCurrentTime(context, time){
          //    context.commit("SET_CURRENT_TIME", time);
          // },
@@ -267,15 +267,15 @@ const dataStore = {
          getCurrentAngularVelocityArray(state){
             return state.current_ang_vel_array;
          },
-         getPreviousAngularVelocities(state){
-            return state.previous_ang_vels;
-         },
-         getValuesInAverage(state){
-            return state.values_in_average;
-         },
-         getAverageCount(state){
-            return state.average_count;
-         },
+         // getPreviousAngularVelocities(state){
+         //    return state.previous_ang_vels;
+         // },
+         // getValuesInAverage(state){
+         //    return state.values_in_average;
+         // },
+         // getAverageCount(state){
+         //    return state.average_count;
+         // },
          getCurrentTime(state){
             return state.current_time_array[3];
          },

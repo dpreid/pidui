@@ -3,30 +3,44 @@
 
 const uiStore = {
     state: () => ({
-        isDraggable: true,
-        consent_given: false,
-        show_force: true,       //should force values be displayed on the UI
-        show_theory: false,      //should the theoretical values component be available on the UI
+
+       remoteLabVersion: '',
+       isDraggable: true,
+       consent_given: false,
+       show_force: true,       //should force values be displayed on the UI
+       show_theory: false,      //should the theoretical values component be available on the UI
+
        }),
        mutations:{
+         SET_REMOTE_LAB_VERSION(state, version){
+            state.remoteLabVersion = version;
+         },
          SET_DRAGGABLE(state, draggable){
             state.isDraggable = draggable;
          },
          SET_CONSENT(state, consent){
             state.consent_given = consent;
-         }
+         },
+         
 
        },
        actions:{
+         setRemoteLabVersion(context, version){
+            context.commit("SET_REMOTE_LAB_VERSION", version);
+         },
          setDraggable(context, draggable){
              context.commit('SET_DRAGGABLE', draggable);
          },
          setConsent(context, consent){
             context.commit('SET_CONSENT', consent);
-         }
+         },
+
 
        },
        getters:{
+         getRemoteLabVersion(state){
+            return state.remoteLabVersion;
+         },
          getDraggable(state){
              return state.isDraggable;
          },

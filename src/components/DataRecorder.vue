@@ -126,7 +126,6 @@ export default {
 
       // },
       plot(){
-        console.log('plotting');
           let angles = this.getCurrentAngleArray; //rad
           let times = this.getTimeArray;       //s
           let ang_vels = this.getCurrentAngularVelocityArray;  //rad/s
@@ -138,9 +137,6 @@ export default {
               let data_object = {id: this.getNumData, t: parseFloat(times[index]), theta: angle.toFixed(2), omega: ang_vels[index].toFixed(2), command: commands[index], drive: drives[index], error: errors[index], showDataPoint: true};
               this.$store.dispatch('addData', data_object);
           })
-
-          
-          
 
       },
       clearData(){

@@ -111,6 +111,17 @@ const commandStore = {
         setCurrentMode(context, mode){
             context.commit("SET_CURRENT_MODE", mode);
          },
+        getModeName(state){
+            if(state.currentMode == 'positionPid'){
+                return 'position (PID)';
+            } else if (state.currentMode == 'speedPid'){
+                return 'velocity (PID)';
+            } else if(state.currentMode == 'speedRaw'){
+                return 'voltage (open loop)';
+            } else {
+                return state.currentMode;
+            }
+        },
 
         
        },

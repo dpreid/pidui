@@ -16,12 +16,13 @@
                    Menu
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("graph")'>Graph</a></li>
                     <li><a class="dropdown-item" href="#" @click='toggleComponent("datarecorder")'>Data Recorder</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("stopwatch")'>Stopwatch</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("table")'>Table</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("systemdiagrams")'>System Diagrams</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("graph")'>Graph</a></li>
                     <li><a class="dropdown-item" href="#" @click='toggleComponent("snapshot")'>Data Snapshot</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("table")'>Table</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("stopwatch")'>Stopwatch</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("systemdiagrams")'>System Diagrams</a></li>
+                    
                   </ul>
               </li>
 

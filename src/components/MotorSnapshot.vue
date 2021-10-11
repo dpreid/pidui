@@ -10,6 +10,10 @@
                 <th v-for='heading in headings' :key="heading" scope="col">{{heading}}</th>
             </tr>
 
+            <tr v-for="row in snaps" :id="row.time" :key="row.time">
+                <td v-for='key in Object.keys(row)' :key="key">{{row[key]}}</td>
+            </tr>
+
             <tr class='current border'>
                 <td>{{getTime.toFixed(2)}}</td>
                 <td>{{getCurrentAngle.toFixed(2)}}</td>
@@ -17,10 +21,6 @@
                 <td>{{getCommand.toFixed(2)}}</td>
                 <td>{{getDrive.toFixed(2)}}</td>
                 <td>{{getError.toFixed(2)}}</td>
-            </tr>
-
-            <tr v-for="row in snaps" :id="row.time" :key="row.time">
-                <td v-for='key in Object.keys(row)' :key="key">{{row[key]}}</td>
             </tr>
                             
         </table> 

@@ -1,4 +1,6 @@
 //vue3 update
+//REALLY SHOULD CHANGE THIS COMPONENT TO INITIALISE A RAMP FUNCTION WITHIN THE FIRMWARE INSTEAD OF SENDING NEW DATA ON A CERTAIN TIME PERIOD.
+//Updated to use commandStore commands, but need to reconsider as above.
 
 <template>
     <div class='m-2 p-2'>
@@ -117,23 +119,20 @@ export default {
          let ramp_value = this.ramp_gradient * this.time;
 
          if(this.mode == 'speedRaw'){
-            let signal = parseFloat(ramp_value) + parseFloat(this.ramp_start);
-             this.dataSocket.send(JSON.stringify({
-				set: "volts",
-				to: signal
-			}));
+             
+             let signal = parseFloat(ramp_value) + parseFloat(this.ramp_start);
+             this.$store.dispatch('setVoltage', signal);
+
          } else if(this.mode == 'speedPid'){  
-            let rad_s = parseFloat(ramp_value) + parseFloat(this.ramp_start);  
-             this.dataSocket.send(JSON.stringify({
-				set: "velocity",
-				to: rad_s
-			}));
+             
+             let rad_s = parseFloat(ramp_value) + parseFloat(this.ramp_start);  
+             this.$store.dispatch('setSpeed', rad_s);
+
          } else if(this.mode == 'positionPid'){
+
              let new_ang_rad = parseFloat(ramp_value) + parseFloat(this.initial_angle);
-             this.dataSocket.send(JSON.stringify({
-				set: "position",
-				to: new_ang_rad
-			}));
+             this.$store.dispatch('setPosition', new_ang_rad);
+
          } else{
              this.stopCommand();
          }
@@ -147,15 +146,9 @@ export default {
         let signal = parseFloat(this.ramp_start);
 
         if(this.mode == 'speedRaw'){
-            this.dataSocket.send(JSON.stringify({
-				set: "volts",
-				to: signal
-            }));
+            this.$store.dispatch('setVoltage', signal);
         } else {
-            this.dataSocket.send(JSON.stringify({
-				set: "velocity",
-				to: signal
-            }));
+            this.$store.dispatch('setSpeed', signal);
         }
      },
   }
