@@ -1,19 +1,27 @@
-//Vue3
-//removed unit choices, since data has been streamlined to not include alternative units
+//initial attempt to update to chart.js v3......not working yet
 
 <template>
 <div class='container-sm m-2 bg-white border rounded'>
     <div class="row m-0 justify-content-center" id="chart-canvas">
         <div class="col-12">
-            <canvas id='graph-canvas' @mousedown="startLine" @mouseup="endDrag" @mousemove="endLine"></canvas>
+            <canvas :id="id" @mousedown="startLine" @mouseup="endDrag" @mousemove="endLine"></canvas>
         </div>
     </div>
 
     <div class="row mb-2 justify-content-center align-items-center" id="chart-functions">
+        <div class='form-group col-3'>
+            <label class='m-2' for="unitSelect">Units:</label>
+            <select class='col-sm' name="unitSelect" id="unitSelect" v-model="unit" @change="getAllData">
+                <option v-if='getGraphDataParameter == "theta"' value="rad">rad</option>
+                <option v-if='getGraphDataParameter == "theta"' value="deg">deg</option>
+                <option v-if='getGraphDataParameter == "omega"' value="rpm">RPM</option>
+                <option v-if='getGraphDataParameter == "omega"' value="rad/s">rad/s</option>
+            </select> 
+        </div>
 
-        <div class='form-group col-6'>
+        <div class='form-group col-3'>
             <label class='m-2' for="gradient">Gradient:</label>
-            <input class='col-sm' id="gradient" :value="gradient.toFixed(2)" readonly > 
+            <input class='col-sm' id="gradient" :value="gradient" readonly> 
         </div>
        
         
@@ -244,65 +252,21 @@
         </div>
 
     </div>
-
-    <toolbar parentCanvasID="graph-canvas" parentComponentName="graph" parentDivID="graph" :showDownload='true' :showPopupHelp="true" :showOptions="false">  
-        
-        <template v-slot:popup id='graph-popup'>
-            <div class='row mb-2' id='gradient-div'>
-                <div class='col-4'>
-                    <img class='popup-image' src='../../public/images/gradient.png'>
-                </div>
-                <div class='col-8'>
-                    <h3> Gradient tool </h3>
-                    <p> Click and drag on the graph in order to draw a straight line segment. The gradient of this line is displayed in the Gradient box.</p>
-                </div>
-            </div>
-
-            <div class='row mb-2' id='data-point-div'>
-                <div class='col-4'>
-                    <img class='popup-image' src='../../public/images/GraphDataPoint.png'>
-                </div>
-                <div class='col-8'>
-                    <h3> Interactive data points </h3>
-                    <p> Hover over a data point to get the exact values. If the 'Data Table' component is open, click a data point to go to the corresponding line in 
-                        the data table.
-                    </p>
-                </div>
-
-            </div>
-
-            <div class='row mb-2' id='functions-div'>
-                <div class='col-4'>
-                    <img class='popup-image' src='../../public/images/function-plotting.png'>
-                </div>
-                <div class='col-8'>
-                    <h3> Function Plotting </h3>
-                    <p> Select the function type from the dropdown menu. Input the corresponding function parameters. Angular parameters are in radians. Click plot to display the function.
-                        The function is plotted up to the maximum time value on the x-axis.
-                    </p>
-                </div>
-
-            </div>
-        </template>
-    </toolbar>
 </div>
 
 </template>
 
 <script>
-
-import { Chart } from 'chart.js';
+import { Chart, ScatterController, LineElement, PointElement, LinearScale } from 'chart.js';
 import { mapGetters } from 'vuex';
-import Toolbar from "./elements/Toolbar.vue";
+
+Chart.register(ScatterController, LineElement, PointElement, LinearScale);
 
 export default {
     
     name: 'GraphOutput',
-    props: ['type'],
+    props: ['type', 'id'],
     emits: ['newselectedgraphpoint'],
-    components:{
-        Toolbar,
-    },
     data(){
         return{
             chart: null,
@@ -321,6 +285,7 @@ export default {
             YAxisMin: 0,
             XAxisMax: 0,
             XAxisMin: 0,
+            unit: '',
             maxDataPoints: 1200,
             current_data_index: 0,
             data_index_interval: 100,
@@ -329,8 +294,14 @@ export default {
     },
     mounted() {
         this.createChart();
-        this.getAllData();
-        this.updateChart();
+        //this.getAllData();
+        //this.updateChart();
+        
+        if(this.getGraphDataParameter == 'theta'){
+            this.unit = 'rad';
+        } else{
+            this.unit = 'rad/s';
+        }
       },
     computed:{
         ...mapGetters([
@@ -341,13 +312,24 @@ export default {
         ]),
       },
     watch:{
+        getGraphDataParameter(param){
+            if(param == 'theta'){
+                this.unit = 'rad';
+            } else{
+                this.unit = 'rad/s';
+            }
+        },
         getData(){
+            console.log('getData');
             this.clearData();       //only runs when data array is completely changed, ie when it is set to empty array []
         },
+        currentFunction(){
+            console.log('function changed')
+        }
     },
     methods: {
-        updateChart(){
-            
+         updateChart(){
+             console.log('updating');
             let max_index = this.getNumData - 1;
             if(max_index < this.maxDataPoints){
                 if(this.latest_index < max_index && this.getIsRecording){
@@ -355,16 +337,16 @@ export default {
                         this.getDataAtIndex(i);
                     }
                     this.latest_index = max_index;
-                    this.chart.update();                       //actually updating the chart moved to here!
-                    this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.getGraphDataParameter;
+                    //this.chart.update();                       //actually updating the chart moved to here!
+                    this.chart.options.scales.y.title.text = this.getGraphDataParameter;
                 } 
             } 
 
             setTimeout(this.updateChart, 20);
         },
         createChart() {
-            var _this = this;
-            const canvas = document.getElementById('graph-canvas');
+            let _this = this;
+            const canvas = document.getElementById(this.id);
             const ctx = canvas.getContext('2d');
             this.chart = new Chart(ctx, {
             type: 'scatter',
@@ -378,21 +360,29 @@ export default {
             options: {
                 animation: false,
                 parsing: false,
-                legend:{
-                    display: false
+                plugins:{
+                    title:{
+                        display: false
+                    },
+                    legend:{
+                        display: false
+                    },
                 },
                 scales: {
-                    xAxes: [{
-                        scaleLabel:{
-                            display: true,
-                            labelString: 'time/s'
-                        },
+                    x: {
                         type: 'linear',
                         position: 'bottom',
+                        title:{
+                            display: true,
+                            text: 'time/s'
+                        },
                         ticks: {
-                            callback : (value,index,values) => {
-                                _this.updateXAxisMax(value, index, values);
-                                _this.updateXAxisMin(value, index);
+                            callback : function(value,index,values) {
+                                if(index == 0){
+                                    _this.updateXAxisMin(value);
+                                } else if(index == values.length - 1){
+                                    _this.updateXAxisMax(value);
+                                }
                                 return value;
                             },
                             
@@ -400,57 +390,50 @@ export default {
                         minRotation: 20,
                         maxRotation: 20,
                         sampleSize: 2,
-                    }],
-                    yAxes: [{
-                        scaleLabel:{
-                            display: true,
-                            labelString: _this.graphDataParameter
-                        },
+                    },
+                    y: {
                         type: 'linear',
                         position: 'left',
+                        title:{
+                            display: true,
+                            text: _this.getGraphDataParameter
+                        },
                         ticks: {
-                            callback : (value,index,values) => {
-                                _this.updateYAxisMax(value, index);
-                                _this.updateYAxisMin(value, index, values);
+                            callback : function(value,index,values) {
+                                if(index == 0){
+                                    _this.updateYAxisMin(value);
+                                } else if(index == values.length - 1){
+                                    _this.updateYAxisMax(value);
+                                }
                                 return value;
-                            }
+                            },
                         },
                         sampleSize: 2,
-                    }],
+                    },
                 },
                 responsive: true
             }
         });
-
-            canvas.onclick = function(event){
-                let active_points = _this.chart.getElementsAtEventForMode(event, 'index', { intersect: true }, false);
-                if(active_points[0]){
-                    _this.$emit('newselectedgraphpoint', active_points[0]._index);       //data point selected so send event to let other elements know.
-                }
+            // canvas.onclick = function(event){
+            //     let active_points = _this.chart.getElementsAtEventForMode(event, 'index', { intersect: true }, false);
+            //     if(active_points[0]){
+            //         _this.$emit('newselectedgraphpoint', active_points[0]._index);       //data point selected so send event to let other elements know.
+            //     }
                 
-            };
+            // };
         },
-        updateYAxisMax(value, index){
-            if(index == 0){
-                this.YAxisMax = value;
-            }
+        updateYAxisMax(value){
+            this.YAxisMax = value;
             
         },
-        updateYAxisMin(value,index,values){
-            if(index == values.length - 1){
-                this.YAxisMin = value;
-            }
+        updateYAxisMin(value){
+            this.YAxisMin = value;
         },
-        updateXAxisMin(value, index){
-            if(index == 0){
-                this.XAxisMin = value;
-            }
-            
+        updateXAxisMin(value){
+            this.XAxisMin = value;
         },
-        updateXAxisMax(value,index,values){
-            if(index == values.length - 1){
-                this.XAxisMax = value;
-            }
+        updateXAxisMax(value){
+            this.XAxisMax = value;
         },
         addDataToChart(data) {
             this.chart.data.datasets[0].data.push(data);
@@ -460,8 +443,7 @@ export default {
             this.max_reached = false;          //NEW
             this.chartData = [];
             this.chart.data.datasets[0].data = this.chartData;
-            //this.chart.reset();
-            this.chart.update();
+            //this.chart.update();
         },
         getAllData(){
             if(this.current_data_index == 0){
@@ -474,10 +456,19 @@ export default {
                 let y_data;
                 switch(this.getGraphDataParameter){
                     case 'theta':
-                        y_data = data.theta;
+                        if(this.unit == 'deg'){
+                            y_data = data.theta_deg;
+                        } else {
+                            y_data = data.theta;
+                        }
                         break;
                     case 'omega':
-                        y_data = data.omega;
+                        if(this.unit == 'rpm'){
+                            y_data = data.omega;
+                        } else{
+                            y_data = data.omega_rad;
+                            
+                        }
                         break;
 
                 }
@@ -492,9 +483,9 @@ export default {
 
                 if(this.current_data_index < this.getNumData && this.current_data_index <= this.maxDataPoints){
                     setTimeout(this.getAllData, 20);
-                    this.chart.update(0);
+                    //this.chart.update(0);
                 } else{
-                    this.chart.update(0);
+                    //this.chart.update(0);
                     this.count = 0;
                     this.current_data_index = 0;
                 }
@@ -508,11 +499,20 @@ export default {
                 let data = this.$store.getters.getData[index];
                 let x_data = data.t;
                 switch(this.getGraphDataParameter){
-                    case 'theta':
-                        y_data = data.theta;
+                        case 'theta':
+                        if(this.unit == 'deg'){
+                            y_data = data.theta_deg;
+                        } else {
+                            y_data = data.theta;
+                            
+                        }
                         break;
                     case 'omega':
-                        y_data = data.omega;
+                        if(this.unit == 'rpm'){
+                            y_data = data.omega;
+                        } else{
+                            y_data = data.omega_rad;
+                        }
                         break;
 
                     }
@@ -527,11 +527,20 @@ export default {
                 let x_data = data.t;
             
                 switch(this.getGraphDataParameter){
-                    case 'theta':
-                        y_data = data.theta;
+                        case 'theta':
+                        if(this.unit == 'deg'){
+                            y_data = data.theta_deg;
+                        } else {
+                            y_data = data.theta;
+                            
+                        }
                         break;
                     case 'omega':
-                        y_data = data.omega;
+                        if(this.unit == 'rpm'){
+                            y_data = data.omega;
+                        } else{
+                            y_data = data.omega_rad;
+                        }
                         break;
 
                     }
@@ -542,12 +551,10 @@ export default {
             this.chart.destroy();
         },
         startLine(event){
-            event.preventDefault();
+            console.log('start line');
             this.gradient_start_point.x = event.offsetX;
             this.gradient_start_point.y = event.offsetY;
-
             this.mouseDragging = true;
-            
         },
         endDrag(){
             this.mouseDragging = false;
@@ -557,19 +564,15 @@ export default {
                 //get ratio of y axis to x axis scales, get ratio of y difference in mouse positions and x difference in mouse positions.
                 this.gradient_end_point.x = event.offsetX;
                 this.gradient_end_point.y = event.offsetY;
-
                 let pointer_ratio = (this.gradient_start_point.y - this.gradient_end_point.y) / (this.gradient_end_point.x - this.gradient_start_point.x);  //pointer ratio
-
                 let canvas_offset = 32;         //might need to change/check this 
-                let canvas = document.getElementById('graph-canvas');
+                let canvas = document.getElementById(this.id);
                 let canvas_height = canvas.clientHeight - canvas_offset;
                 let canvas_width = canvas.clientWidth;
                 let canvas_ratio = canvas_height/canvas_width;      //canvas ratio
-                
                 let y_diff = this.YAxisMax - this.YAxisMin;
                 let x_diff = this.XAxisMax - this.XAxisMin;
                 let axis_ratio = y_diff/x_diff;         //axis ratio
-
                 if(this.chartData.length > 1){
                     this.gradient = axis_ratio*pointer_ratio/canvas_ratio;
                     this.drawLine(this.gradient_start_point, this.gradient_end_point);
@@ -581,7 +584,7 @@ export default {
             
             //draw the gradient line
             //only draw anything if at least 2 data points have been plotted
-            let canvas = document.getElementById('graph-canvas');
+            let canvas = document.getElementById(this.id);
             const context = canvas.getContext('2d');
             context.clearRect(0, 0, canvas.width, canvas.height);
             this.chart.update(0);       //instantly update with no animation
@@ -599,8 +602,6 @@ export default {
             
         },
         plotFunc(func){
-            // let min = store.getMinTime();
-            // let max = store.getMaxTime();
             let min = this.XAxisMin;
             let max = this.XAxisMax;
             let t_delta = max-min;
@@ -682,17 +683,25 @@ export default {
             
         },
         addNewDataSet(colour, data){
-            this.chart.data.datasets.push({
+            try{
+                console.log('addNewDataSet');
+                console.log(this.currentFunction);
+                this.chart.data.datasets.push({
                 label:"plotted function",
                 pointBackgroundColor: colour,
                 data: data
                 });
-            this.chart.update(0);
+            //this.chart.update();
+            } catch(e){
+                console.log(e);
+            }
+            
         },
         deleteFunctionDataset(){
             this.chart.data.datasets = this.chart.data.datasets.filter(set => set.label !== "plotted function");
-            this.chart.update(0);
+            //this.chart.update(0);
         },
+            
 
       },
       
@@ -735,7 +744,6 @@ export default {
 #outputButton        {background-color: #e1b131ff;}
 #outputButton:hover  {background-color: #cc9d1eff;}
 
-
 label {
     font-size:16px;
     color: #0501f7;
@@ -754,7 +762,6 @@ select{
     
     background-color: #4490d8;
 }
-
 
 
 </style>

@@ -1,3 +1,5 @@
+//Vue3 updated
+
 <template>
     <div class='m-2 p-2 bg-white border rounded'>
         <div class='row m-2 p-2'>
@@ -13,7 +15,7 @@
             </div>
             <div class='col-6'>
                 <h2>Plant transfer function</h2>
-                <img v-if='remoteLabVersion == "variable_governor" || remoteLabVersion == "spinning_disk"' id="pidTransferFunction" src="../../public/images/plantTransferFirstOrder.png">
+                <img v-if='getRemoteLabVersion == "variable_governor" || getRemoteLabVersion == "spinning_disk"' id="pidTransferFunction" src="../../public/images/plantTransferFirstOrder.png">
                 <img v-else id="pidTransferFunction" src="../../public/images/plantTransferSecondOrder.png">
             </div>
         </div>
@@ -22,27 +24,22 @@
 </template>
 
 <script>
-//import { eventBus } from "../main";
-//import { store } from "../store.js";
+import { mapGetters } from 'vuex';
 
 export default {
     name: "SystemDiagrams",
     props:{
-      remoteLabVersion: String,
+      
   },
     data(){
         return{
         
         }
     },
-    created(){
-    
-    },
-    methods:{
-        
-    },
     computed:{
-        
+        ...mapGetters([
+            'getRemoteLabVersion'
+        ])
 
     }
 }

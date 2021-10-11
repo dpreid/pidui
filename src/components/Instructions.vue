@@ -1,6 +1,4 @@
-//NAVIGATION BAR COMPONENT: Includes menu items for adding UI components; tools menu for adding UI tools like ruler and protractor
-
-//TODO: Include user login alerts and profile data.
+//vue3 update
 
 
 <template>

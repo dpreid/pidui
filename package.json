@@ -1,46 +1,33 @@
 {
-  "name": "pidui",
+  "name": "pidui_2.0",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
-    "test": "jest"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@cycjimmy/jsmpeg-player": "git+https://github.com/timdrysdale/jsmpeg-player.git",
+    "@cycjimmy/jsmpeg-player": "github:timdrysdale/jsmpeg-player",
+    "@popperjs/core": "^2.9.2",
     "axios": "^0.21.1",
-    "bootstrap": "^4.6.0",
-    "bootstrap-vue": "^2.21.2",
-    "canvasjs": "github:vasilrimar/canvasjs",
+    "bootstrap": "^5.0.0-beta3",
     "chart.js": "^2.9.4",
-    "core-js": "^3.9.1",
+    "core-js": "^3.6.5",
     "dayjs": "^1.10.4",
     "es6-promise": "^4.2.8",
-    "reconnecting-websocket": "^4.4.0",
     "smoothie": "^1.35.0",
-    "vue": "^2.6.11",
-    "vue-jest": "^3.0.7",
-    "vue-router": "^3.5.1",
-    "vue-unity-webgl": "^1.2.0",
-    "vuex": "^3.6.2"
+    "vue": "^3.0.0",
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/vue": "^5.6.1",
-    "@vue/cli-plugin-babel": "^4.5.12",
-    "@vue/cli-plugin-eslint": "^4.5.12",
-    "@vue/cli-plugin-unit-jest": "^4.5.12",
-    "@vue/cli-service": "^4.5.12",
-    "babel-core": "^7.0.0-bridge.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^26.6.3",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^6.2.2",
-    "jest": "^26.6.3",
-    "vue-template-compiler": "^2.6.11"
+    "eslint-plugin-vue": "^7.0.0"
   },
   "eslintConfig": {
     "root": true,
@@ -48,39 +35,17 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/vue3-essential",
       "eslint:recommended"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {},
-    "overrides": [
-      {
-        "files": [
-          "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)"
-        ],
-        "env": {
-          "jest": true
-        }
-      }
-    ]
+    "rules": {}
   },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not dead"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      "^.+\\.js$": "babel-jest",
-      ".*\\.(vue)$": "vue-jest"
-    }
-  }
+  ]
 }

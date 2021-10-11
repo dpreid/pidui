@@ -1,80 +1,95 @@
-<template>
-<div class="m-2 bg-white border rounded">
-    <div class="row justify-content-center">
-    <!-- <input type="text" id="search" v-on:keyup="search" v-model="search_field" placeholder="Search the table..."> -->
+//Vue3 updated
+//Orthogonality
 
-    <table class="table">
+<template>
+<div class="m-0 bg-white border rounded table">
+    <div class="row justify-content-center">
+
+    <table v-if='tableData.length != 0' class="table">
         <tr>
-            <!-- <th scope="col">ID</th> -->
-            <th scope="col">Time/s</th>
-            <th scope="col">Angle/rad</th>
-            <th scope="col">Angular Velocity/rad/s</th>
-            <th scope='col'>Command</th>
-            <th scope='col'>Drive</th>
-            <th scope='col'>Error</th>
+            <th v-for='heading in tableHeadings' :key="heading" scope="col">{{heading}}</th>
         </tr>
         <tr v-for="row in tableData" :id="row.id" :key="row.id" v-bind:class="[row.id == selected_row_id ? 'selected-row' : '']" @click="changeSelected(row.id)">
-            <!-- <td>{{row.id}}</td> -->
-            <td>{{row.t}}</td>
-            <td>{{row.theta.toFixed(2)}}</td>
-            <td>{{row.omega_rad.toFixed(2)}}</td>
-            <td>{{row.command}}</td>
-            <td>{{row.drive}}</td>
-            <td>{{row.error}}</td>
+            <td v-for='key in Object.keys(row)' :key="key">{{row[key]}}</td>
+            <td><input type="checkbox" :id="row.id" :name="row.id" :checked='row.showDataPoint' @change="toggleShowDataPoint(row.id, row.showDataPoint)"></td>
         </tr>
                             
     </table> 
+
+    <table v-else class='table' id='tableData'>
+         <tr>
+            <th v-for='heading in tableHeadings' :key="heading" scope="col">{{heading}}</th>
+        </tr>
+        <tr>
+            <td :colspan="tableHeadings.length"> Data will display once recording complete.</td>
+        </tr>
+    </table>
 
     </div>
 </div>
 </template>
 
 <script>
-import { store } from "../simplestore.js";
-import { eventBus } from "../main.js";
+import { mapGetters } from 'vuex';
 
 export default {
     name: 'TableOutput',
-    props:{
-      remoteLabVersion: String,
-  },
+    props:[
+      'tableHeadings', 'selected_point'
+    ],
     data(){
         return{
-            tableData: [], //store.state.data,
+            tableData: [],
             searchData:[],
             search_field:"",
             selected_row_id: "0",
         }
     },
-    computed:{
+    created(){
         
+    },
+    mounted() {
+        this.updateTable();
+    },
+    computed:{
+        ...mapGetters([
+            'getIsRecording',
+            'getData'
+        ]),
     },
     watch:{
-        
+        //to clear data table on reset.
+        getData(data){
+            if(data.length == 0){
+                this.updateTable();
+            }
+        },
+        //to update table once recording complete
+        getIsRecording(now, prev){
+            if(!now && prev){
+                this.updateTable();
+            }
+        },
+        selected_point(id){
+            this.changeSelected(id);
+        }
     },
     methods: {
-        getData(){
-            //console.log('updating table');
-            this.tableData = [...store.state.data];
-        },
-        getMode(){
-            return store.state.currentMode;
+        updateTable(){
+            this.tableData = [...this.getData];     //get a clone of the data, not set tableData to the getData getter
         },
         changeSelected(id){
             this.selected_row_id = id;
             var elmnt = document.getElementById(id);
             elmnt.scrollIntoView(false); 
+        },
+        toggleShowDataPoint(data_id, current_state){
+            console.log(current_state);
+            this.$store.dispatch('setShowDataPoint',{id: data_id, show: !current_state});
+            
         }
       },
-      mounted() {
-        this.tableData = [...store.state.data];
-        
-      },
-      created(){
-          eventBus.$on('updatetable', this.getData);                  
-            eventBus.$on('newselectedobject', this.changeSelected)
-            eventBus.$on('clearalldata', this.getData);
-      }
+      
 }
 </script>
 
@@ -83,5 +98,10 @@ export default {
 .selected-row{
     background-color: red;
     color: white;
+}
+
+.table{
+    overflow: scroll;
+    max-height: 500px;
 }
 </style>

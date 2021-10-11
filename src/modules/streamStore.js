@@ -1,9 +1,9 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+//import Vue from 'vue';
+//import Vuex from 'vuex';
+//import { createStore } from 'vuex';
+//Vue.use(Vuex);
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
+const streamStore = {
    state: {
         connectionDroppedAt: 0,
         connectionIsDropped: false,
@@ -15,11 +15,9 @@ const store = new Vuex.Store({
         videoURLObtained: false,
         dataURL: "",
         dataURLObtained: false,
-        remoteLabVersion: '',
-        isDataRecorderOn: false,
-        disableTooltips: false,
         expiryTime: '',
         camera: '',
+        sessionExpired: false,
       },
       mutations:{
           SET_CONNECTION_DROPPED_AT(state, when){
@@ -58,20 +56,14 @@ const store = new Vuex.Store({
             state.dataURL = "";
             state.dataURLObtained = false;
           },
-          SET_REMOTE_LAB_VERSION(state, version){
-              state.remoteLabVersion = version;
-          },
-          SET_DATA_RECORDER(state, set){
-              state.isDataRecorderOn = set;
-          },
-          SET_DISABLE_TOOLTIPS(state, set){
-            state.disableTooltips = set;
-          },
           SET_EXPIRY_TIME(state, time){
             state.expiryTime = time;
           },
           SET_CAMERA(state,cam){
             state.camera = cam;
+          },
+          SET_SESSION_EXPIRED(state, set){
+            state.sessionExpired = set;
           }
       },
       actions:{
@@ -105,20 +97,14 @@ const store = new Vuex.Store({
            deleteDataURL(context){
                context.commit("DELETE_DATA_URL");
            },
-           setRemoteLabVersion(context, version){
-               context.commit("SET_REMOTE_LAB_VERSION", version);
-            },
-           setDataRecorder(context, set){
-            context.commit("SET_DATA_RECORDER", set);
-        },
-            setDisableTooltips(context, set){
-                context.commit("SET_DISABLE_TOOLTIPS", set);
-            },
             setExpiryTime(context, time){
                 context.commit("SET_EXPIRY_TIME", time);
             },
             setCamera(context, cam){
               context.commit("SET_CAMERA", cam);
+            },
+            setSessionExpired(context, set){
+              context.commit('SET_SESSION_EXPIRED', set);
             }
            
         },
@@ -158,15 +144,6 @@ const store = new Vuex.Store({
         getDataURLObtained(state){
             return state.dataURLObtained;
         },
-        getRemoteLabVersion(state){
-            return state.remoteLabVersion;
-        },
-        getIsDataRecorderOn(state){
-            return state.isDataRecorderOn;
-        },
-        getDisableTooltips(state){
-            return state.disableTooltips;
-        },
         getExpiryTime(state){
             return state.expiryTime;
         },
@@ -184,11 +161,15 @@ const store = new Vuex.Store({
         },
         getCamera(state){
           return state.camera;
+        },
+        getSessionExpired(state){
+          return state.sessionExpired;
         }
         
         
  
       },
- })
+ }
 
- export default store;
+ export default streamStore;
+

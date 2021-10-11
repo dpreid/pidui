@@ -1,8 +1,9 @@
+//Vue3 updated
+
 <template>
 <div class='container-sm m-2 bg-white border rounded'>
 <div class='row' id="video">
 	<div class='col-12'>
-		<!-- <canvas id="video-canvas"></canvas> -->
 		<video-element :url="url" />
 	</div>
 </div>
@@ -10,15 +11,9 @@
 </template>
 
 <script>
-//import * as pendulum from "../pendulum";
-//import { eventBus } from "../main";
-//import { JSMpeg } from "../../public/js/jsmpeg.min.js";
-//import JSMpeg from "jsmpeg";
-//import JSMpeg from '@cycjimmy/jsmpeg-player';
-//playerUrl = scheme + host + ':' + port + '/' + stream;
-//let playerUrl = 'ws://video.practable.io:8080/out/dpr/video0';
 import axios from "axios";
 import VideoElement from "./VideoElement.vue";
+import { mapGetters } from 'vuex';
 
 export default {
 	name: "WebcamStream",
@@ -27,30 +22,27 @@ export default {
 	},
     data(){
         return{
-			// player: null,
 			stream: Object,
         }
     },
     computed:{
-		urlOK() {
-			return this.$store.getters.getVideoURLObtained;
-		},
+		...mapGetters({
+			url: 'getVideoURL',
+			urlOK: 'getVideoURLObtained'
+		}),
 		streamOK(){			
 			return this.$store.getters.getStream("video");
 		},
-		url(){
-			return this.$store.getters.getVideoURL;
-			
-		},
+		
 		
 	},
 	mounted(){
-		var _this = this;
-		var reconnect = function () {
-			_this.accessVideo();
-		};
+		// var _this = this;
+		// var reconnect = function () {
+		// 	_this.accessVideo();
+		// };
 		//make second and subsequent connections
-		document.addEventListener("streams:dropped", reconnect);
+		document.addEventListener("streams:dropped", this.accessVideo);
 	},
 	methods:{
 		accessVideo(){
@@ -78,7 +70,7 @@ export default {
 		urlOK(is) {
 			if (is) {
 				console.log("get videoURL", this.urlOK, this.url);
-			}
+			} 
 		},
 
 	}

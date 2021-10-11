@@ -1,112 +1,90 @@
+//vue3 update
+//vastly streamlined
+
 <template>
-<div class="m-2 bg-white border rounded">
-    <div class="row justify-content-center align-items-center">
+<div class="m-2 bg-white border rounded" id='motor-snapshot-div'>
+    <div class="row justify-content-center align-items-center" >
 
-        <div class='form-group col-1'>
-			<label for="time">t/s</label>
-			<div class='current border border-right-0'>
-                    <p>{{time.toFixed(2)}}</p>
-            </div>
-            <p v-for='row in snaps' :id="row.time" :key="row.time">
-                {{row.time}}
-            </p>
-            <!-- <p>{{snapshot_time}}</p> -->
-            
-        </div>
+        <table class="table">
+            <tr>
+                <th v-for='heading in headings' :key="heading" scope="col">{{heading}}</th>
+            </tr>
 
-		<div class='form-group col-2 v-divider'>
-			<label for="position">Angle/rad</label>
-            <div class='current border border-right-0 border-left-0'>
-                    <p>{{position.toFixed(2)}}</p>
-            </div>
-            <p v-for='row in snaps' :id="row.time + 'pos'" :key="row.time + 'pos'">
-                {{row.position}}
-            </p>
-            <!-- <p>{{snapshot_position}}</p> -->
-        </div>
-		<div class='form-group col-2 v-divider'>
-			<label for="velocity">Ang. Vel/(rad/s)</label>
-			<div class='current border border-right-0 border-left-0'>
-                    <p>{{velocity.toFixed(2)}}</p>
-            </div>
-            <p v-for='row in snaps' :id="row.time + 'vel'" :key="row.time + 'vel'">
-                {{row.velocity}}
-            </p>
-            <!-- <p>{{snapshot_velocity}}</p> -->
-        </div>
-        <div class='form-group col-2 v-divider'>
-			<label for="command">Command</label>
-			<div class='current border border-right-0 border-left-0'>
-                    <p>{{command.toFixed(2)}}</p>
-            </div>
-            <p v-for='row in snaps' :id="row.time + 'com'" :key="row.time + 'com'">
-                {{row.command}}
-            </p>
-            <!-- <p>{{snapshot_command}}</p> -->
-        </div>
-        <div class='form-group col-2 v-divider'>
-			<label for="drive">Drive</label>
-			<div class='current border border-right-0 border-left-0'>
-                    <p>{{drive.toFixed(2)}}</p>
-            </div>
-             <p v-for='row in snaps' :id="row.time + 'drive'" :key="row.time + 'drive'">
-                {{row.drive}}
-            </p>
-            <!-- <p>{{snapshot_drive}}</p> -->
-        </div>
-        <div class='form-group col-2 v-divider'>
-			<label for="error">Error</label>
-			<div class='current border border-left-0'>
-                    <p>{{error.toFixed(2)}}</p>
-            </div>
-            <p v-for='row in snaps' :id="row.time + 'error'" :key="row.time + 'error'">
-                {{row.error}}
-            </p>
-            <!-- <p>{{snapshot_error}}</p> -->
-        </div>
+            <tr class='current border'>
+                <td>{{getTime.toFixed(2)}}</td>
+                <td>{{getCurrentAngle.toFixed(2)}}</td>
+                <td>{{getCurrentAngularVelocity.toFixed(2)}}</td>
+                <td>{{getCommand.toFixed(2)}}</td>
+                <td>{{getDrive.toFixed(2)}}</td>
+                <td>{{getError.toFixed(2)}}</td>
+            </tr>
+
+            <tr v-for="row in snaps" :id="row.time" :key="row.time">
+                <td v-for='key in Object.keys(row)' :key="key">{{row[key]}}</td>
+            </tr>
+                            
+        </table> 
+
 	</div>
 
-    <!-- <table class="table">
-        <tr v-for="row in snaps" :id="row.id" :key="row.id">
-            <td>{{row.time}}</td>
-            <td>{{row.position.toFixed(2)}}</td>
-            <td>{{row.velocity.toFixed(2)}}</td>
-            <td>{{row.command}}</td>
-            <td>{{row.drive}}</td>
-            <td>{{row.error}}</td>
-        </tr>
-                            
-    </table>  -->
 
-    <div class='row justify-content-center align-items-center'>
-        <button id="snapshot" class="btn btn-default btn-sm m-3" v-if='showRecordButton' @click="takeSnapshot">Record Snapshot</button>
-        <button id="reset_snaps" class="btn btn-default btn-sm m-3" @click="resetSnaps">Reset</button>
-        <button id="download_snaps" class="btn btn-default btn-sm m-3" @click="outputToCSV">Download Snapshots</button>
+    <div class='d-grid gap-2 d-sm-block'>
+        <button id="snapshot" type='button' class="btn btn-sm" v-if='getIsRecording' @click="takeSnapshot">Record Snapshot</button>
+        <button id="reset_snaps" type='button' class="btn btn-sm" @click="toggleResetModal">Reset</button>
+        <button id="download_snaps" type='button' class="btn btn-sm" @click="outputToCSV">Download Snapshots</button>
     </div>
     
+     <toolbar parentCanvasID="" parentComponentName="snapshot" parentDivID="motor-snapshot-div" :showDownload='false' :showPopupHelp="true" :showOptions="false">  
+        <template v-slot:popup id='snapshot-popup'>
+            <div class='row mb-2'>
+                <div class='col'>
+                    <h3> Snapshot tool </h3>
+                    <p> Once data is being recorded, press 'Take Snapshot' to save the current data. Every time you click a new data set will be added. Click 'Download Snapshots'
+                        to download all the snapshots as a .csv file
+                    </p>
+                </div>
+            </div>
 
+        </template>
+    </toolbar>
+
+    <div v-if='showResetConfirmModal' class="modal modal-show" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Reset Data</h5>
+              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close" @click='toggleResetModal'>
+                
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to Reset? This will clear all stored data.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" @click="resetSnaps(); toggleResetModal();">Reset</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal" @click="toggleResetModal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
 </div>
 </template>
 
 <script>
-import { store } from "../simplestore.js";
-
+import { mapGetters } from 'vuex';
+import Toolbar from "./elements/Toolbar.vue"
 
 export default {
     name: 'MotorSnapshot',
-    props:{
-      
-  },
+    props:[
+      'headings'
+    ],
+    components:{
+        Toolbar,
+    },
     data(){
         return{
-            dataStore: store,
-            time: 0,
-            position: 0,
-            velocity: 0,
-            command: 0,
-            drive: 0,
-            error: 0,
             snapshot_time: 0,
             snapshot_position: 0,
             snapshot_velocity: 0,
@@ -114,81 +92,51 @@ export default {
             snapshot_drive: 0,
             snapshot_error: 0,
             snaps: [],
+            showResetConfirmModal: false
         }
     },
     computed:{
-        newData(){
-            return this.dataStore.state.current_time;
-        },
-        // showRecordButton(){
-        //     if(this.dataStore.state.inputMode != 'free'){
-        //         return true;
-        //     } else if(this.dataStore.state.isRecording){
-        //         return true;
-        //     } else {
-        //         console.log("not recording");
-        //         return false;
-        //     }
-        // }
-        showRecordButton(){
-            return this.dataStore.state.isRecording;
-        }
-    },
-    watch:{
-        newData(){
-            if(this.dataStore.state.isRecording){
-                this.time = store.getTime();
-                // console.log("current time = " + store.state.current_time);
-                // console.log("start time = " + store.state.start_time);
-                this.position = store.state.current_angle;
-                this.velocity = store.state.current_ang_vel * 2* Math.PI/60.0;
-                if(store.state.current_error != null){
-                    this.error = store.state.current_error;
-                } else{
-                    this.error = 0;
-                }
-
-                if(store.state.current_drive != null){
-                    this.drive = store.state.current_drive;
-                } else{
-                    this.drive = 0;
-                }
-
-                if(store.state.current_command_value != null){
-                    this.command = store.state.current_command_value;
-                } else{
-                    this.command = 0;
-                }
+        ...mapGetters([
+            'getTime',
+            'getIsRecording',
+            'getCurrentAngle',
+            'getCurrentAngularVelocity',
+        ]),
+        getError(){
+            let error = this.$store.getters.getError;
+            if(error == null){
+                return 0;
+            } else{
+                return error;
             }
-            
-            
-            
-            
-        }
-    },
-    mounted(){
-        
+        },
+        getDrive(){
+            let drive = this.$store.getters.getDrive;
+            if(drive == null){
+                return 0;
+            } else{
+                return drive;
+            }
+        },
+        getCommand(){
+            let command = this.$store.getters.getCommand;
+            if(command == null){
+                return 0;
+            } else{
+                return command;
+            }
+        },
+
+
     },
     methods: {
         takeSnapshot(){
-            this.snapshot_time = this.time;
-            this.snapshot_position = this.position;
-            this.snapshot_velocity = this.velocity;
-            if(this.command != null){
-                this.snapshot_command = this.command;
-            } else{
-                this.snapshot_command = 0;
-            }
-            if(this.drive != null){
-                this.snapshot_drive = this.drive;
-            } else{
-                this.snapshot_drive = 0;
-            }
-            if(this.error != null){
-                this.snapshot_error = this.error;
-            } else{
-                this.snapshot_error = 0;
-            }
+            this.snapshot_time = this.getTime;
+            this.snapshot_position = this.getCurrentAngle;
+            this.snapshot_velocity = this.getCurrentAngularVelocity;
+            this.snapshot_command = this.getCommand;
+            this.snapshot_drive = this.getDrive;
+            this.snapshot_error = this.getError;
             
             let new_snap = {time: (this.snapshot_time).toFixed(2), position: (this.snapshot_position).toFixed(2), velocity: (this.snapshot_velocity).toFixed(2), command: (this.snapshot_command).toFixed(2), drive: (this.snapshot_drive).toFixed(2), error: (this.snapshot_error).toFixed(2)};
             this.snaps.push(new_snap);
@@ -197,6 +145,9 @@ export default {
         },
         resetSnaps(){
             this.snaps = [];
+        },
+        toggleResetModal(){
+            this.showResetConfirmModal = !this.showResetConfirmModal;
         },
         outputToCSV(){
           let csv = '';
@@ -234,15 +185,11 @@ export default {
                   csv += ",";
                   csv += "";
                 }
-                
-                
-                
-                
+                     
                 csv += "\n";
             });
-          //}
             filename += '.csv';
-          //console.log(csv);
+          
           let hiddenElement = document.createElement('a');
           hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
           hiddenElement.target = '_blank';
@@ -280,8 +227,13 @@ export default {
 .v-divider{
  margin-left:5px;
  margin-right:5px;
+ padding: 0px;
  width:1px;
  height:100%;
- border-left:1px solid gray;
+ border-right:1px solid gray;
+}
+
+.modal-show{
+    display: block;
 }
 </style>

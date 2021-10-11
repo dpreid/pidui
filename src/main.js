@@ -1,23 +1,14 @@
-import Vue from 'vue';
-
+import { createApp } from 'vue'
+import store from "./store.js";
 import App from './App.vue'
-import store from "./streamStore.js";
-import "bootstrap/dist/css/bootstrap.min.css";
-import BootstrapVue from 'bootstrap-vue';
 
-export const eventBus = new Vue();
+import 'bootstrap';
+//import "bootstrap/dist/js/bootstrap.bundle.js";
+import "bootstrap/dist/css/bootstrap.min.css";
 import 'es6-promise/auto'
 
-Vue.config.productionTip = false
 
-Vue.use(BootstrapVue)
+const app = createApp(App)
 
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-
-
-
-new Vue({
-  store: store,
-  render: h => h(App),
-}).$mount('#app')
-
+app.use(store)
+app.mount('#app')

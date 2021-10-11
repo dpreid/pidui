@@ -1,92 +1,82 @@
-//NAVIGATION BAR COMPONENT: Includes menu items for adding UI components; tools menu for adding UI tools like ruler and protractor
-
-//TODO: Include user login alerts and profile data.
-
+//Updated to Vue3, removing eventBus implementation, instead nav bar emits up to App which then controls components and passes props to sibling components
 
 <template>
-    <div class='mb-5 pb-2'>
-  <b-navbar toggleable="lg" type="dark" variant="primary" fixed="top">
-    <b-navbar-brand href="#">Remote Lab: {{labName}} </b-navbar-brand>
 
-    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-    
-    <b-collapse id="nav-collapse" is-nav>
-        <!--Left aligned menu items-->
-      <b-navbar-nav>
-        <b-nav-item-dropdown text="Menu" right>
-            <b-dropdown-item @click='toggleComponent("graph")'>Graph</b-dropdown-item>
-            <b-dropdown-item @click='toggleComponent("graphinput")'>Graph Input</b-dropdown-item>
-            <b-dropdown-item @click='toggleComponent("datarecorder")'>Data Recorder</b-dropdown-item>
-            <b-dropdown-item @click='toggleComponent("stopwatch")'>Stopwatch</b-dropdown-item>
-            <b-dropdown-item @click='toggleComponent("table")'>Table</b-dropdown-item>
-            <b-dropdown-item @click='toggleComponent("systemdiagrams")'>System Diagrams</b-dropdown-item>
-            <b-dropdown-item @click='toggleComponent("snapshot")'>Data Snapshot</b-dropdown-item>
-            
-            
-        </b-nav-item-dropdown>
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Remote Lab: {{labName}}</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <b-nav-item-dropdown text="Tools" right>
-          <b-dropdown-item @click='addTool("ruler")'>Ruler</b-dropdown-item>
-          <b-dropdown-item @click='addTool("protractor")'>Protractor</b-dropdown-item>
-        </b-nav-item-dropdown>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                   Menu
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("graph")'>Graph</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("datarecorder")'>Data Recorder</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("stopwatch")'>Stopwatch</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("table")'>Table</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("systemdiagrams")'>System Diagrams</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleComponent("snapshot")'>Data Snapshot</a></li>
+                  </ul>
+              </li>
 
-        <!-- <b-nav-item-dropdown v-if='taskOptionsAvailable' text="Tasks" right>
-          <b-dropdown-item v-if='remoteLabVersion == "variable_governor" || remoteLabVersion == "spinning_disk"' @click='setExercise1v1'>Exercise 1.1</b-dropdown-item>
-          <b-dropdown-item v-if='remoteLabVersion == "variable_governor"' @click='setExercise1v2'>Exercise 1.2</b-dropdown-item>
-          <b-dropdown-item v-if='remoteLabVersion == "robot_arm"' @click='setExercise1v3'>Exercise 1.3</b-dropdown-item>
-          <b-dropdown-item v-if='remoteLabVersion == "robot_arm"' @click='setExercise2v1'>Exercise 2.1</b-dropdown-item>
-        </b-nav-item-dropdown> -->
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                   Tools
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                    <li><a class="dropdown-item" href="#" @click='addTool("ruler")'>Ruler</a></li>
+                    <li><a class="dropdown-item" href="#" @click='addTool("protractor")'>Protractor</a></li>
+                  </ul>
+              </li>
 
-        <b-nav-item @click='clearWorkspace'>Clear Workspace</b-nav-item>
+              <li class="nav-item">
+                  <a class="nav-link" href="#" tabindex="-1" @click='clearWorkspace'>Clear Workspace</a>
+              </li>
+          </ul>
 
+          <div class='d-flex'>
+              <clock />
+          </div>
 
-      </b-navbar-nav>
+      </div>
+    </div>
+  </nav>
 
-      <!-- Right aligned nav items -->
-      <b-navbar-nav class="ml-auto">
-        <!-- <b-nav-form>
-          <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
-          <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
-        </b-nav-form> -->
-        
-        <b-nav-text><clock /></b-nav-text>
-      </b-navbar-nav>
-    </b-collapse>
-  </b-navbar>
-</div>
 </template>
 
 <script>
-//import { store } from "../simplestore.js";
-import { eventBus } from "../main.js";
-//import userData from '../userDataStore';
+
 import Clock from "./Clock.vue";
 
 export default {
 
   name: 'NavigationBar',
-  props:{
-      remoteLabVersion: String,
-  },
-  data () {
-    return {
-        taskOptionsAvailable: true,         //remove option for tasks to be preset.
-    }
-  },
   components: {
     Clock,
   },
-  mounted(){
-    
+  props:{
+      
+  },
+  emits:[
+    'togglegraph', 'toggledatarecorder', 'togglestopwatch', 'toggletable', 'togglesystemdiagrams', 'togglesnapshot', 'toggleworkspace', 'clearworkspace', 'addruler', 'addprotractor'
+  ],
+  data () {
+    return {
+        
+    }
   },
   computed:{
-      // getUserEmail(){
-      //   return userData.getters.getUserEmail;
-      // },
       labName(){
-        if(this.remoteLabVersion == 'variable_governor'){
+        let lab = this.$store.getters.getRemoteLabVersion;
+        if(lab == 'variable_governor'){
           return 'Variable Governor';
-        } else if(this.remoteLabVersion == 'spinning_disk'){
+        } else if(lab == 'spinning_disk'){
           return 'Spinning Disk';
         } else{
           return 'Robot Arm';
@@ -96,31 +86,14 @@ export default {
   methods: {
       addTool(tool){
           this.toggleComponent('workspace');
-          setTimeout(function(){
-              eventBus.$emit('add' + tool), 100});  //give the workspace time to initialise and then send tool event
-          
+          setTimeout(() => {this.$emit('add' + tool)}, 100);  //give the workspace time to initialise and then send tool event
       },
       toggleComponent(component){
-          eventBus.$emit('toggle' + component);
+          this.$emit('toggle' + component);
       },
       clearWorkspace(){
-          eventBus.$emit('clearworkspace');
+          this.$emit('clearworkspace');
       },
-      // logout(){
-      //   userData.dispatch('logout');
-      // },
-      setExercise1v1(){
-        eventBus.$emit('setexercise1v1');
-      },
-      setExercise1v2(){
-        eventBus.$emit('setexercise1v2');
-      },
-      setExercise1v3(){
-        eventBus.$emit('setexercise1v3');
-      },
-      setExercise2v1(){
-        eventBus.$emit('setexercise2v1');
-      }
   }
 }
 </script>
