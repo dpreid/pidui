@@ -1,5 +1,4 @@
-//vue3 update
-//added in incremental changes to voltage
+//v2 update - added commandStore commands
 
 <template>
 <div class='m-0 p-0 bg-white'>
@@ -21,7 +20,7 @@
 
         <label class="col-lg-2 col-sm-6 col-form-label" for="ang_vel">Motor angular velocity (rad/s)</label>
         <div class='col-lg-4 col-sm-12' v-if='isAnalogueOutput'>
-            <analogue-output :outputValue="angVel" :minValue="0" :maxValue="400" :intervalValue="50" :minorIntervalValue="10"></analogue-output>
+            <analogue-output :outputValue="getCurrentAngularVelocity" :minValue="0" :maxValue="400" :intervalValue="50" :minorIntervalValue="10"></analogue-output>
         </div>
         <div v-else class='col-lg-4 col-sm-12'>
             <input type='text' class='form-control' id="ang_velocity" :value='avgAngVel' readonly>
@@ -33,7 +32,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import AnalogueOutput from "./AnalogueOutput.vue";
 
 export default {
@@ -49,22 +48,20 @@ export default {
   data () {
     return {
         voltage: 0,
-        isAnalogueOutput: true,
+        isAnalogueOutput: false,
     }
   },
   computed:{
+      ...mapGetters([
+          'getCurrentAngularVelocity',
+          'calculateAverageVelocity',
+      ]),
       getVoltageAsString(){
           let num = Number(this.voltage);
           return num.toFixed(2);
       },
-      angVel(){
-          let data = this.$store.getters.getCurrentAngularVelocity;
-          //convert to rad/s
-          data = data*2*Math.PI/60;
-          return data;
-      },
       avgAngVel(){
-          let average = this.$store.getters.calculateAverageVelocity;
+          let average = this.calculateAverageVelocity;
           return average.toFixed(2);
       }
   },
@@ -73,11 +70,7 @@ export default {
           'setDraggable'
       ]),
       setVoltage(){
-          let signal = this.voltage;                //send raw voltage
-          this.dataSocket.send(JSON.stringify({
-				set: "volts",
-				to: signal
-			}));
+          this.$store.dispatch('setVoltage', this.voltage);
       },
       incrementVoltage(delta){
           this.voltage = Number(this.voltage) + Number(delta);

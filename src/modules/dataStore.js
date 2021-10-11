@@ -2,17 +2,21 @@
 const dataStore = {
     state: () => ({
        //current_time: 0,
-       current_time_array : [],
-        //current_angle: 0,     //in rad
-        current_angle_array: [],
+       current_time_array : [],  // in ms
+        //current_angle: 0,     
+        current_angle_array: [], //in rad
         current_enc_pos: 0,
-        //current_ang_vel: 0,   //in rad/s
-        current_ang_vel_array: [],
-        previous_ang_vels: [],
-        values_in_average: 100,
-        average_count: 0,
+        //current_ang_vel: 0,   
+        current_ang_vel_array: [], //in rad/s
+
+        //calculation of simple moving average velocity
+        moving_avg_array: [0,0,0,0,0],
+        moving_avg_index: 0,
+        moving_avg_k: 5,
+        moving_avg: 0,
+
         start_time: 0,
-        currentMode: '',
+       
         inputMode: '',
         graphDataParameter: 'omega',   //'theta'
         data: [],
@@ -81,9 +85,7 @@ const dataStore = {
          SET_START_TIME(state, time){
             state.start_time = time;
          },
-         SET_CURRENT_MODE(state, mode){
-            state.currentMode = mode;
-         },
+         
          SET_INPUT_MODE(state, mode){
             state.inputMode = mode;
          },
@@ -183,9 +185,7 @@ const dataStore = {
          setStartTime(context, time){
             context.commit("SET_START_TIME", time);
          },
-         setCurrentMode(context, mode){
-            context.commit("SET_CURRENT_MODE", mode);
-         },
+         
          setInputMode(context, mode){
             context.commit("SET_INPUT_MODE", mode);
          },
@@ -285,9 +285,7 @@ const dataStore = {
          getStartTime(state){
             return state.start_time;
          },
-         getCurrentMode(state){
-            return state.currentMode;
-         },
+         
          getModeName(state){
             if(state.currentMode == 'positionPid'){
                return 'position (PID)';
@@ -403,18 +401,16 @@ const dataStore = {
             }
          },
          calculateAverageVelocity(state){
-            state.previous_ang_vels[state.average_count] = state.current_ang_vel;
-             if(state.average_count >= state.values_in_average - 1){
-                 state.average_count = 0;
-             } else{
-                 state.average_count++;
-             }
-            let sum = 0;
-             for(let i=0;i<state.values_in_average;i++){
-                 sum += state.previous_ang_vels[i];
-             }
-   
-             return sum/state.values_in_average;
+            //uses a simple moving average
+            let newest = state.current_ang_vel_array[3];
+            let oldest = state.moving_avg_array[state.moving_avg_index];
+
+            state.moving_avg += (newest - oldest)/state.moving_avg_k;
+
+            state.moving_avg_array[state.moving_avg_index] = state.current_ang_vel_array[3];
+            state.moving_avg_index = (state.moving_avg_index + 1) % state.moving_avg_k;
+
+            return state.moving_avg;
           },  
        },  
   

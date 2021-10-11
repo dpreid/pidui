@@ -1,4 +1,4 @@
-//vue3 update
+//commandStore update
 
 <template>
 
@@ -236,52 +236,44 @@ export default {
 			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			this.showInputType = true;
 			this.speedParam = 0;
-			this.setCurrentMode('stopped');
-			this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "stop"
-			}));
+
+			this.$store.dispatch('stop');
+			
 			this.changingMode = false;
 		},
 		hasStopped(message){
-			this.stop();								//firmware does not automatically stop
-			this.clearMessages();
-			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			this.showInputType = true;
 			this.error = 'Automatic stop: ' + message + ". Select a mode to continue.";
-			this.speedParam = 0;
-			this.setCurrentMode('stopped');
-			this.changingMode = false;
-			
+			this.stop();								//firmware does not automatically stop
 		},
 		wait(){
 			//this is an internal mode in the firmware and does not need to be reflected in the UI.
 			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "wait"
-				}));
+			this.$store.dispatch('wait');
 		},
 		speedPid(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
-			this.setCurrentMode('speedPid');
-			this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "velocity"
-			}));
+			
+			this.$store.dispatch('speedPid');
+
 			this.changingMode = false;
-			setTimeout(this.setParameters, 500);					//when entering pid mode ensure parameters are set
+			setTimeout(this.setParameters, 100);					//when entering pid mode ensure parameters are set
+		},
+		positionPid(){
+			this.clearMessages();
+			this.position_running = false;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			this.setGraphDataParameter('theta');
+			
+			this.$store.dispatch('positionPid');
+
+			this.changingMode = false;
+			setTimeout(this.setParameters, 100);			//when entering pid mode ensure parameters are set
 		},
 		speedRaw(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
-			this.setCurrentMode('speedRaw');
-
-			this.dataSocket.send(JSON.stringify({
-			set: "mode",
-			to: "motor"
-			}));
+			
+			this.$store.dispatch('speedRaw');
 			
 			this.changingMode = false;
 		},
@@ -289,54 +281,27 @@ export default {
 			this.clearMessages();
 			this.showInputType = false;
 			if(!isNaN(this.speedParam)){
-				let speed = parseFloat(this.speedParam);
-				this.dataSocket.send(JSON.stringify({
-					set: "velocity",
-					to: speed
-			}));
+				this.$store.dispatch('setSpeed', parseFloat(this.speedParam));
 			} else {
 				this.error = 'Speed parameter is NaN';
 			}
 		},
-		positionPid(){
-			this.clearMessages();
-			this.position_running = false;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			this.setGraphDataParameter('theta');
-			this.setCurrentMode('positionPid');
-
-			this.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "position"
-			}));
-
-			this.changingMode = false;
-			setTimeout(this.setParameters, 500);			//when entering pid mode ensure parameters are set
-		},
+		
 		setPosition(){
 			this.clearMessages();
 			this.showInputType = false;
 			this.position_running = true;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			if(!isNaN(this.angleParam)){
-				let pos = this.angleParam			//anglParam in rad
-				this.dataSocket.send(JSON.stringify({
-					set: "position",
-					to: pos
-				}));
+				this.$store.dispatch('setPosition', this.angleParam);
 			} else {
 				this.error = 'Angle parameter is NaN';
 			}
-			
-			
 		},
 		setParameters(){
 			this.clearMessages();
 			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0){
-				this.dataSocket.send(JSON.stringify({
-					"set": "parameters",
-					"kp": parseFloat(this.kpParam),
-					"ki": parseFloat(this.kiParam),
-					"kd": parseFloat(this.kdParam),
-			}));
+				let params = {kp: parseFloat(this.kpParam), ki: parseFloat(this.kiParam), kd: parseFloat(this.kdParam)};
+				this.$store.dispatch('setPidParameters', params);
 			} else{
 				this.error = 'Cannot parse PID parameters';
 			}
@@ -355,14 +320,13 @@ export default {
 			this.kpParam = 1.0;
 			this.kiParam = 0.0;
 			this.kdParam = 0.0;
-			this.dtParam = 20.0;
 			this.setParameters();
 		},
 		toggleInputType(on){
 			this.showInputType = on;
 		},
 		updateSmoothieChart(){
-			if(this.getCurrentMode == 'positionPID'){
+			if(this.getCurrentMode == 'positionPid'){
 				this.chart_omega.options.maxValue = this.smoothie_y_max_pos;
 				this.chart_omega.options.minValue = this.smoothie_y_min_pos;
 			} 

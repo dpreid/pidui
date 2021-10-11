@@ -4,13 +4,15 @@
 const commandStore = {
     state: () => ({
         dataSocket: null,
-        
+        currentMode: '',
+
        }),
        mutations:{
         SET_DATA_SOCKET(state, socket){
             state.dataSocket = socket;
         },
         STOP(state){
+            state.currentMode = 'stopped';
             state.dataSocket.send(JSON.stringify({
                 set: "mode",
                 to: "stop"
@@ -23,18 +25,21 @@ const commandStore = {
 			}));
         },
         SPEED_RAW(state){
+            state.currentMode = 'speedRaw';
             state.dataSocket.send(JSON.stringify({
                 set: "mode",
                 to: "motor"
             }));
         },
         SPEED_PID(state){
+            state.currentMode = 'speedPid';
             state.dataSocket.send(JSON.stringify({
 				set: "mode",
 				to: "velocity"
 			}));
         },
         POSITION_PID(state){
+            state.currentMode = 'positionPid';
             state.dataSocket.send(JSON.stringify({
 				set: "mode",
 				to: "position"
@@ -64,8 +69,11 @@ const commandStore = {
                 "kp": params.kp,
                 "ki": params.ki,
                 "kd": params.kd
-        }));
-        }
+            }));
+        },
+        SET_CURRENT_MODE(state, mode){
+            state.currentMode = mode;
+         },
             
 
        },
@@ -99,14 +107,20 @@ const commandStore = {
         },
         setPidParameters(context, params){
             context.commit('SET_PID_PARAMETERS', params);
-        }
+        },
+        setCurrentMode(context, mode){
+            context.commit("SET_CURRENT_MODE", mode);
+         },
 
         
        },
        getters:{
         getDataSocket(state){
             return state.dataSocket;
-          },
+        },
+        getCurrentMode(state){
+            return state.currentMode;
+        },
           
        },  
   
