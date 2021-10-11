@@ -63,6 +63,12 @@ const commandStore = {
                 to: value
             }));
         },
+        SET_POSITION_RAMP(state, value){
+            state.dataSocket.send(JSON.stringify({
+                set: "position_ramp",
+                to: value
+            }));
+        },
         SET_PID_PARAMETERS(state, params){
             state.dataSocket.send(JSON.stringify({
                 "set": "parameters",
@@ -105,12 +111,23 @@ const commandStore = {
         setPosition(context, value){
             context.commit('SET_POSITION', value);
         },
+        setPositionRamp(context, value){
+            context.commit('SET_POSITION_RAMP', value);
+        },
         setPidParameters(context, params){
             context.commit('SET_PID_PARAMETERS', params);
         },
         setCurrentMode(context, mode){
             context.commit("SET_CURRENT_MODE", mode);
-         },
+        },
+       },
+       getters:{
+        getDataSocket(state){
+            return state.dataSocket;
+        },
+        getCurrentMode(state){
+            return state.currentMode;
+        },
         getModeName(state){
             if(state.currentMode == 'positionPid'){
                 return 'position (PID)';
@@ -121,16 +138,6 @@ const commandStore = {
             } else {
                 return state.currentMode;
             }
-        },
-
-        
-       },
-       getters:{
-        getDataSocket(state){
-            return state.dataSocket;
-        },
-        getCurrentMode(state){
-            return state.currentMode;
         },
           
        },  

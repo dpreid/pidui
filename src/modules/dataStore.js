@@ -48,7 +48,7 @@ const dataStore = {
          Kd:0,
         },
         isRecording: false,         //is data actually being recorded
-        remoteLabVersion: '',
+        
         isDataRecorderOn: false,    //is the Data Recorder element active
        }),
        mutations:{
@@ -141,9 +141,7 @@ const dataStore = {
          SET_IS_RECORDING(state, set){
             state.isRecording = set;
          },
-         SET_REMOTE_LAB_VERSION(state, version){
-            state.remoteLabVersion = version;
-        },
+         
         SET_DATA_RECORDER(state, set){
             state.isDataRecorderOn = set;
         },
@@ -240,9 +238,6 @@ const dataStore = {
          setIsRecording(context, set){
             context.commit("SET_IS_RECORDING", set);
          },
-         setRemoteLabVersion(context, version){
-            context.commit("SET_REMOTE_LAB_VERSION", version);
-         },
         setDataRecorder(context, set){
          context.commit("SET_DATA_RECORDER", set);
          },
@@ -286,17 +281,6 @@ const dataStore = {
             return state.start_time;
          },
          
-         getModeName(state){
-            if(state.currentMode == 'positionPid'){
-               return 'position (PID)';
-            } else if (state.currentMode == 'speedPid'){
-               return 'velocity (PID)';
-            } else if(state.currentMode == 'speedRaw'){
-               return 'voltage (open loop)';
-            } else {
-               return state.currentMode;
-            }
-         },
          getInputMode(state){
             return state.inputMode;
          },
@@ -345,9 +329,6 @@ const dataStore = {
          getIsRecording(state){
             return state.isRecording;
          },
-         getRemoteLabVersion(state){
-            return state.remoteLabVersion;
-        },
         getIsDataRecorderOn(state){
             return state.isDataRecorderOn;
         },

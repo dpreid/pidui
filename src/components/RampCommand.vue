@@ -1,6 +1,8 @@
 //vue3 update
-//REALLY SHOULD CHANGE THIS COMPONENT TO INITIALISE A RAMP FUNCTION WITHIN THE FIRMWARE INSTEAD OF SENDING NEW DATA ON A CERTAIN TIME PERIOD.
-//Updated to use commandStore commands, but need to reconsider as above.
+//Firmware has been updated to include a ramp function
+//This component now just needs to send a slightly different command to the firmware.
+
+//TODO: IMPLEMENT RAMP FOR VOLTAGE AND VELOCITY
 
 <template>
     <div class='m-2 p-2'>
@@ -83,37 +85,51 @@ export default {
       ...mapActions([
           'setDraggable'
       ]),
-     runCommand(){
-         if(!this.isRampRunning){
-             if(this.$store.getters.getIsDataRecorderOn){
-                 this.$store.dispatch('setIsRecording', true);
-             }
+    //  runCommand(){
+    //      if(!this.isRampRunning){
+    //          if(this.$store.getters.getIsDataRecorderOn){
+    //              this.$store.dispatch('setIsRecording', true);
+    //          }
              
-             this.$emit('showinputtype', false);
-             this.time = 0;
-            this.time_interval = parseFloat(this.time_interval);
-            this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
-            //set store state for access by graph input component
-            let ramp = {
-                ramp_start: 0,
-                ramp_gradient: this.ramp_gradient,
-                ramp_start_time: this.time_until_ramp,
-                max_voltage: 12,
-                max_rad_s: 200,
-            }
+    //          this.$emit('showinputtype', false);
+    //          this.time = 0;
+    //         this.time_interval = parseFloat(this.time_interval);
+    //         this.ramp_gradient = Math.abs(parseFloat(this.ramp_gradient));     //only positive gradients
+    //         //set store state for access by graph input component
+    //         let ramp = {
+    //             ramp_start: 0,
+    //             ramp_gradient: this.ramp_gradient,
+    //             ramp_start_time: this.time_until_ramp,
+    //             max_voltage: 12,
+    //             max_rad_s: 200,
+    //         }
             
-            this.$store.dispatch('setRamp', ramp);
+    //         this.$store.dispatch('setRamp', ramp);
             
-            this.initial_angle = this.$store.getters.getCurrentAngle;         //new!!!!!!!!!!!!!!!!!!!!!!!!!
+    //         this.initial_angle = this.$store.getters.getCurrentAngle;         //new!!!!!!!!!!!!!!!!!!!!!!!!!
             
-            this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
+    //         this.interval_id = setInterval(() => this.sendCommand(), this.time_interval*1000);
             
-            this.isRampRunning = true;
-         }
+    //         this.isRampRunning = true;
+    //      }
          
         
        
-     },
+    //  },
+    //firmware implementation of ramp means just need to send appropriate command to firmware to set ramp mode and then enter the correct mode -> voltage, position, speed
+    runCommand(){
+        if(this.$store.getters.getIsDataRecorderOn){
+            this.$store.dispatch('setIsRecording', true);
+        }
+
+    //only implemented for positionPid so far
+    if(this.mode == 'positionPid'){
+        this.$store.dispatch('setPositionRamp', this.ramp_gradient);
+    }
+    
+
+        
+    },
      sendCommand(){
          this.time += this.time_interval;        //in seconds
          let ramp_value = this.ramp_gradient * this.time;
