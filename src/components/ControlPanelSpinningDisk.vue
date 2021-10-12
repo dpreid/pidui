@@ -129,7 +129,6 @@ export default {
 			kpParam: 1,
 			kiParam: 0,
 			kdParam: 0,
-			changingMode: false,
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
 			chart_omega: null,
@@ -215,45 +214,33 @@ export default {
 		]),
 		stop(){
 			this.clearMessages();
-			this.showInputType = false;					//when stopped, need to select a mode before input type shows again
+			this.showInputType = false;	
 			this.speedParam = 0;
-
 			this.$store.dispatch('stop');
-			
-			this.changingMode = false;
 		},
 		hasStopped(message){
 			this.error = 'Automatic stop: ' + message + ". Select a mode to continue.";
-			this.stop();								//firmware does not automatically stop
+			this.stop();								
 		},
 		speedPid(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
 			this.showInputType = true;
-			
 			this.$store.dispatch('speedPid');
-
-			this.changingMode = false;
 			setTimeout(this.setParameters, 100);					//when entering pid mode ensure parameters are set
 		},
 		positionPid(){
 			this.clearMessages();
 			this.setGraphDataParameter('theta');
 			this.showInputType = true;
-			
 			this.$store.dispatch('positionPid');
-
-			this.changingMode = false;
 			setTimeout(this.setParameters, 100);			//when entering pid mode ensure parameters are set
 		},
 		speedRaw(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
 			this.showInputType = true;
-			
 			this.$store.dispatch('speedRaw');
-			
-			this.changingMode = false;
 		},
 		setSpeed(){
 			this.clearMessages();
@@ -264,7 +251,6 @@ export default {
 				this.error = 'Speed parameter is NaN';
 			}
 		},
-		
 		setPosition(){
 			this.clearMessages();
 			this.showInputType = false;
