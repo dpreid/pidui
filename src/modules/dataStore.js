@@ -30,18 +30,18 @@ const dataStore = {
         drive_array: [0,0,0,0],
         //command: 0,
         command_array: [0,0,0,0],
-        step:{
-           step_time: 0,      //seconds
-           step_start: 0,
-           step_size: 0
-        },
-        ramp:{
-           ramp_start: 0,
-            ramp_gradient: 1,
-            ramp_start_time: 0,
-            max_voltage: 12,
-            max_rad_s: 200,
-        },
+      //   step:{
+      //      step_time: 0,      //seconds
+      //      step_start: 0,
+      //      step_size: 0
+      //   },
+      //   ramp:{
+      //      ramp_start: 0,
+      //       ramp_gradient: 1,
+      //       ramp_start_time: 0,
+      //       max_voltage: 12,
+      //       max_rad_s: 200,
+      //   },
         pid_parameters:{      //is this necessary
          Kp: 1,
          Ki:0,
@@ -129,12 +129,12 @@ const dataStore = {
          SET_COMMAND_ARRAY(state, array){
             state.command_array = array;
          },
-         SET_STEP(state, step){
-            state.step = step;
-         },
-         SET_RAMP(state, ramp){
-            state.ramp = ramp;
-         },
+         // SET_STEP(state, step){
+         //    state.step = step;
+         // },
+         // SET_RAMP(state, ramp){
+         //    state.ramp = ramp;
+         // },
          SET_PID_PARAMETERS(state, parameters){
             state.pid_parameters = parameters;
          },
@@ -226,12 +226,12 @@ const dataStore = {
          setCommandArray(context, array){
             context.commit("SET_COMMAND_ARRAY", array);
          },
-         setStep(context, step){
-            context.commit("SET_STEP", step);
-         },
-         setRamp(context, ramp){
-            context.commit("SET_RAMP", ramp);
-         },
+         // setStep(context, step){
+         //    context.commit("SET_STEP", step);
+         // },
+         // setRamp(context, ramp){
+         //    context.commit("SET_RAMP", ramp);
+         // },
          setPIDParameters(context, parameters){
             context.commit("SET_PID_PARAMETERS", parameters);
          },
@@ -317,12 +317,12 @@ const dataStore = {
          getCommandArray(state){
             return state.command_array;
          },
-         getStep(state){
-            return state.step;
-         },
-         getRamp(state){
-            return state.ramp;
-         },
+         // getStep(state){
+         //    return state.step;
+         // },
+         // getRamp(state){
+         //    return state.ramp;
+         // },
          getPIDParameters(state){
             return state.pid_parameters;
          },

@@ -1,7 +1,5 @@
 //vue3 update
 
-
-
 <template>
     <div class='m-2 p-2'>
         <div class="row justify-content-center" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">    
@@ -17,8 +15,8 @@
             </div>
 
             <div class='col-4 d-grid gap-2 d-sm-block'>
-                <button class='btn btn-sm' v-if='!position_running' id="run" @click="runCommand">Run</button>
-                <button class='btn btn-sm' v-if='position_running' id="wait" @click="wait">Stop</button>
+                <button class='btn btn-lg' v-if='!isPositionStepRunning' id="run" @click="runStep">Run</button>
+                <button class='btn btn-lg btn-danger' v-else-if='isPositionStepRunning' id="wait" @click="stopStep">Stop</button>
             </div>
         </div>
 
@@ -34,20 +32,15 @@ export default {
   name: 'StepCommand',
   props:{
       mode: String,
-      dataSocket: WebSocket,
   },
   emits:['showinputtype'],
   data () {
     return {
-        time_to_step: 0,
         step_size: null,            
-        motor_max_voltage: 12,
-        encoder_max: 1000,
-        tooltip_delay: 2000,
         max_position_step: 2*Math.PI, 
         max_speed_step: 100,
         max_voltage_step: 12,
-        position_running: false,
+        isPositionStepRunning: false,
     }
   },
   components: {
@@ -62,53 +55,60 @@ export default {
             this.max_position_step = 3*Math.PI/10;          //robot arm is soft limited to 300 encoder steps from 0.
         }
 	},
-  mounted(){
-      this.position_running = false;      
-  },
   methods: {
       ...mapActions([
           'setDraggable'
       ]),
-     runCommand(){
+     runStep(){
          if(this.$store.getters.getIsDataRecorderOn){
                  this.$store.dispatch('setIsRecording', true);
              }
+
          this.$emit('showinputtype', false);
          
-         let step = {
-             step_time: this.time_to_step,
-             step_start: 0,
-             step_size: this.step_size
-         }
-         this.$store.dispatch('setStep', step);
+        //  let step = {
+        //      step_time: this.time_to_step,
+        //      step_start: 0,
+        //      step_size: this.step_size
+        //  }
+        //  this.$store.dispatch('setStep', step);
          
         this.sendCommand();
              
      },
      sendCommand(){
          if(this.mode == 'speedRaw'){
-
+             
+             this.isPositionStepRunning = false; 
              let signal = parseFloat(this.step_size);
              this.$store.dispatch('setVoltage', signal);
 
          } else if(this.mode == 'positionPid'){
 
-             this.position_running = true;                      //NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+             this.isPositionStepRunning = true;                      //NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              let new_ang_rad = this.$store.getters.getCurrentAngle + parseFloat(this.step_size);
              this.$store.dispatch('setPosition', new_ang_rad);
 
          } else if(this.mode == 'speedPid'){
 
+             this.isPositionStepRunning = false; 
              let rad_s = this.$store.getters.getCurrentAngularVelocity + parseFloat(this.step_size);           //needs to be in rad/s
              this.$store.dispatch('setSpeed', rad_s);
 
          }
          
      },
-     wait(){
+     stopStep(){
             //this is an internal mode in the firmware and does not need to be reflected in the UI.
-            this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			this.$store.dispatch('wait');
+            this.isPositionStepRunning = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			
+            this.$emit('showinputtype', true);
+
+            if(this.$store.getters.getIsRecording){
+                 this.$store.dispatch('setIsRecording', false);
+             }
+
+             this.$store.dispatch('wait');
 		},
      
   }

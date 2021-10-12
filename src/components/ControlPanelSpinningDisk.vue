@@ -50,13 +50,11 @@
 		<div class='col' v-show='showInputType'>
 			<label class='m-2' for="inputSelect">Input type:</label>
 			<select name="inputSelect" id="inputSelect" v-model="inputMode">
-				<option value="free">Free</option>
+				<option v-if='getCurrentMode == "speedRaw"' value="free">Free</option>
 				<option value="step">Step</option>
 				<option v-if='getRemoteLabVersion != "robot_arm"' value="ramp">Ramp</option>
 			</select> 
 		</div>
-			
-		
 
 	</div>
 
@@ -64,7 +62,7 @@
 
 	<div v-if='inputMode == "free"'>
 
-		<div v-if='getCurrentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
+		<!-- <div v-if='getCurrentMode == "positionPid"' class="row justify-content-center m-2 align-items-center">
 			<div class="col-3 sliderlabel"> Angle ({{parseFloat(angleParam).toFixed(2)}}rad)</div>
 			<div class="col-7"><input type="range" min="-1.57" max="1.57" step="0.01" v-model="angleParam" class="slider" id="angleSlider"></div>
 			<button v-if='!position_running' id="set" class="btn btn-default btn-lg col-2" @click="setPosition">Set</button>
@@ -75,7 +73,7 @@
 			<div class="col-3  sliderlabel"> Speed ({{parseFloat(speedParam).toFixed(2)}}rad/s)</div>
 			<div class="col-7"><input type="range" min="0" max="200" v-model="speedParam" class="slider" id="brakeSlider"></div>
 			<button id="set" class="btn btn-default btn-lg col-2" @click="setSpeed">Set</button>
-		</div>
+		</div> -->
 
 		<div v-if='getCurrentMode == "speedRaw"'>
 			<DCMotorPanel v-bind:dataSocket="getDataSocket" :maxV="12" />
@@ -84,11 +82,11 @@
 	</div>
 
 	<div v-else-if="inputMode == 'step'">
-		<StepCommand v-bind:mode='getCurrentMode' v-bind:dataSocket='getDataSocket' @showinputtype="toggleInputType"/>
+		<StepCommand v-bind:mode='getCurrentMode' @showinputtype="toggleInputType"/>
 	</div>
 
 	<div v-else-if="inputMode == 'ramp'">
-		<RampCommand v-bind:mode='getCurrentMode' v-bind:dataSocket='getDataSocket' @showinputtype="toggleInputType"/>
+		<RampCommand v-bind:mode='getCurrentMode' @showinputtype="toggleInputType"/>
 	</div>
 
 </div>
@@ -158,7 +156,7 @@ export default {
 			smoothie_y_min_pos: -1,
 			smoothie_y_max_pos: 6.28,
 			smoothie_millis_per_pixel: 10,
-			showInputType: true,
+			showInputType: false,				//don't show input types until a mode has been selected
 			position_running: false,
         }
     },
@@ -234,7 +232,7 @@ export default {
 		stop(){
 			this.clearMessages();
 			this.position_running = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			this.showInputType = true;
+			this.showInputType = false;					//when stopped, need to select a mode before input type shows again
 			this.speedParam = 0;
 
 			this.$store.dispatch('stop');
@@ -253,6 +251,7 @@ export default {
 		speedPid(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
+			this.showInputType = true;
 			
 			this.$store.dispatch('speedPid');
 
@@ -263,6 +262,7 @@ export default {
 			this.clearMessages();
 			this.position_running = false;												//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			this.setGraphDataParameter('theta');
+			this.showInputType = true;
 			
 			this.$store.dispatch('positionPid');
 
@@ -272,6 +272,7 @@ export default {
 		speedRaw(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
+			this.showInputType = true;
 			
 			this.$store.dispatch('speedRaw');
 			
