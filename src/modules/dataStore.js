@@ -9,12 +9,12 @@ const dataStore = {
         //current_ang_vel: 0,   
         current_ang_vel_array: [], //in rad/s
 
-        //calculation of simple moving average velocity
+        //calculation of simple moving average velocity======
         moving_avg_array: [0,0,0,0,0],
         moving_avg_index: 0,
         moving_avg_k: 5,
         moving_avg: 0,
-
+         //==================================================
         start_time: 0,
        
         inputMode: '',
