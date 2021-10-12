@@ -51,9 +51,21 @@ const commandStore = {
 				to: value
 			}));
         },
+        SET_VOLTAGE_RAMP(state, value){
+            state.dataSocket.send(JSON.stringify({
+				set: "volts_ramp",
+				to: value
+			}));
+        },
         SET_SPEED(state, value){
             state.dataSocket.send(JSON.stringify({
                 set: "velocity",
+                to: value
+            }));
+        },
+        SET_SPEED_RAMP(state, value){
+            state.dataSocket.send(JSON.stringify({
+                set: "velocity_ramp",
                 to: value
             }));
         },
@@ -105,8 +117,14 @@ const commandStore = {
         setVoltage(context, value){
             context.commit('SET_VOLTAGE', value);
         },
+        setVoltageRamp(context, value){
+            context.commit('SET_VOLTAGE_RAMP', value);
+        },
         setSpeed(context, value){
             context.commit('SET_SPEED', value);
+        },
+        setSpeedRamp(context, value){
+            context.commit('SET_SPEED_RAMP', value);
         },
         setPosition(context, value){
             context.commit('SET_POSITION', value);

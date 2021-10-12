@@ -122,9 +122,17 @@ export default {
             this.$store.dispatch('setIsRecording', true);
         }
 
-    //only implemented for positionPid so far
+    
     if(this.mode == 'positionPid'){
         this.$store.dispatch('setPositionRamp', this.ramp_gradient);
+    } 
+    else if(this.mode == 'speedPid'){
+        this.$store.dispatch('setSpeedRamp', this.ramp_gradient);
+    } 
+    else if(this.mode == 'speedRaw'){
+        this.$store.dispatch('setVoltageRamp', this.ramp_gradient);
+    } else{
+        this.$store.dispatch('setIsRecording', false);
     }
     
 
