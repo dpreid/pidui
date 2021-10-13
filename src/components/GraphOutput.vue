@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <div class="row mb-2 justify-content-center align-items-center" id="chart-functions">
+    <div class="row mb-2 justify-content-center align-items-center" id="chart-functions" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
 
         <div class='form-group col-6'>
             <label class='m-2' for="gradient">Gradient:</label>
@@ -292,7 +292,7 @@
 <script>
 
 import { Chart } from 'chart.js';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import Toolbar from "./elements/Toolbar.vue";
 
 export default {
@@ -346,6 +346,9 @@ export default {
         },
     },
     methods: {
+        ...mapActions([
+            'setDraggable'
+        ]),
         updateChart(){
             
             let max_index = this.getNumData - 1;

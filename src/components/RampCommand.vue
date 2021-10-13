@@ -18,7 +18,7 @@
         </div> -->
 
 
-        <div class="row justify-content-center m-2">   
+        <div class="row justify-content-center m-2" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">   
             <div class='col'> 
                 <label v-if='mode == "speedRaw"' class='m-2' for="ramp_gradient"><b>Ramp gradient (Vs<sup>-1</sup>)</b></label>
                 <label v-else-if='mode == "positionPid"' class='m-2' for="ramp_gradient"><b>Ramp gradient (rads<sup>-1</sup>)</b></label>

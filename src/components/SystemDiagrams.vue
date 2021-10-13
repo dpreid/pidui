@@ -15,8 +15,8 @@
             </div>
             <div class='col-6'>
                 <h2>Plant transfer function</h2>
-                <img v-if='getRemoteLabVersion == "variable_governor" || getRemoteLabVersion == "spinning_disk"' id="pidTransferFunction" src="../../public/images/plantTransferFirstOrder.png">
-                <img v-else id="pidTransferFunction" src="../../public/images/plantTransferSecondOrder.png">
+                <img v-if='getCurrentMode == "positionPid"' id="pidTransferFunction" src="../../public/images/plantTransferSecondOrder.png">
+                <img v-else id="pidTransferFunction" src="../../public/images/plantTransferFirstOrder.png">
             </div>
         </div>
         
@@ -38,7 +38,7 @@ export default {
     },
     computed:{
         ...mapGetters([
-            'getRemoteLabVersion'
+            'getCurrentMode'
         ])
 
     }

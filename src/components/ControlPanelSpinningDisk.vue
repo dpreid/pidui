@@ -77,7 +77,7 @@
 </div>
 	
 
-	<div v-if='getCurrentMode == "speedPid" || getCurrentMode == "positionPid"' class="row justify-content-center m-1 align-items-center">
+	<div v-if='getCurrentMode == "speedPid" || getCurrentMode == "positionPid"' class="row justify-content-center m-1 align-items-center" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
 		<div class='form-group col-2'>
 			<label for="kp">K<sub>p</sub>:</label>
 			<input type='text' id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
@@ -211,6 +211,7 @@ export default {
 		...mapActions([
 			'setCurrentMode',
 			'setGraphDataParameter',
+			'setDraggable'
 		]),
 		stop(){
 			this.clearMessages();
