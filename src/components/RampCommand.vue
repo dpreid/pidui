@@ -3,22 +3,32 @@
 //This component now just needs to send a slightly different command to the firmware.
 
 <template>
-    <div class='m-2 p-2'>
-        <!-- <div class="row justify-content-center" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">  
-            <div class='col'>
-                <label class='m-2' v-if='mode == "speedRaw"' for="ramp_start"><b>Start Voltage(0-12V)</b></label>
-                <label class='m-2' v-else-if='mode == "speedPid"' for="ramp_start"><b>Start Ang. Vel. (rads<sup>-1</sup>)</b></label>
-            </div>
-            <div class='col'>
-                <input v-if='mode == "speedRaw" || mode == "speedPid"' id="ramp_start" class='mr-2' v-model="ramp_start">
-            </div>
-            <div class='col d-grid gap-2 d-sm-block'>
-                <button class='btn btn-lg' v-show="mode == 'speedRaw' || mode == 'speedPid'" id="set" @click="setStart">Set</button>
-            </div>
-        </div> -->
+    <div class="row d-flex justify-content-center m-4" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">  
+            <div class='col-auto'>
+                <div class='input-group' v-if='mode == "speedRaw"'>
+                    <span class='input-group-text' for="ramp_gradient"><b>Ramp gradient (Vs<sup>-1</sup>)</b></span>
+                    <input class='form-control' id="ramp_gradient" v-model="ramp_gradient">
+                    <button class='btn btn-lg' id="run" v-if='!isPositionRampRunning' @click="runRamp">Run</button>
+                </div>
+
+                <div class='input-group' v-else-if='mode == "speedPid"'>
+                    <span class='input-group-text' for="ramp_gradient"><b>Ramp gradient (rads<sup>-2</sup>)</b></span>
+                     <input class='form-control' id="ramp_gradient" v-model="ramp_gradient">
+                     <button class='btn btn-lg' id="run" v-if='!isPositionRampRunning' @click="runRamp">Run</button>
+                </div>
+
+                <div class='input-group' v-else-if='mode == "positionPid"'>
+                    <span class='input-group-text' for="ramp_gradient"><b>Ramp gradient (rads<sup>-1</sup>)</b></span>
+                    <input class='form-control' id="ramp_gradient" v-model="ramp_gradient">
+                    <button class='btn btn-lg' id="run" v-if='!isPositionRampRunning' @click="runRamp">Run</button>
+                    <button class='btn btn-lg btn-danger' v-else-if='isPositionRampRunning' id="stop" @click="stopRamp">Stop</button>
+                </div>
 
 
-        <div class="row justify-content-center m-2" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">   
+            </div>
+
+
+        <!-- <div class="row justify-content-center m-2" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">   
             <div class='col'> 
                 <label v-if='mode == "speedRaw"' class='m-2' for="ramp_gradient"><b>Ramp gradient (Vs<sup>-1</sup>)</b></label>
                 <label v-else-if='mode == "positionPid"' class='m-2' for="ramp_gradient"><b>Ramp gradient (rads<sup>-1</sup>)</b></label>
@@ -31,7 +41,7 @@
                 <button class='btn btn-lg' id="run" v-if='!isPositionRampRunning' @click="runRamp">Run</button>
                 <button class='btn btn-lg btn-danger' v-else-if='isPositionRampRunning' id="stop" @click="stopRamp">Stop</button>
             </div>
-        </div>
+        </div> -->
 
 
      </div>   

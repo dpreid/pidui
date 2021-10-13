@@ -9,237 +9,320 @@
         </div>
     </div>
 
-    <div class="row mb-2 justify-content-center align-items-center" id="chart-functions" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
+    <div class="row justify-content-center align-items-center" id="chart-functions" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
 
-        <div class='form-group col-6'>
-            <label class='m-2' for="gradient">Gradient:</label>
-            <input class='col-sm' id="gradient" :value="gradient.toFixed(2)" readonly > 
+        <div class='col-md-5 m-2'>
+            <div class='input-group'>
+                <span class='input-group-text' for="gradient">Gradient:</span>
+                <input class='form-control col-sm' id="gradient" :value="gradient.toFixed(2)" readonly > 
+            </div>
         </div>
        
-        
-        <div class='form-group col-6'>
-            <label class='m-2' for="graph">Plot function: </label>
-            <select class='col-sm-4' name="function" id="function" v-model="currentFunction">
-                <option value="linear">Linear</option>
-                <option value="quadratic">Quadratic</option>
-                <option value="trigonometric">Trigonometric</option>
-                <option value="exponential">Exponential</option>
-                <option v-if='getGraphDataParameter == "omega"' value="step">Step (1st Order)</option>
-                <option v-if='getGraphDataParameter == "omega"' value="ramp">Ramp (1st Order)</option>
-                <option v-if='getGraphDataParameter == "theta"' value="step2nd">Step (2nd Order)</option>
-            </select> 
-
-            <div v-if="currentFunction === 'linear'">
-               
-                <div class='row justify-content-center'>
-                    <img id='linear_function' src='../../public/images/LinearFunction.png'>
-                </div>
-
-
-                <div class='row justify-content-center'>
-                    <div>
-                        <label class='m-2' for="func_a">a = </label>
-                        <input id="func_a" v-model="func_a" size="3">
+        <div class='col-md-5 m-2'>
+            <div class='row d-flex justify-content-center mb-2'>
+                <div class='col-auto'>
+                    <div class='input-group'>
+                        <span class='input-group-text' for="graph">Plot function: </span>
+                        <select class='form-select form-select-sm' name="function" id="function" v-model="currentFunction">
+                            <option value="linear">Linear</option>
+                            <option value="quadratic">Quadratic</option>
+                            <option value="trigonometric">Trigonometric</option>
+                            <option value="exponential">Exponential</option>
+                            <option v-if='getGraphDataParameter != "theta"' value="step">Step (1st Order)</option>
+                            <option v-if='getGraphDataParameter != "theta"' value="ramp">Ramp (1st Order)</option>
+                            <option v-if='getGraphDataParameter == "theta"' value="step2nd">Step (2nd Order)</option>
+                        </select> 
                     </div>
-                    
-
-                    <div>
-                        <label class='m-2' for="func_b">b = </label>
-                        <input id="func_b" v-model="func_b" size="3">                
-                    </div>
-                </div>
-
-
-                <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(linear)">Plot</button>
-                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                 </div>
             </div>
+
+            <div class='row d-flex justify-content-center'>
+                
+                <div v-if="currentFunction === 'linear'">
+                    <div class='row justify-content-center mb-2'>
+                        <img id='linear_function' src='../../public/images/LinearFunction.png'>
+                    </div>
+
+                    <div class='row d-flex justify-content-center'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_a">a = </label>
+                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row d-flex justify-content-center'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_b">b = </label>
+                                <input class='form-control' id="func_b" v-model="func_b" size='3'>
+                            </div>
+                        </div>
+                    </div>
+                       
+
+                    <div class="row-sm justify-content-center">
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(linear)">Plot</button>
+                        <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    </div>
+                </div>
+
+
+
                 <div v-else-if="currentFunction === 'quadratic'">
 
+                    <div class='row justify-content-center mb-2'>
+                        <img id='linear_function' src='../../public/images/QuadraticFunction.png'>
+                    </div>
+
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_a">a = </label>
+                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_b">b = </label>
+                                <input class='form-control' id="func_b" v-model="func_b" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-sm justify-content-center">
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(quadratic)">Plot</button>
+                        <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    </div>
+                </div>
+
+
+                <div v-else-if="currentFunction === 'trigonometric'">
+
+                    <div class='row justify-content-center mb-1'>
+                        <img id='trig_function' src='../../public/images/TrigFunction.png'>
+                    </div>
+
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_a">A = </label>
+                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_b">&omega; = </label>
+                                <input class='form-control' id="func_b" v-model="func_b" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_c">&phi; = </label>
+                                <input class='form-control' id="func_c" v-model="func_c" size='3'>
+                            </div>
+                        </div>
+                    </div>
+            
+                    
+
+                    <div class="row-sm justify-content-center">
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(trigonometric)">Plot</button>
+                        <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    </div>
+                </div>
+
+                
+                <div v-else-if="currentFunction === 'exponential'">
+
                     <div class='row justify-content-center'>
-                    <img id='linear_function' src='../../public/images/QuadraticFunction.png'>
+                        <img id='linear_function' src='../../public/images/ExpFunction.png'>
+                    </div>
+
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_a">A = </label>
+                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_b">b = </label>
+                                <input class='form-control' id="func_b" v-model="func_b" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-sm justify-content-center">
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(exponential)">Plot</button>
+                        <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
+                    </div>
                 </div>
 
 
-                <div class='row justify-content-center'>
-                    <div>
-                        <label class='m-2' for="func_a">a = </label>
-                        <input id="func_a" v-model="func_a" size="3">
+                <div v-else-if="currentFunction === 'step'">
+                    
+                    <div class='row justify-content-center mb-1'>
+                        <img id='transfer_function' src='../../public/images/VoltSpeedTransferFunction.png'>
+                    </div>
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_b">Step size, A<sub>v</sub> </label>
+                                <input class='form-control' id="func_b" v-model="func_b" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_a">K = </label>
+                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_c">&tau; = </label>
+                                <input class='form-control' id="func_c" v-model="func_c" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_d">t<sub>0</sub> = </label>
+                                <input class='form-control' id="func_d" v-model="func_d" size='3'>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="row-sm justify-content-center">
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
+                        <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                     </div>
                     
-
-                    <div>
-                        <label class='m-2' for="func_b">b = </label>
-                        <input id="func_b" v-model="func_b" size="3">                
-                    </div>
-                </div>
-
-                <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(quadratic)">Plot</button>
-                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
-                </div>
-            </div>
-            <div v-else-if="currentFunction === 'trigonometric'">
-
-                <div class='row justify-content-center'>
-                    <img id='trig_function' src='../../public/images/TrigFunction.png'>
                 </div>
 
 
-                <div class='row justify-content-center'>
-                    <div>
-                        <label class='m-2' for="func_a">A</label>
-                        <input id="func_a" v-model="func_a" size="3">
-                    </div>
-                    
-                    <div>
-                        <label class='m-2' for="func_b">&omega;</label>
-                        <input id="func_b" v-model="func_b" size="3">
+                <div v-else-if="currentFunction === 'step2nd'">
+
+                    <div class='row justify-content-center mb-1'>
+                        <img id='second_order_transfer_function' src='../../public/images/TransferFunction2ndOrder.png'>
                     </div>
 
-                    <div>
-                        <label class='m-2' for="func_c">&phi;</label>
-                        <input id="func_c" v-model="func_c" size="3">                
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_a">Step size, A</label>
+                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(trigonometric)">Plot</button>
-                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
-                </div>
-            </div>
-            <div v-else-if="currentFunction === 'exponential'">
-
-                 <div class='row justify-content-center'>
-                    <img id='linear_function' src='../../public/images/ExpFunction.png'>
-                </div>
-
-
-                <div class='row justify-content-center'>
-                    <div>
-                        <label class='m-2' for="func_a">A = </label>
-                        <input id="func_a" v-model="func_a" size="3">
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_b">&zeta; =</label>
+                                <input class='form-control' id="func_b" v-model="func_b" size='3'>
+                            </div>
+                        </div>
                     </div>
-                    
 
-                    <div>
-                        <label class='m-2' for="func_b">b = </label>
-                        <input id="func_b" v-model="func_b" size="3">                
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_c">&omega;<sub>n</sub> =</label>
+                                <input class='form-control' id="func_c" v-model="func_c" size='3'>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(exponential)">Plot</button>
-                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
-                </div>
-            </div>
-            <div v-else-if="currentFunction === 'step'">
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_d">t<sub>0</sub> =</label>
+                                <input class='form-control' id="func_d" v-model="func_d" size='3'>
+                            </div>
+                        </div>
+                    </div>
                 
-                 <div class='row justify-content-center'>
-                    <label class='m-2' for="func_b">Step size, A<sub>v</sub></label>
-                    <input id="func_b" v-model="func_b" size="3">
-                </div>
-
-                <div class='row justify-content-center'>
-                    <img id='transfer_function' src='../../public/images/VoltSpeedTransferFunction.png'>
-                </div>
-
-
-                <div class='row justify-content-center'>
-                    <div>
-                        <label class='m-2' for="func_a">K</label>
-                        <input id="func_a" v-model="func_a" size="3">
+                    <div class="row-sm justify-content-center">
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step2nd)">Plot</button>
+                        <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                     </div>
                     
+                </div>
 
-                    <div>
-                        <label class='m-2' for="func_c">&tau;</label>
-                        <input id="func_c" v-model="func_c" size="3">                
+
+                <div v-else-if="currentFunction === 'ramp'">
+
+                    <div class='row justify-content-center mb-1'>
+                        <img id='transfer_function' src='../../public/images/VoltSpeedTransferFunction.png'>
                     </div>
 
-                    <div>
-                        <label class='m-2' for="func_d">t<sub>0</sub></label>
-                        <input id="func_d" v-model="func_d" size="3">                
-                    </div>
-                </div>
-        
-                <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step)">Plot</button>
-                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
-                </div>
-                
-            </div>
-            <div v-else-if="currentFunction === 'step2nd'">
-                
-                 <div class='row justify-content-center'>
-                    <label class='m-2' for="func_a">Step size, A</label>
-                    <input id="func_a" v-model="func_a" size="3">
-                </div>
-
-                <div class='row justify-content-center'>
-                    <img id='second_order_transfer_function' src='../../public/images/TransferFunction2ndOrder.png'>
-                </div>
-
-
-                <div class='row justify-content-center'>
-                    <div>
-                        <label class='m-2' for="func_b">&zeta;</label>
-                        <input id="func_b" v-model="func_b" size="3">
-                    </div>
-                    
-
-                    <div>
-                        <label class='m-2' for="func_c">&omega;<sub>n</sub></label>
-                        <input id="func_c" v-model="func_c" size="3">                
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_b">Ramp gradient, A<sub>v</sub></label>
+                                <input class='form-control' id="func_b" v-model="func_b" size='3'>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class='m-2' for="func_d">t<sub>0</sub></label>
-                        <input id="func_d" v-model="func_d" size="3">                
-                    </div>
-                </div>
-               
-                <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(stepSecondOrder)">Plot</button>
-                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
-                </div>
-                
-            </div>
-            <div v-else-if="currentFunction === 'ramp'">
-
-                <div class='row justify-content-center'>
-                    <label class='m-2' for="func_b">Ramp gradient, A<sub>v</sub></label>
-                    <input id="func_b" v-model="func_b" size="3">
-                </div>
-
-                <div class='row justify-content-center'>
-                    <img id='transfer_function' src='../../public/images/VoltSpeedTransferFunction.png'>
-                </div>
-
-
-                <div class='row justify-content-center'>
-                    <div>
-                        <label class='m-2' for="func_a">K</label>
-                        <input id="func_a" v-model="func_a" size="3">
-                    </div>
-                    
-
-                    <div>
-                        <label class='m-2' for="func_c">&tau;</label>
-                        <input id="func_c" v-model="func_c" size="3">                
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_a">K =</label>
+                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class='m-2' for="func_d">&omega;<sub>0</sub></label>
-                        <input id="func_d" v-model="func_d" size="3">                
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_c">&tau; =</label>
+                                <input class='form-control' id="func_c" v-model="func_c" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row d-flex justify-content-center mb-1'>
+                        <div class='col-auto'>
+                            <div class='input-group'>
+                                <label class='input-group-text' for="func_d">&omega;<sub>0</sub> =</label>
+                                <input class='form-control' id="func_d" v-model="func_d" size='3'>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row-sm justify-content-center">
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(ramp)">Plot</button>
+                        <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                     </div>
                 </div>
 
-                <div class="row-sm justify-content-center">
-                    <button class="btn btn-default btn-xs m-1" id="plotFunctionButton" @click="plotFunc(ramp)">Plot</button>
-                    <button class="btn btn-default btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
-                </div>
             </div>
         </div>
 
@@ -650,7 +733,7 @@ export default {
             }
             
         },
-        stepSecondOrder(t){
+        step2nd(t){
             let t0 = parseFloat(this.func_d);
             let t_norm = t - t0;
             let zeta = parseFloat(this.func_b);
@@ -726,11 +809,11 @@ export default {
     height: 30px;
 }
 
-#plotFunctionButton       {background-color: #4CAF50FF; color: rgb(255, 255, 255)}
+/* #plotFunctionButton       {background-color: #4CAF50FF; color: rgb(255, 255, 255)}
 #plotFunctionButton:hover {background-color: #3e8e41} 
 
 #clearFunctionButton        {background-color: #e13131ff; color: rgb(255, 255, 255)}
-#clearFunctionButton:hover {background-color: #cc1e1eff;}
+#clearFunctionButton:hover {background-color: #cc1e1eff;} */
 
 #clearButton  {background-color: #e17a31ff;}
 #clearButton:hover  {background-color: #cc661eff;}

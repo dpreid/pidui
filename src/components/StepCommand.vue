@@ -1,27 +1,32 @@
 //vue3 update
 
 <template>
-    <div class='m-2 p-2'>
-        <div class="row justify-content-center" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">    
-            <div class='col-4'>
-                <label v-if='mode == "speedRaw"' class='m-2' for="step_raw">Step size (0 - {{max_voltage_step}}V)</label>
-                <label v-else-if='mode == "positionPid"' class='m-2' for="step_speed">Step size (0 - {{max_position_step.toFixed(2)}} rad)</label>
-                <label v-else-if='mode == "speedPid"' class='m-2' for="step_position">Step size (0 - {{max_speed_step}} rad/s)</label>
-            </div>
-            <div class='col-4'>
-                <input v-if='mode == "speedRaw"' id="step_raw" v-model="step_size" max='max_voltage_step' min='-max_voltage_step'>
-                <input v-else-if='mode == "speedPid"' id="step_speed" v-model="step_size" max='max_speed_step' min='-max_speed_step'>
-                <input v-else-if='mode == "positionPid"' id="step_position" v-model="step_size" max='max_position_step' min='-max_position_step'>
-            </div>
+        
+        <div class="row d-flex justify-content-center m-4" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">  
+            <div class='col-auto'>
+                <div class='input-group' v-if='mode == "speedRaw"'>
+                    <span class='input-group-text' for="step_raw">Step size (0 - {{max_voltage_step}}V)</span>
+                    <input class='form-control' id="step_raw" v-model="step_size" max='max_voltage_step' min='-max_voltage_step'>
+                    <button class='btn btn-lg' id="run" @click="runStep">Run</button>
+                </div>
+            
 
-            <div class='col-4 d-grid gap-2 d-sm-block'>
-                <button class='btn btn-lg' v-if='!isPositionStepRunning' id="run" @click="runStep">Run</button>
-                <button class='btn btn-lg btn-danger' v-else-if='isPositionStepRunning' id="wait" @click="stopStep">Stop</button>
+                <div class='input-group' v-else-if='mode == "speedPid"'>
+                    <span class='input-group-text' for="step_speed">Step size (0 - {{max_speed_step}} rad/s)</span>
+                    <input class='form-control' id="step_speed" v-model="step_size" max='max_speed_step' min='-max_speed_step'>
+                    <button class='btn btn-lg' id="run" @click="runStep">Run</button>
+                </div>
+
+                <div class='input-group' v-else-if='mode == "positionPid"'>
+                    <span class='input-group-text' for="step_speed">Step size (0 - {{max_position_step.toFixed(2)}} rad)</span>
+                    <input class='form-control' id="step_position" v-model="step_size" max='max_position_step' min='-max_position_step'>
+                    <button class='btn btn-lg' v-if='!isPositionStepRunning' id="run" @click="runStep">Run</button>
+                    <button class='btn btn-lg btn-danger' v-else-if='isPositionStepRunning' id="wait" @click="stopStep">Stop</button>
+                </div>
+
             </div>
         </div>
-
-
-     </div>   
+       
 </template>
 
 <script>
@@ -43,10 +48,6 @@ export default {
         isPositionStepRunning: false,
     }
   },
-  components: {
-    
-  },
-  
   created(){
       let version = this.$store.getters.getRemoteLabVersion;
         if( version == 'variable_governor'){

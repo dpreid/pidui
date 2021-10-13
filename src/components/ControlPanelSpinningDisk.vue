@@ -40,20 +40,26 @@
 	</div>
 
 	<div id="buttons">
-		<div class='col d-grid gap-2 d-md-block'>
-				<button v-if='getCurrentMode == "stopped"' id="pidspeed" class="btn btn-lg me-1" @click="speedPid">Velocity (PID)</button>
-				<button v-if='getCurrentMode == "stopped"' id="pidposition" class="btn btn-lg me-1" @click="positionPid">Position (PID)</button>	
-				<button v-if='getCurrentMode == "stopped"' id="dcmotor" class="btn btn-lg me-1" @click="speedRaw">Voltage (open loop)</button>
-				<button id="stop" class="btn btn-lg" @click="stop">Exit mode</button>
+		<div class='row'>
+			<div class='d-grid gap-1 d-md-block mb-1'>
+				<button v-if='getCurrentMode == "stopped"' id="pidspeed" class="btn btn-lg btn-primary me-1" @click="speedPid">Velocity (PID)</button>
+				<button v-if='getCurrentMode == "stopped"' id="pidposition" class="btn btn-lg btn-secondary me-1" @click="positionPid">Position (PID)</button>	
+				<button v-if='getCurrentMode == "stopped"' id="dcmotor" class="btn btn-lg btn-success me-1" @click="speedRaw">Voltage (open loop)</button>
+				<button id="stop" v-if='getCurrentMode != "stopped"' class="btn btn-lg btn-danger" @click="stop">Exit mode</button>
+			</div>
 		</div>
 
-		<div class='col' v-show='showInputType'>
-			<label class='m-2' for="inputSelect">Input type:</label>
-			<select name="inputSelect" id="inputSelect" v-model="inputMode">
-				<option v-if='getCurrentMode == "speedRaw"' value="free">Free</option>
-				<option value="step">Step</option>
-				<option v-if='getRemoteLabVersion != "robot_arm"' value="ramp">Ramp</option>
-			</select> 
+		<div class='row d-flex justify-content-center'>
+			<div class='col-auto'>
+				<div class='input-group' v-show='showInputType'>
+					<span class="input-group-text" for="inputSelect">Input type</span>
+					<select class="form-select form-select-sm" name="inputSelect" id="inputSelect" v-model="inputMode">
+						<option v-if='getCurrentMode == "speedRaw"' value="free">Free</option>
+						<option value="step">Step</option>
+						<option v-if='getRemoteLabVersion != "robot_arm"' value="ramp">Ramp</option>
+					</select> 
+				</div>
+			</div>
 		</div>
 
 	</div>
@@ -77,23 +83,35 @@
 </div>
 	
 
-	<div v-if='getCurrentMode == "speedPid" || getCurrentMode == "positionPid"' class="row justify-content-center m-1 align-items-center" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
-		<div class='form-group col-2'>
-			<label for="kp">K<sub>p</sub>:</label>
-			<input type='text' id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
-        </div>
-		<div class='form-group col-2'>
-			<label for="ki">K<sub>i</sub>:</label>
-			<input type='text' id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
+	<div v-if='getCurrentMode == "speedPid" || getCurrentMode == "positionPid"' @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
+		<div class='row justify-content-center mb-2'>
+		
+			<div class='col-md-3'>
+				<div class="input-group">
+					<span class="input-group-text" id="basic-addon1">K<sub>p</sub></span>
+					<input type="text" class="form-control" placeholder="Kp" aria-label="Kp" aria-describedby="basic-addon1" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
+				</div>	
+			</div>
+
+			<div class='col-md-3'>
+				<div class="input-group">
+					<span class="input-group-text" id="basic-addon1">K<sub>i</sub></span>
+					<input type="text" class="form-control" placeholder="Ki" aria-label="Ki" aria-describedby="basic-addon1" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
+				</div>
+			</div>
+
+			<div class='col-md-3'>
+				<div class="input-group">
+					<span class="input-group-text" id="basic-addon1">K<sub>d</sub></span>
+					<input type="text" class="form-control" placeholder="Kd" aria-label="Kd" aria-describedby="basic-addon1" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
+				</div>	
+			</div>
+			<div class='col-md-3'>
+				<button id="reset" type='button' class="btn btn-danger btn-sm" @click="resetParameters">Reset</button>
+			</div>
+		
 		</div>
-		<div class='form-group col-2'>
-			<label for="kd">K<sub>d</sub>:</label>
-			<input type='text' id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
-        </div>
-
-		<button id="reset" class="btn btn-default btn-sm mt-3" @click="resetParameters">Reset</button>
 	</div>
-
 
 </div>
 
@@ -635,32 +653,39 @@ export default {
 
 .sliderlabel{ text-align: left;}
 
+select{
+    color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    
+    background-color: #4490d8;
+}
 
-#setmode       {background-color: rgb(3, 248, 12);}
-#setmode:hover {background-color: #3e8e41} 
+/* #setmode       {background-color: rgb(3, 248, 12);}
+#setmode:hover {background-color: #3e8e41}  */
 
-#reset       {background-color: rgba(248, 72, 3, 0.658);}
-#reset:hover {background-color: #5f0f04} 
+/* #reset       {background-color: rgba(248, 72, 3, 0.658);}
+#reset:hover {background-color: #5f0f04}  */
 
-#stop       {background-color: rgb(255, 0, 0);}
-#stop:hover {background-color: #cc1e1eff;}
+/* #stop       {background-color: rgb(255, 0, 0);}
+#stop:hover {background-color: #cc1e1eff;} */
 
-#pidspeed        {background-color: rgb(255, 187, 0);}
+/* #pidspeed        {background-color: rgb(255, 187, 0);}
 #pidspeed:hover  {background-color: #cc9d1eff;}
 
 #pidposition        {background-color: rgb(115, 255, 0);}
 #pidposition:hover  {background-color: rgb(58, 92, 3);}
 
 #dcmotor        {background-color: rgb(217, 255, 0);}
-#dcmotor:hover  {background-color: rgb(190, 187, 2);}
+#dcmotor:hover  {background-color: rgb(190, 187, 2);} */
 
-#resetHeight         {background-color: #5b7fa5ff;}
+/* #resetHeight         {background-color: #5b7fa5ff;}
 #resetHeight:hover   {background-color: #46627fff;}
 
 #configure         {background-color: rgb(220, 38, 236);}
 #configure:hover   {background-color: rgb(76, 19, 82);}
 
 #set         {background-color: rgb(30, 250, 1);}
-#set:hover   {background-color: rgb(30, 172, 2);}
+#set:hover   {background-color: rgb(30, 172, 2);} */
 
 </style>
