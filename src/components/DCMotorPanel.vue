@@ -48,7 +48,7 @@ export default {
   data () {
     return {
         voltage: 0,
-        isAnalogueOutput: false,
+        isAnalogueOutput: true,
     }
   },
   computed:{

@@ -1,3 +1,5 @@
+//Store for the data being received from the firmware as well as computed data properties
+
 
 const dataStore = {
     state: () => ({
@@ -42,11 +44,11 @@ const dataStore = {
       //       max_voltage: 12,
       //       max_rad_s: 200,
       //   },
-        pid_parameters:{      //is this necessary
-         Kp: 1,
-         Ki:0,
-         Kd:0,
-        },
+      //   pid_parameters:{      //is this necessary
+      //    Kp: 1,
+      //    Ki:0,
+      //    Kd:0,
+      //   },
         isRecording: false,         //is data actually being recorded
         
         isDataRecorderOn: false,    //is the Data Recorder element active
@@ -135,9 +137,9 @@ const dataStore = {
          // SET_RAMP(state, ramp){
          //    state.ramp = ramp;
          // },
-         SET_PID_PARAMETERS(state, parameters){
-            state.pid_parameters = parameters;
-         },
+         // SET_PID_PARAMETERS(state, parameters){
+         //    state.pid_parameters = parameters;
+         // },
          SET_IS_RECORDING(state, set){
             state.isRecording = set;
          },
@@ -232,9 +234,9 @@ const dataStore = {
          // setRamp(context, ramp){
          //    context.commit("SET_RAMP", ramp);
          // },
-         setPIDParameters(context, parameters){
-            context.commit("SET_PID_PARAMETERS", parameters);
-         },
+         // setPIDParameters(context, parameters){
+         //    context.commit("SET_PID_PARAMETERS", parameters);
+         // },
          setIsRecording(context, set){
             context.commit("SET_IS_RECORDING", set);
          },
@@ -323,9 +325,9 @@ const dataStore = {
          // getRamp(state){
          //    return state.ramp;
          // },
-         getPIDParameters(state){
-            return state.pid_parameters;
-         },
+         // getPIDParameters(state){
+         //    return state.pid_parameters;
+         // },
          getIsRecording(state){
             return state.isRecording;
          },
