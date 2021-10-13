@@ -134,7 +134,7 @@ export default {
           let errors = this.getErrorArray;
 
           angles.forEach((angle, index) => {
-              let data_object = {id: this.getNumData, t: parseFloat(times[index]), theta: angle.toFixed(2), omega: ang_vels[index].toFixed(2), command: commands[index], drive: drives[index], error: errors[index], showDataPoint: true};
+              let data_object = {id: this.getNumData, t: parseFloat(times[index]), theta: angle.toFixed(2), omega: ang_vels[index].toFixed(2), command: commands[index], drive: drives[index], error: errors[index]};
               this.$store.dispatch('addData', data_object);
           })
 

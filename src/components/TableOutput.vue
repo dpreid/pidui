@@ -11,7 +11,7 @@
         </tr>
         <tr v-for="row in tableData" :id="row.id" :key="row.id" v-bind:class="[row.id == selected_row_id ? 'selected-row' : '']" @click="changeSelected(row.id)">
             <td v-for='key in Object.keys(row)' :key="key">{{row[key]}}</td>
-            <td><input type="checkbox" :id="row.id" :name="row.id" :checked='row.showDataPoint' @change="toggleShowDataPoint(row.id, row.showDataPoint)"></td>
+            <!-- <td><input type="checkbox" :id="row.id" :name="row.id" :checked='row.showDataPoint' @change="toggleShowDataPoint(row.id, row.showDataPoint)"></td> -->
         </tr>
                             
     </table> 
@@ -83,11 +83,11 @@ export default {
             var elmnt = document.getElementById(id);
             elmnt.scrollIntoView(false); 
         },
-        toggleShowDataPoint(data_id, current_state){
-            console.log(current_state);
-            this.$store.dispatch('setShowDataPoint',{id: data_id, show: !current_state});
+        // toggleShowDataPoint(data_id, current_state){
+        //     console.log(current_state);
+        //     this.$store.dispatch('setShowDataPoint',{id: data_id, show: !current_state});
             
-        }
+        // }
       },
       
 }

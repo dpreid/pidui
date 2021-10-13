@@ -51,7 +51,7 @@ const dataStore = {
       //   },
         isRecording: false,         //is data actually being recorded
         
-        isDataRecorderOn: false,    //is the Data Recorder element active
+        
        }),
        mutations:{
          SET_CURRENT_ENCODER_POSITION(state, pos){
@@ -144,12 +144,11 @@ const dataStore = {
             state.isRecording = set;
          },
          
-        SET_DATA_RECORDER(state, set){
-            state.isDataRecorderOn = set;
-        },
-        SET_SHOW_DATA_POINT(state, options){
-            state.data[options.id].showDataPoint = options.show;
-        },
+        
+      //   SET_SHOW_DATA_POINT(state, options){
+      //      console.log('toggling show data point');
+      //       state.data[options.id].showDataPoint = options.show;
+      //   },
        },
        actions:{
          setCurrentEncoderPosition(context, pos){
@@ -240,12 +239,10 @@ const dataStore = {
          setIsRecording(context, set){
             context.commit("SET_IS_RECORDING", set);
          },
-        setDataRecorder(context, set){
-         context.commit("SET_DATA_RECORDER", set);
-         },
-        setShowDataPoint(context, options){
-            context.commit('SET_SHOW_DATA_POINT', options);
-        },
+        
+      //   setShowDataPoint(context, options){
+      //       context.commit('SET_SHOW_DATA_POINT', options);
+      //   },
 
        },
        getters:{
@@ -331,9 +328,7 @@ const dataStore = {
          getIsRecording(state){
             return state.isRecording;
          },
-        getIsDataRecorderOn(state){
-            return state.isDataRecorderOn;
-        },
+        
          getNumData(state){
             return state.data.length;
         },
