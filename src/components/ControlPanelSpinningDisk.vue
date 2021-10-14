@@ -89,21 +89,21 @@
 			<div class='col-md-3'>
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>p</sub></span>
-					<input type="text" class="form-control" placeholder="Kp" aria-label="Kp" aria-describedby="basic-addon1" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kpParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kp" aria-label="Kp" aria-describedby="basic-addon1" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
 				</div>	
 			</div>
 
 			<div class='col-md-3'>
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>i</sub></span>
-					<input type="text" class="form-control" placeholder="Ki" aria-label="Ki" aria-describedby="basic-addon1" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kiParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Ki" aria-label="Ki" aria-describedby="basic-addon1" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
 				</div>
 			</div>
 
 			<div class='col-md-3'>
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>d</sub></span>
-					<input type="text" class="form-control" placeholder="Kd" aria-label="Kd" aria-describedby="basic-addon1" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kdParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kd" aria-label="Kd" aria-describedby="basic-addon1" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
 				</div>	
 			</div>
 			<div class='col-md-3'>
@@ -144,9 +144,9 @@ export default {
 			dataSocket: null,
 			speedParam: 0,			//in rad/sec FOR NEW FIRMWARE
 			angleParam: 0,			//in rads for new firmware
-			kpParam: 1,
-			kiParam: 0,
-			kdParam: 0,
+			kpParam: 1.00,
+			kiParam: 0.00,
+			kdParam: 0.00,
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
 			chart_omega: null,
@@ -194,7 +194,8 @@ export default {
 			} else {
 				return "error-message border border-danger";
 			}
-		}
+		},
+		
 	},
 	watch:{
         url(){
@@ -281,7 +282,7 @@ export default {
 		},
 		setParameters(){
 			this.clearMessages();
-			if(!isNaN(this.kpParam) && !isNaN(this.kiParam) && !isNaN(this.kdParam) && this.kpParam >= 0 && this.kiParam >= 0 && this.kdParam >= 0){
+			if(parseFloat(this.kpParam) >= 0 && parseFloat(this.kiParam) >= 0 && parseFloat(this.kdParam) >= 0){
 				let params = {kp: parseFloat(this.kpParam), ki: parseFloat(this.kiParam), kd: parseFloat(this.kdParam)};
 				this.$store.dispatch('setPidParameters', params);
 			} else{
