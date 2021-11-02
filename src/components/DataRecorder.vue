@@ -141,7 +141,7 @@ export default {
       },
       clearData(){
           this.$store.dispatch('clearAllData');
-          this.max_reached = false;
+          //this.max_reached = false;
       },
       toggleResetModal(){
           this.showResetConfirmModal = !this.showResetConfirmModal;

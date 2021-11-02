@@ -10,7 +10,7 @@
     </div>
 
     <div class="row justify-content-center align-items-center" id="chart-functions" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
-
+        
         <div class='col-md-5 m-2'>
             <div class='input-group'>
                 <span class='input-group-text' for="gradient">Gradient:</span>
@@ -381,7 +381,6 @@ import Toolbar from "./elements/Toolbar.vue";
 export default {
     
     name: 'GraphOutput',
-    props: ['type'],
     emits: ['newselectedgraphpoint'],
     components:{
         Toolbar,
@@ -389,7 +388,6 @@ export default {
     data(){
         return{
             chart: null,
-            chartData: [],
             gradient_start_point: {x:0, y:0},
             gradient_end_point: {x:0, y:0},
             gradient: 0,
@@ -425,8 +423,8 @@ export default {
       },
     watch:{
         getData(){
-            this.clearData();       //only runs when data array is completely changed, ie when it is set to empty array []
-        },
+            this.clearData(); //only runs if data array gets reset to [];
+        }
     },
     methods: {
         ...mapActions([
@@ -437,12 +435,14 @@ export default {
             let max_index = this.getNumData - 1;
             if(max_index < this.maxDataPoints){
                 if(this.latest_index < max_index && this.getIsRecording){
+                    console.log('getting data');
                     for(let i=this.latest_index; i < max_index; i++){
                         this.getDataAtIndex(i);
                     }
                     this.latest_index = max_index;
-                    this.chart.update();                       //actually updating the chart moved to here!
                     this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.getGraphDataParameter;
+                    this.chart.update(0);                       //actually updating the chart moved to here!
+                    
                 } 
             } 
 
@@ -456,8 +456,8 @@ export default {
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: _this.type,
-                    data: _this.chartData,
+                    label: 'graph',
+                    data: [],
                     pointBackgroundColor: 'rgba(0, 0, 0, 1)',
                 }]
             },
@@ -490,7 +490,7 @@ export default {
                     yAxes: [{
                         scaleLabel:{
                             display: true,
-                            labelString: _this.graphDataParameter
+                            labelString: _this.getGraphDataParameter
                         },
                         type: 'linear',
                         position: 'left',
@@ -539,23 +539,27 @@ export default {
             }
         },
         addDataToChart(data) {
-            this.chart.data.datasets[0].data.push(data);
+            try{
+                this.chart.data.datasets[0].data.push(data);
+            } catch(e){
+                console.log(e);
+            }
+            
         },
         clearData(){
             this.latest_index = 0;          //NEW
-            this.max_reached = false;          //NEW
-            this.chartData = [];
-            this.chart.data.datasets[0].data = this.chartData;
-            //this.chart.reset();
-            this.chart.update();
+            
+            this.chart.destroy();
+            this.createChart();
         },
         getAllData(){
             if(this.current_data_index == 0){
                 this.clearData();
                 
             }
-            for(let i=this.current_data_index; i<this.getNumData;i++){
-                let data = this.$store.getters.getData[i];
+            let _current_index = this.current_data_index;
+            for(let i=_current_index; i<this.getNumData;i++){
+                let data = this.getData[i];
                 let x_data = data.t;
                 let y_data;
                 switch(this.getGraphDataParameter){
@@ -591,7 +595,7 @@ export default {
             let index = this.getNumData - 1;
             let y_data;
             if(index >= 0){
-                let data = this.$store.getters.getData[index];
+                let data = this.getData[index];
                 let x_data = data.t;
                 switch(this.getGraphDataParameter){
                     case 'theta':
@@ -609,7 +613,7 @@ export default {
         getDataAtIndex(index){
             let y_data;
             if(index >= 0){
-                let data = this.$store.getters.getData[index];
+                let data = this.getData[index];
                 let x_data = data.t;
             
                 switch(this.getGraphDataParameter){
@@ -656,7 +660,7 @@ export default {
                 let x_diff = this.XAxisMax - this.XAxisMin;
                 let axis_ratio = y_diff/x_diff;         //axis ratio
 
-                if(this.chartData.length > 1){
+                if(this.getNumData > 1){
                     this.gradient = axis_ratio*pointer_ratio/canvas_ratio;
                     this.drawLine(this.gradient_start_point, this.gradient_end_point);
                 }
