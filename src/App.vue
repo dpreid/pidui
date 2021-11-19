@@ -232,6 +232,8 @@ export default {
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
+      this.rulerAdded = false;
+      this.protractorAdded = false;
     },
     toggleDataRecorder(){
       this.isDataRecorderOn = !this.isDataRecorderOn;

@@ -2,7 +2,7 @@
 
 <template>
 
-<div v-if='getSessionExpired' class='row'>
+<!-- <div v-if='getSessionExpired' class='row'>
   <div class='col-12'>
         <img id='session-end-image' src='https://assets.practable.io/images/common/thank-you-screen.svg' alt='session ended'>
     </div>
@@ -14,9 +14,14 @@
         <toolbar parentCanvasID="video-canvas" parentComponentName="webcam" parentDivID='video-element' :showDownload='true' :showPopupHelp='false' :showOptions="false"></toolbar>
       </div>
     </div>
-</div>    
+</div>     -->
     
-    
+    <div class='row' >
+      <div class='col-12' id='video-element'>
+        <canvas id="video-canvas"></canvas>
+        <toolbar parentCanvasID="video-canvas" parentComponentName="webcam" parentDivID='video-element' :showDownload='true' :showPopupHelp='false' :showOptions="false"></toolbar>
+      </div>
+    </div>
     <!-- <div id='videoWrapper'></div> -->
 </template>
 
@@ -41,12 +46,19 @@ export default {
       'getSessionExpired',
     ]),
   },
+  mounted(){
+    // TEMP in mounted
+    let canvas = document.getElementById("video-canvas");
+        //temporary static URL for video access
+        let url = "wss://video.practable.io:443/in/dpr/video0";
+        this.player = new JSMpeg.Player(url, {canvas: canvas, preserveDrawingBuffer: true});
+  },
   watch:{
-    url(){
-        let canvas = document.getElementById("video-canvas");
-        this.player = new JSMpeg.Player(this.url, {canvas: canvas, preserveDrawingBuffer: true});
+    // url(){
+    //     let canvas = document.getElementById("video-canvas");
+    //     this.player = new JSMpeg.Player(this.url, {canvas: canvas, preserveDrawingBuffer: true});
 
-    },
+    // },
   },
   methods:{
     
