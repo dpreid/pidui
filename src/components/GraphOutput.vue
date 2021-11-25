@@ -404,7 +404,7 @@ export default {
             XAxisMin: 0,
             maxDataPoints: 1200,
             current_data_index: 0,
-            data_index_interval: 100,
+            data_index_interval: 10,
             latest_index: 0,
         }
     },
@@ -446,7 +446,7 @@ export default {
                 } 
             } 
 
-            setTimeout(this.updateChart, 20);
+            setTimeout(this.updateChart, 50);
         },
         createChart() {
             var _this = this;
