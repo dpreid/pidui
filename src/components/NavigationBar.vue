@@ -39,6 +39,19 @@
               <li class="nav-item">
                   <a class="nav-link" href="#" tabindex="-1" @click='clearWorkspace'>Clear Workspace</a>
               </li>
+
+               <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                   Layout
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                    <li><a class="dropdown-item" href="#" @click='toggleLayout(1)'>Single Column</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleLayout(0.25)'>25%:75%</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleLayout(0.5)'>50%:50%</a></li>
+                    <li><a class="dropdown-item" href="#" @click='toggleLayout(0.75)'>75%:25%</a></li>
+                  </ul>
+              </li>
+
           </ul>
 
           <div class='d-flex'>
@@ -65,7 +78,7 @@ export default {
       
   },
   emits:[
-    'togglegraph', 'toggledatarecorder', 'togglestopwatch', 'toggletable', 'togglesystemdiagrams', 'togglesnapshot', 'toggleworkspace', 'clearworkspace', 'addruler', 'addprotractor'
+    'togglelayout', 'togglegraph', 'toggledatarecorder', 'togglestopwatch', 'toggletable', 'togglesystemdiagrams', 'togglesnapshot', 'toggleworkspace', 'clearworkspace', 'addruler', 'addprotractor'
   ],
   data () {
     return {
@@ -95,6 +108,24 @@ export default {
       clearWorkspace(){
           this.$emit('clearworkspace');
       },
+       toggleLayout(ratio){
+        if(ratio == 0.25)
+        {
+          this.$emit('togglelayout', 0.25);
+        }
+        else if(ratio == 0.5)
+        {
+          this.$emit('togglelayout', 0.5);
+        }
+        else if(ratio == 0.75)
+        {
+          this.$emit('togglelayout', 0.75);
+        }
+        else 
+        {
+          this.$emit('togglelayout', 1);
+        }
+      }
   }
 }
 </script>

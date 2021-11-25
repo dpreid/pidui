@@ -4,7 +4,7 @@
   <div id="app" class='container-fluid-sm m-0'>
 
     <!-- Components that do not conform to draggable grid -->
-    <navigation-bar @togglegraph="toggleGraph" @toggledatarecorder="toggleDataRecorder" 
+    <navigation-bar @togglelayout="toggleLayout" @togglegraph="toggleGraph" @toggledatarecorder="toggleDataRecorder" 
             @togglesnapshot="toggleSnapshot" @togglestopwatch="toggleStopwatch" @toggleworkspace="addWorkspace" @toggletable="toggleTable" 
                     @togglesystemdiagrams="toggleSystemDiagrams" @clearworkspace="clearWorkspace" @addruler="rulerAdded = true" @addprotractor="protractorAdded = true"
                     />
@@ -43,7 +43,7 @@
 
       <div class='row' id='component-grid'>
 
-          <div class='col-lg-6 col-sm-12' id='left-screen'>
+          <div :class='leftClass' id='left-screen'>
             <div class='col drop-area' id='drop_0_0' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><webcam-stream id='webcam-stream' /></div>
             <div class='col drop-area' id='drop_1_0' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><data-stream id='data-stream' /></div>
             <div class='col drop-area' id='drop_2_0' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><instructions v-if='isWorkspaceOn' id='instructions' :isWorkspaceOn="isWorkspaceOn"/></div>
@@ -51,7 +51,7 @@
             <div class='col drop-area' id='drop_4_0' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><stopwatch v-if='isStopwatchOn' id='stopwatch'/></div>
           </div>
 
-          <div class='col-lg-6 col-sm-12' id='right-screen'>
+          <div :class='rightClass' id='right-screen'>
             <div class='col drop-area' id='drop_0_1' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><data-recorder v-if='isDataRecorderOn' id='data-recorder' /></div>
             <div class='col drop-area' id='drop_1_1' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><motor-snapshot v-if='isSnapshotOn' id='snapshot' :headings="['Time/s', 'Angle/rad', 'Ang. Vel./rad/s', 'Command', 'Drive', 'Error']"/></div>
             <div class='col drop-area' id='drop_2_1' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><graph-output v-if='isGraphOn' id='graph' @newselectedgraphpoint="selectedGraphPoint"/></div>
@@ -139,7 +139,8 @@ export default {
       showLoadDataModal: false,
       saved_date: '',
       selected_graph_point: null,
-
+      leftClass: 'col-lg-6',
+      rightClass: 'col-lg-6' 
       
     }
   },
@@ -266,6 +267,21 @@ export default {
           this.toggleDataRecorder();
         }
         
+      }
+    },
+    toggleLayout(ratio){
+      if(ratio == 0.25){
+        this.leftClass = 'col-lg-3';
+        this.rightClass = 'col-lg-9';
+      } else if(ratio == 0.5){
+        this.leftClass = 'col-lg-6';
+        this.rightClass = 'col-lg-6';
+      } else if(ratio == 0.75){
+         this.leftClass = 'col-lg-9';
+        this.rightClass = 'col-lg-3';
+      } else{
+         this.leftClass = 'col-lg-12';
+        this.rightClass = 'col-lg-12';
       }
     },
     loadData(){
