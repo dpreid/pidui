@@ -1,4 +1,4 @@
-# pidui_2.0
+# pidui
 
 ## Project setup
 ```
