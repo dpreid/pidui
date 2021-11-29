@@ -99,6 +99,10 @@ export default {
 
 }
 
+.popup-image{
+    width:100%;
+}
+
 #close-button{
     position:absolute;
     right:0px;

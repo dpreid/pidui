@@ -845,6 +845,8 @@ select{
     background-color: #4490d8;
 }
 
-
+.popup-image{
+    width:100%;
+}
 
 </style>
