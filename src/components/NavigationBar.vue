@@ -55,7 +55,20 @@
           </ul>
 
           <div class='d-flex'>
-              <clock />
+              <ul class="navbar-nav dropstart">
+                  
+                  <checklist />
+
+                  <li class="nav-item">
+                    <clock class='nav-link' />
+                  </li>
+
+              </ul>
+
+
+
+
+              
           </div>
 
       </div>
@@ -67,12 +80,14 @@
 <script>
 
 import Clock from "./Clock.vue";
+import Checklist from './Checklist.vue';
 
 export default {
 
   name: 'NavigationBar',
   components: {
     Clock,
+    Checklist,
   },
   props:{
       

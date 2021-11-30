@@ -228,8 +228,8 @@ export default {
         if(!this.isDataRecorderOn){
           this.toggleDataRecorder();
         }
-        
       }
+      this.$store.dispatch('setChecklistCompleted', 'graph');
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
