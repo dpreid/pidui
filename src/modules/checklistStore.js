@@ -1,36 +1,41 @@
 //Store for the checklist specific to this remote lab.
 
+/**Checklist items:
+
+
+
+**/
 
 const checklistStore = {
     state: () => ({
         //temporary checklist items are: graph, table and ruler.
         checklist: [{name:'graph', verbose:'Opened graph', completed: false}, {name:'table', verbose:'Opened table', completed: false}, {name:'ruler', verbose:'Used ruler', completed: false}],
-        new_update: false,
+        new_checklist_update: false,
 
        }),
        mutations:{
-         SET_COMPLETED(state, name){
+         SET_CHECKLIST_COMPLETED(state, name){
             state.checklist.forEach(item => {
                 if(item.name == name){
                     item.completed = true;
                 }
             });
          },
-         SET_UPDATE(state, set){
-             state.new_update = set;
+         SET_CHECKLIST_UPDATE(state, set){
+             state.new_checklist_update = set;
          }
          
 
        },
        actions:{
         setChecklistCompleted(context, name){
-             if(context.getters.getUncompleted.includes(name)){
-                context.commit('SET_COMPLETED', name);
-                context.commit('SET_UPDATE', true);
+             if(context.getters.getChecklistUncompleted.includes(name)){
+                context.commit('SET_CHECKLIST_COMPLETED', name);
+                context.commit('SET_CHECKLIST_UPDATE', true);
              }
          },
-         setUpdate(context, set){
-             context.commit('SET_UPDATE', set);
+         setChecklistUpdate(context, set){
+             context.commit('SET_CHECKLIST_UPDATE', set);
          }
 
 
@@ -39,7 +44,7 @@ const checklistStore = {
          getChecklist(state){
             return state.checklist;
          },
-         getCompleted(state){
+         getChecklistCompleted(state){
              let completed = [];
             state.checklist.forEach(item => {
                 if(item.completed){
@@ -48,7 +53,7 @@ const checklistStore = {
             });
             return completed;
          },
-         getUncompleted(state){
+         getChecklistUncompleted(state){
             let uncompleted = [];
             state.checklist.forEach(item => {
                 if(!item.completed){
@@ -57,8 +62,8 @@ const checklistStore = {
             });
             return uncompleted;
          },
-         getUpdated(state){
-             return state.new_update;
+         getChecklistUpdated(state){
+             return state.new_checklist_update;
          }
           
          

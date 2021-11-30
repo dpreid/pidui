@@ -57,6 +57,7 @@
           <div class='d-flex'>
               <ul class="navbar-nav dropstart">
                   
+                  <achievements />
                   <checklist />
 
                   <li class="nav-item">
@@ -81,6 +82,7 @@
 
 import Clock from "./Clock.vue";
 import Checklist from './Checklist.vue';
+import Achievements from './Achievements.vue';
 
 export default {
 
@@ -88,6 +90,7 @@ export default {
   components: {
     Clock,
     Checklist,
+    Achievements,
   },
   props:{
       
