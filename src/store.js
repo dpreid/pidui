@@ -5,6 +5,7 @@ import uiStore from './modules/uiStore.js'
 import commandStore from './modules/commandStore.js'
 import checklistStore from './modules/checklistStore.js'
 import achievementStore from './modules/achievementStore.js'
+import loggingStore from './modules/logging.js';
 
 const store = createStore({
     modules:{
@@ -13,7 +14,8 @@ const store = createStore({
         ui: uiStore,
         command: commandStore,
         checklist: checklistStore,
-        achievement: achievementStore
+        achievement: achievementStore,
+        logging: loggingStore
     }
 })
 
