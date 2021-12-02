@@ -134,6 +134,9 @@ const commandStore = {
         },
         setPidParameters(context, params){
             context.commit('SET_PID_PARAMETERS', params);
+            context.commit('SET_P', params.kp); //in dataStore module
+            context.commit('SET_I', params.ki);
+            context.commit('SET_D', params.kd);
         },
         setCurrentMode(context, mode){
             context.commit("SET_CURRENT_MODE", mode);

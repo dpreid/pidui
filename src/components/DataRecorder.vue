@@ -147,6 +147,12 @@ export default {
           this.showResetConfirmModal = !this.showResetConfirmModal;
       },
       outputToCSV(){
+
+        if(this.getNumData > 100){
+          this.$store.dispatch('setChecklistCompleted', 'download-data');
+        }
+
+
           let csv = '';
           let filename = '';
             let date = new Date();

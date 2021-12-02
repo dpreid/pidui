@@ -22,7 +22,6 @@ const loggingStore = {
             state.clicks.push(data);
         },
         SET_LOGGING_START(state){
-            console.log(Date.now());
             state.session_time.start = Date.now();
         },
         SET_LOGGING_END(state){
@@ -49,7 +48,6 @@ const loggingStore = {
              return state.clicks;
          },
          getLoggingStart(state){
-             console.log(state.session_time.start);
              return state.session_time.start;
          },
          getLoggingEnd(state){

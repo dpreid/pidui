@@ -7,7 +7,7 @@
                 <div class='input-group' v-if='mode == "speedRaw"'>
                     <span class='input-group-text' for="step_raw">Step size (0 - {{max_voltage_step}}V)</span>
                     <input type="number" :max='max_voltage_step' :min='-max_voltage_step' :class="(parseFloat(step_size) >= -max_voltage_step && parseFloat(step_size) <= max_voltage_step) ? 'form-control' : 'form-control is-invalid'" id="step_raw" v-model="step_size">
-                    <button class='btn btn-lg' id="run" @click="runStep">Run</button>
+                    <button class='btn btn-lg' id="run" @click="runStep(); this.$store.dispatch('setChecklistCompleted', 'speedRaw-step-input')">Run</button>
                 </div>
             
 
@@ -20,7 +20,7 @@
                 <div class='input-group' v-else-if='mode == "positionPid"'>
                     <span class='input-group-text' for="step_speed">Step size (0 - {{max_position_step.toFixed(2)}} rad)</span>
                     <input type="number" step='0.01' :max='max_position_step.toFixed(2)' :min='-max_position_step.toFixed(2)' :class="(parseFloat(step_size) >= -max_position_step && parseFloat(step_size) <= max_position_step) ? 'form-control' : 'form-control is-invalid'" id="step_position" v-model="step_size" >
-                    <button class='btn btn-lg' v-if='!isPositionStepRunning' id="run" @click="runStep">Run</button>
+                    <button class='btn btn-lg' v-if='!isPositionStepRunning' id="run" @click="runStep(); this.$store.dispatch('checkPIDControllerConditions')">Run</button>
                     <button class='btn btn-lg btn-danger' v-else-if='isPositionStepRunning' id="wait" @click="stopStep">Stop</button>
                 </div>
 

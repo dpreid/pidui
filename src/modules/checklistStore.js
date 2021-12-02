@@ -9,7 +9,20 @@
 const checklistStore = {
     state: () => ({
         //temporary checklist items are: graph, table and ruler.
-        checklist: [{name:'graph', verbose:'Opened graph', completed: false}, {name:'table', verbose:'Opened table', completed: false}, {name:'ruler', verbose:'Used ruler', completed: false}],
+        checklist: [{name:'open-graph', verbose:'Opened graph tool', completed: false}, 
+                    {name:'voltage-mode', verbose:'Set hardware to voltage mode', completed: false}, 
+                    {name:'position-mode', verbose:'Set hardware to position PID mode', completed: false}, 
+                    {name:'speedRaw-step-input', verbose:'Step input whilst in open loop mode', completed: false}, 
+                    {name:'positionPid-step-input', verbose:'Step input whilst in position PID mode', completed: false},
+                    {name:'positionPid-ramp-input', verbose:'Ramp input whilst in position PID mode', completed: false},
+                    {name:'download-data', verbose:'Downloaded a dataset', completed: false},
+                    {name:'plot-linear', verbose:'Plot linear function', completed: false},
+                    {name:'plot-1st-step', verbose:'Plot 1st order step function', completed: false},
+                    {name:'plot-2nd-step', verbose:'Plot 2nd order step function', completed: false},
+                    {name:'p-controller', verbose:'Used a non-unity proportional controller in position mode', completed: false},
+                    {name:'pd-controller', verbose:'Used a PD controller in position mode', completed: false},
+                    {name:'pid-controller', verbose:'Used a full PID controller in position mode', completed: false},
+                ],
         new_checklist_update: false,
 
        }),
@@ -36,6 +49,18 @@ const checklistStore = {
          },
          setChecklistUpdate(context, set){
              context.commit('SET_CHECKLIST_UPDATE', set);
+         },
+         checkPIDControllerConditions(context){
+             console.log(context.rootState.data.p);
+            if(context.rootState.data.p != 1 && context.rootState.data.i == 0 && context.rootState.data.d == 0){
+                context.dispatch('setChecklistCompleted', 'p-controller');
+            } else if(context.rootState.data.p > 0 && context.rootState.data.i == 0 && context.rootState.data.d > 0){
+                context.dispatch('setChecklistCompleted', 'pd-controller');
+            } else if(context.rootState.data.p > 0 && context.rootState.data.i > 0 && context.rootState.data.d > 0){
+                context.dispatch('setChecklistCompleted', 'pid-controller');
+            } 
+
+            context.dispatch('setChecklistCompleted', 'positionPid-step-input');
          }
 
 

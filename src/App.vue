@@ -229,7 +229,7 @@ export default {
           this.toggleDataRecorder();
         }
       }
-      this.$store.dispatch('setChecklistCompleted', 'graph');
+      this.$store.dispatch('setChecklistCompleted', 'open-graph');
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
