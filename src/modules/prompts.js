@@ -3,7 +3,9 @@
 
 const promptsStore = {
     state: () => ({
-        prompts: [{name:'test', verbose:'test-verbose', completed: false}, 
+        prompts: [
+            {name:'enjoy-likert', response: '', hidden: false, completed: false, type: 'likert', verbose:'How are you enjoying the web app?', mainText: 'Please rate your enjoyment so far of the remote lab web app?', minScale:'Not at all', maxScale: 'Love it!'}, 
+            {name:'inertia-input', response: '', hidden: true, completed: false, type: 'text-input', verbose:'Inertia calculation', mainText: 'Calculate the inertia of your disk?'}, 
                     
                 ],
         new_prompt_update: false,
