@@ -231,6 +231,7 @@ export default {
         }
       }
       this.$store.dispatch('setChecklistCompleted', 'open-graph');
+      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'graph'});
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
@@ -248,6 +249,7 @@ export default {
     },
     toggleStopwatch(){
       this.isStopwatchOn = !this.isStopwatchOn;
+      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'stopwatch'});
     },
     toggleTable(){
       this.isTableOn = !this.isTableOn;
@@ -256,12 +258,14 @@ export default {
             this.toggleDataRecorder();
         }
       }
+      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'table'});
     },
     toggleInputGraph(){
       this.isInputGraphOn = !this.isInputGraphOn;
     },
     toggleSystemDiagrams(){
       this.isSystemDiagramsOn = !this.isSystemDiagramsOn;
+      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'diagrams'});
     },
     toggleSnapshot(){
       this.isSnapshotOn = !this.isSnapshotOn;
@@ -269,8 +273,8 @@ export default {
         if(!this.isDataRecorderOn){
           this.toggleDataRecorder();
         }
-        
       }
+      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'snapshot'});
     },
     toggleLayout(ratio){
       if(ratio == 0.25){

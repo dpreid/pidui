@@ -4,12 +4,12 @@
 const dataStore = {
     state: () => ({
        //current_time: 0,
-       current_time_array : [],  // in ms
+       current_time_array : [0,0,0,0],  // in ms
         //current_angle: 0,     
-        current_angle_array: [], //in rad
+        current_angle_array: [0,0,0,0], //in rad
         current_enc_pos: 0,
         //current_ang_vel: 0,   
-        current_ang_vel_array: [], //in rad/s
+        current_ang_vel_array: [0,0,0,0], //in rad/s
 
         //calculation of simple moving average velocity======
         moving_avg_array: [0,0,0,0,0],

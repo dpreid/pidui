@@ -3,8 +3,20 @@
 
 const achievementStore = {
     state: () => ({
-        //temporary achievements
-        achievements: [{name:'plots', verbose:'Plotted 10 times', completed: false}, {name:'table', verbose:'Used the table component', completed: false}, {name:'ruler', verbose:'Used ruler', completed: false}],
+        achievements: [
+            {name:'first-run', verbose:'Run any experiment for the first time', completed: false, hidden: true}, 
+            {name:'ruler', verbose:'Used the ruler tool', completed: false, hidden: true},
+            {name:'custom-ui', verbose:'Customised the UI', completed: false, hidden: true}, 
+            {name:'open-all', verbose:'Opened all the components', completed: false, hidden: true, fractional: [
+                {name:'graph', completed: false},
+                {name:'snapshot', completed: false},
+                {name:'table', completed: false},
+                {name:'stopwatch', completed: false},
+                {name:'diagrams', completed: false},
+
+            ], required: 5, n: 0}, 
+            {name:'multiple-runs', verbose:'Run a step or ramp 10 times', completed: false, hidden: true, required: 10, n: 0}, 
+        ],
         new_achievement_update: false,
 
        }),
@@ -16,6 +28,39 @@ const achievementStore = {
             state.achievements.forEach(item => {
                 if(item.name == name){
                     item.completed = true;
+                }
+            });
+         },
+         //payload -> achievement = {name: name, fractional: fractional}
+         SET_FRACTIONAL_ACHIEVEMENT_COMPLETED(state, achievement){
+            state.achievements.forEach(item => {
+                if(item.name == achievement.name){
+                    if('fractional' in item){
+                        item.fractional.forEach(frac => {
+                            if(frac.name == achievement.fractional && !frac.completed){
+                                frac.completed = true;
+                                item.n++;
+    
+                                if(item.n == item.required){
+                                    item.completed = true;
+                                }
+                            }
+                        })
+                    }
+                }
+            });
+         },
+         ADD_MULTIPLE_ACHIEVEMENT(state, name){
+            state.achievements.forEach(item => {
+                if(item.name == name){
+                    if('n' in item){
+                        if(item.n == item.required - 1){
+                            item.n++;
+                            item.completed = true;
+                        } else {
+                            item.n++;
+                        }
+                    }
                 }
             });
          },
@@ -34,6 +79,18 @@ const achievementStore = {
                 context.commit('SET_ACHIEVEMENT_COMPLETED', name);
                 context.commit('SET_ACHIEVEMENT_UPDATE', true);
              }
+         },
+         setFractionalAchievementCompleted(context, achievement){
+            if(context.getters.getAchievementsUncompleted.includes(achievement.name)){
+                context.commit('SET_FRACTIONAL_ACHIEVEMENT_COMPLETED', achievement);
+                context.commit('SET_ACHIEVEMENT_UPDATE', true);     //although perhaps not completed, should show some kind of update to progress.
+            }
+         },
+         addMultipleAchievement(context, name){
+            if(context.getters.getAchievementsUncompleted.includes(name)){
+                context.commit('ADD_MULTIPLE_ACHIEVEMENT', name);
+                context.commit('SET_ACHIEVEMENT_UPDATE', true);     //although perhaps not completed, should show some kind of update to progress.
+            }
          },
          setAchievementUpdate(context, set){
              context.commit('SET_ACHIEVEMENT_UPDATE', set);

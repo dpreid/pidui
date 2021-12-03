@@ -97,6 +97,8 @@ export default {
              this.$store.dispatch('setSpeed', rad_s);
 
          }
+
+         this.$store.dispatch('addMultipleAchievement','multiple-runs');
          
      },
      stopStep(){
