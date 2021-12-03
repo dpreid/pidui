@@ -39,6 +39,7 @@ const checklistStore = {
        },
        actions:{
         loadChecklist(context, checklist){
+            console.log(checklist);
             context.commit('LOAD_CHECKLIST', checklist);
         },
         setChecklistCompleted(context, name){

@@ -19,7 +19,8 @@
               </button>
             </div>
             <div class="modal-body">
-              <p>Previously recorded data was saved on {{ saved_date }}. Do you want to load this previous data?</p>
+              <p> Your Checklist and Achievement data has been stored from a previous session, as well as your last recorded run</p>
+              <p>Data was saved on {{ saved_date }}. Do you want to load this previous data?</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="load">Load</button>
@@ -301,7 +302,7 @@ export default {
           }
       },
     hasDataToLoad(){
-        if(window.localStorage.getItem('savedDataSpinningDisk')){
+        if(window.localStorage.getItem('savedDataSpinningDisk') || window.localStorage.getItem('checklistSpinningDisk') || window.localStorage.getItem('achievementsSpinningDisk')){
 
           return true;
 
@@ -313,18 +314,12 @@ export default {
     },
      loadFromLocalStorage(){
         if(this.hasStorage()){
-            if(window.localStorage.getItem('savedDataSpinningDisk')){
-              
-              this.loadData();
-              this.loadChecklist();
-              this.loadAchievements();
+          this.loadData();
+          this.loadChecklist();
+          this.loadAchievements();
 
-              return true;
+          return true;
 
-            } else {
-              console.log('no saved data');
-              return false;
-            }
         } else{
             console.log('no local storage');
             return false;
@@ -332,22 +327,29 @@ export default {
           
       },
       loadData(){
-        let data = window.localStorage.getItem('savedDataSpinningDisk');
-        data = JSON.parse(data);
-        this.$store.dispatch('clearAllData');
-        for(let i=0; i<data.length;i++){
-            this.$store.dispatch('addData', data[i]);
+        if(window.localStorage.getItem('savedDataSpinningDisk')){
+          let data = window.localStorage.getItem('savedDataSpinningDisk');
+          data = JSON.parse(data);
+          this.$store.dispatch('clearAllData');
+          for(let i=0; i<data.length;i++){
+              this.$store.dispatch('addData', data[i]);
+          }
         }
+        
       },
       loadChecklist(){
-        let data = window.localStorage.getItem('checklistSpinningDisk');
-        data = JSON.parse(data);
-        this.$store.dispatch('loadChecklist', data);
+        if(window.localStorage.getItem('checklistSpinningDisk')){
+          let data = window.localStorage.getItem('checklistSpinningDisk');
+          data = JSON.parse(data);
+          this.$store.dispatch('loadChecklist', data);
+        }
       },
       loadAchievements(){
-        let data = window.localStorage.getItem('achievementsSpinningDisk');
-        data = JSON.parse(data);
-        this.$store.dispatch('loadAchievements', data);
+        if(window.localStorage.getItem('achievementsSpinningDisk')){
+          let data = window.localStorage.getItem('achievementsSpinningDisk');
+          data = JSON.parse(data);
+          this.$store.dispatch('loadAchievements', data);
+        }
       },
       saveDataToLocalStorage(){
          if(this.hasStorage()){
