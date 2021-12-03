@@ -22,7 +22,7 @@
               <p>Previously recorded data was saved on {{ saved_date }}. Do you want to load this previous data?</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="loadData">Load</button>
+              <button type="button" class="btn btn-primary" @click="load">Load</button>
               <button type="button" class="btn btn-danger" data-dismiss="modal" data-bs-dismiss="modal" @click='showLoadDataModal = false'>Cancel</button>
             </div>
           </div>
@@ -149,14 +149,14 @@ export default {
     this.$store.dispatch('setDataRecorder', this.isDataRecorderOn);     //NEW
   },
   mounted(){
-    if(this.hasDataToLoad(this.remoteLabVersion)){
-      this.saved_date = JSON.parse(window.localStorage.getItem('dateSaved'));
+    if(this.hasDataToLoad()){
+      this.saved_date = JSON.parse(window.localStorage.getItem('dateSavedSpinningDisk'));
       this.showLoadDataModal = true;
     } else{
       this.showLoadDataModal = false;
     }
-      window.addEventListener('pagehide', () => {this.saveDataToLocalStorage(this.remoteLabVersion)});				//closing window
-      window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage(this.remoteLabVersion)});			//refreshing page, changing URL
+      window.addEventListener('pagehide', () => {this.saveDataToLocalStorage()});				//closing window
+      window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage()});			//refreshing page, changing URL
   },
   computed:{
     ...mapGetters([
@@ -286,8 +286,9 @@ export default {
         this.rightClass = 'col-lg-12';
       }
     },
-    loadData(){
-      this.loadDataFromLocalStorage();
+    // =================== LOCAL STORAGE LOADING AND SAVING DATA, CHECKLIST AND ACHIEVEMENTS =========================
+    load(){
+      this.loadFromLocalStorage();
       this.showLoadDataModal = false;
     },
     hasStorage(){
@@ -299,26 +300,24 @@ export default {
             return false;
           }
       },
-    hasDataToLoad(remoteLabVersion){
-        if(window.localStorage.getItem('savedData')){
-          if(window.localStorage.getItem('remoteLabVersion') == remoteLabVersion){
-              return true;
-          } else {
-              return false;
-          }
+    hasDataToLoad(){
+        if(window.localStorage.getItem('savedDataSpinningDisk')){
+
+          return true;
+
         } else{
+
           return false;
+
         }
     },
-     loadDataFromLocalStorage(){
+     loadFromLocalStorage(){
         if(this.hasStorage()){
-            if(window.localStorage.getItem('savedData')){
-              let data = window.localStorage.getItem('savedData');
-              data = JSON.parse(data)
-              this.$store.dispatch('clearAllData');
-              for(let i=0; i<data.length;i++){
-                  this.$store.dispatch('addData', data[i]);
-              }
+            if(window.localStorage.getItem('savedDataSpinningDisk')){
+              
+              this.loadData();
+              this.loadChecklist();
+              this.loadAchievements();
 
               return true;
 
@@ -327,32 +326,59 @@ export default {
               return false;
             }
         } else{
-            console.log('no saved data');
+            console.log('no local storage');
             return false;
         }
           
       },
-      saveDataToLocalStorage(remoteLabVersion){
+      loadData(){
+        let data = window.localStorage.getItem('savedDataSpinningDisk');
+        data = JSON.parse(data);
+        this.$store.dispatch('clearAllData');
+        for(let i=0; i<data.length;i++){
+            this.$store.dispatch('addData', data[i]);
+        }
+      },
+      loadChecklist(){
+        let data = window.localStorage.getItem('checklistSpinningDisk');
+        data = JSON.parse(data);
+        this.$store.dispatch('loadChecklist', data);
+      },
+      loadAchievements(){
+        let data = window.localStorage.getItem('achievementsSpinningDisk');
+        data = JSON.parse(data);
+        this.$store.dispatch('loadAchievements', data);
+      },
+      saveDataToLocalStorage(){
          if(this.hasStorage()){
-            if(this.$store.getters.getNumData > 0){
-               let data_string = JSON.stringify(this.$store.getters.getData);
-               window.localStorage.setItem('savedData', data_string);
-               let date = JSON.stringify(new Date());
-               window.localStorage.setItem('dateSaved', date);
-               window.localStorage.setItem('remoteLabVersion', remoteLabVersion);
+            
+            this.saveData();
+            this.saveChecklist();
+            this.saveAchievements();
 
-               return true;
-
-            } else{
-               console.log('no data to save');
-               return false;
-            }
+            return true;
             
          } else{
             console.log('no localStorage allowed');
             return false;
          }
-   },
+      },
+      saveData(){
+        if(this.$store.getters.getNumData > 0){
+          let data_json = JSON.stringify(this.$store.getters.getData);
+          window.localStorage.setItem('savedDataSpinningDisk', data_json);
+          let date = JSON.stringify(new Date());
+          window.localStorage.setItem('dateSavedSpinningDisk', date);
+        }
+      },
+      saveChecklist(){
+        let data_json = JSON.stringify(this.$store.getters.getChecklist);
+        window.localStorage.setItem('checklistSpinningDisk', data_json);
+      },
+      saveAchievements(){
+        let data_json = JSON.stringify(this.$store.getters.getAchievements);
+        window.localStorage.setItem('achievementsSpinningDisk', data_json);
+      }
   },
 }
 

@@ -1,14 +1,8 @@
 //Store for the checklist specific to this remote lab.
 
-/**Checklist items:
-
-
-
-**/
 
 const checklistStore = {
     state: () => ({
-        //temporary checklist items are: graph, table and ruler.
         checklist: [{name:'open-graph', verbose:'Opened graph tool', completed: false}, 
                     {name:'voltage-mode', verbose:'Set hardware to voltage mode', completed: false}, 
                     {name:'position-mode', verbose:'Set hardware to position PID mode', completed: false}, 
@@ -27,6 +21,9 @@ const checklistStore = {
 
        }),
        mutations:{
+        LOAD_CHECKLIST(state, checklist){
+            state.checklist = checklist;
+        },
          SET_CHECKLIST_COMPLETED(state, name){
             state.checklist.forEach(item => {
                 if(item.name == name){
@@ -41,6 +38,9 @@ const checklistStore = {
 
        },
        actions:{
+        loadChecklist(context, checklist){
+            context.commit('LOAD_CHECKLIST', checklist);
+        },
         setChecklistCompleted(context, name){
              if(context.getters.getChecklistUncompleted.includes(name)){
                 context.commit('SET_CHECKLIST_COMPLETED', name);

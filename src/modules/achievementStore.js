@@ -9,6 +9,9 @@ const achievementStore = {
 
        }),
        mutations:{
+        LOAD_ACHIEVEMENTS(state, achievements){
+            state.achievements = achievements;
+        },
          SET_ACHIEVEMENT_COMPLETED(state, name){
             state.achievements.forEach(item => {
                 if(item.name == name){
@@ -23,6 +26,9 @@ const achievementStore = {
 
        },
        actions:{
+        loadAchievements(context, achievements){
+            context.commit('LOAD_ACHIEVEMENTS', achievements);
+        },
         setAchievementCompleted(context, name){
              if(context.getters.getAchievementsUncompleted.includes(name)){
                 context.commit('SET_ACHIEVEMENT_COMPLETED', name);
