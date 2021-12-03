@@ -4,9 +4,9 @@
 const achievementStore = {
     state: () => ({
         achievements: [
-            {name:'first-run', verbose:'Run any experiment for the first time', completed: false, hidden: true}, 
-            {name:'ruler', verbose:'Used the ruler tool', completed: false, hidden: true},
-            {name:'custom-ui', verbose:'Customised the UI', completed: false, hidden: true}, 
+            {name:'custom-ui', verbose:'Customise the UI', completed: false, hidden: false},
+            {name:'velocity-mode', verbose:'Set the hardware to velocity PID mode', completed: false, hidden: true},
+            {name:'ruler', verbose:'Used the ruler tool', completed: false, hidden: true}, 
             {name:'open-all', verbose:'Opened all the components', completed: false, hidden: true, fractional: [
                 {name:'graph', completed: false},
                 {name:'snapshot', completed: false},

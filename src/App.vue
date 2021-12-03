@@ -200,6 +200,10 @@ export default {
         }
         console.log(draggedID);
         droppedElement.appendChild(document.getElementById(draggedID));
+        if(draggedZone != droppedElement){
+          this.$store.dispatch('setAchievementCompleted', 'custom-ui');
+        }
+        
       } 
       else if(droppedElement){
         let element = droppedElement;
@@ -209,7 +213,9 @@ export default {
             console.log(element.childNodes[0]);
             draggedZone.appendChild(element.childNodes[0]);
             element.appendChild(document.getElementById(draggedID));
-            
+            if(draggedZone != droppedElement){
+              this.$store.dispatch('setAchievementCompleted', 'custom-ui');
+            }
             break;
           }
         }

@@ -42,7 +42,7 @@
 	<div id="buttons">
 		<div class='row'>
 			<div class='d-grid gap-1 d-md-block mb-1'>
-				<button v-if='getCurrentMode == "stopped"' id="pidspeed" class="btn btn-lg btn-primary me-1" @click="speedPid">Velocity (PID)</button>
+				<button v-if='getCurrentMode == "stopped"' id="pidspeed" class="btn btn-lg btn-primary me-1" @click="speedPid(); this.$store.dispatch('setAchievementCompleted', 'velocity-mode')">Velocity (PID)</button>
 				<button v-if='getCurrentMode == "stopped"' id="pidposition" class="btn btn-lg btn-secondary me-1" @click="positionPid(); this.$store.dispatch('setChecklistCompleted', 'position-mode')">Position (PID)</button>	
 				<button v-if='getCurrentMode == "stopped"' id="dcmotor" class="btn btn-lg btn-success me-1" @click="speedRaw(); this.$store.dispatch('setChecklistCompleted', 'voltage-mode')">Voltage (open loop)</button>
 				<button id="stop" v-if='getCurrentMode != "stopped"' class="btn btn-lg btn-danger" @click="stop">Exit mode</button>
