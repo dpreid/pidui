@@ -1,13 +1,15 @@
 //Store for the prompts specific to this remote lab.
-
+//Prompts must have unique names
 
 const promptsStore = {
     state: () => ({
         prompts: [
             {name:'enjoy-likert', response: '', hidden: false, completed: false, type: 'likert', verbose:'How are you enjoying the web app?', mainText: 'Please rate your enjoyment so far of the remote lab web app?', minScale:'Not at all', maxScale: 'Love it!'}, 
-            {name:'inertia-input', response: '', hidden: true, completed: false, type: 'text-input', verbose:'Inertia calculation', mainText: 'Calculate the inertia of your disk?'}, 
-                    
-                ],
+            {name:'inertia-calc', response: '', hidden: false, completed: false, type: 'calc', verbose:'Inertia calculation', mainText: 'Calculate the inertia of your disk?'}, 
+            {name:'improve-text', response: '', hidden: false, completed: false, type: 'text', verbose:'Give us your feedback', mainText: 'Please tell us about any issues you had with the remote lab?'},
+            {name:'overshoot-calc', response: '', hidden: false, completed: false, type: 'calc', verbose:'Overshoot calculation', mainText: 'What is the percentage overshoot when you use Kp = 1 and a 3 rad step in position mode?'},
+            
+        ],
         new_prompt_update: false,
 
        }),
@@ -46,6 +48,16 @@ const promptsStore = {
        getters:{
          getPrompts(state){
             return state.prompts;
+         },
+         getAvailablePrompts(state){
+             let a_p = [];
+            state.prompts.forEach(prompt => {
+                if(!prompt.hidden && !prompt.completed){
+                    a_p.push(prompt);
+                }
+            })
+
+            return a_p;
          },
          getPromptCompleted(state){
              let completed = [];
