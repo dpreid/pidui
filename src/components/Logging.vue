@@ -32,31 +32,37 @@ export default {
         }
     },
     mounted(){
-
-        this.setLoggingStart();
+        
+        this.logStart();
 
         window.onclick = (event) => {
             let data = {target: event.target, screen_pos: {x: event.clientX, y: event.clientY}, time: Date.now()}
-            this.setLoggingClick(data);
+            this.logClick(data);
         }
 
-        window.addEventListener('pagehide', () => {this.setLoggingEnd});				//closing window
+        window.addEventListener('pagehide', () => {this.logEnd});				//closing window
     },
     computed:{
         ...mapGetters([
-            'getLoggingStart',
-            'getLoggingClicks'
+            'getLogStart',
+            'getLogClicks'
         ]),
 
     },
     methods:{
         ...mapActions([
-            'setLoggingClick',
-            'setLoggingStart',
-            'setLoggingEnd'
+            'logClick',
+            'logStart',
+            'logEnd',
+            'logBrowser'
         ]),
         getNumClicks(){
-            return this.getLoggingClicks.length;
+            let num = this.getLogClicks.length;
+            if(num == 100){
+                this.$store.dispatch('showPrompt', 'enjoy-likert');
+            }
+
+            return num;
         }
     }
 }

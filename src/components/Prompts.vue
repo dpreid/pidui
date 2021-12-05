@@ -87,7 +87,6 @@ export default {
     },
     computed:{
         ...mapGetters([
-            'getPrompts',
             'getAvailablePrompts',
             'getPromptUpdated'
         ]),
@@ -96,11 +95,13 @@ export default {
     methods:{
         ...mapActions([
             'setPromptUpdate',
+            'setPromptResponse'
         ]),
         updateResponse(prompt, input_id){
-            prompt.response = document.getElementById(input_id).value;
-            prompt.completed = true;
-            prompt.hidden = true;
+            let payload = {name: prompt.name, response: document.getElementById(input_id).value}
+            this.setPromptResponse(payload);
+            // this.setPromptCompleted(prompt.name);
+            
         }
     }
 }

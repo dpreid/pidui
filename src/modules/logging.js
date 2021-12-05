@@ -14,43 +14,50 @@ const loggingStore = {
             start: Date.now(),
             end: Date.now()
         },
+        browser: '',
 
 
        }),
        mutations:{
-        SET_LOGGING_CLICK(state, data){
+        LOG_CLICK(state, data){
             state.clicks.push(data);
         },
-        SET_LOGGING_START(state){
+        LOG_START(state){
             state.session_time.start = Date.now();
         },
-        SET_LOGGING_END(state){
+        LOG_END(state){
             state.session_time.end = Date.now();
+        },
+        LOG_BROWSER(state, browser){
+            state.browser = browser;
         }
          
 
        },
        actions:{
-        setLoggingClick(context, data){
-            context.commit('SET_LOGGING_CLICK', data);
+        logClick(context, data){
+            context.commit('LOG_CLICK', data);
         },
-        setLoggingStart(context){
-            context.commit('SET_LOGGING_START');
+        logStart(context){
+            context.commit('LOG_START');
         },
-        setLoggingEnd(context){
-            context.commit('SET_LOGGING_END');
+        logEnd(context){
+            context.commit('LOG_END');
+        },
+        logBrowser(context, browser){
+            context.commit('LOG_BROWSER', browser);
         }
 
 
        },
        getters:{
-         getLoggingClicks(state){
+         getLogClicks(state){
              return state.clicks;
          },
-         getLoggingStart(state){
+         getLogStart(state){
              return state.session_time.start;
          },
-         getLoggingEnd(state){
+         getLogEnd(state){
              return state.session_time.end;
          },
           
