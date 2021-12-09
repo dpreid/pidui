@@ -166,7 +166,7 @@ export default {
 		this.$store.dispatch('setInputMode',  'step');
 	},
 	mounted(){
-		this.connectWithArrays();		//testing============================================================
+		//this.connectWithArrays();		//testing============================================================
 	},
 	computed: {
 		...mapGetters([
@@ -201,8 +201,8 @@ export default {
         url(){
 			try{
 				if(this.url != '' && this.getDataURLObtained){
-					//this.connect();								//only for testing, reinstate later==================================
-					//this.setGraphDataParameter('omega');
+					this.connectWithArrays();								//new method for arrays
+					this.setGraphDataParameter('omega');
 				} else{
 					console.log('disconnecting: ' + this.url);
 				}
@@ -449,8 +449,8 @@ export default {
 			let _store = this.$store;
 			let _this = this;
 
-			//this.dataSocket = new WebSocket(this.url);
-			this.dataSocket = new WebSocket('wss://video.practable.io:443/bi/dpr/pendulum0');		//testing
+			this.dataSocket = new WebSocket(this.url);
+			//this.dataSocket = new WebSocket('wss://video.practable.io:443/bi/dpr/pendulum0');		//testing
 			_store.dispatch('setDataSocket', this.dataSocket);
 			var delay = 0
 			let delay_sum = 0;
