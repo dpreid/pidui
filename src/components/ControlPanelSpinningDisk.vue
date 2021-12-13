@@ -539,14 +539,24 @@ export default {
 								//_store.dispatch('setCurrentAngle', encs[3]);
 								_store.dispatch('setCurrentAngleArray', encs);
 
-								series_theta.append(d_msgTime + thisDelay, encs[3]);
+								series_theta.append(msgTimes[0] + thisDelay, encs[0]);
+								series_theta.append(msgTimes[1] + thisDelay, encs[1]);
+								series_theta.append(msgTimes[2] + thisDelay, encs[2]);
+								series_theta.append(msgTimes[3] + thisDelay, encs[3]);
+								
+								//series_theta.append(d_msgTime + thisDelay, encs[3]);
 								data_received = true;
 							}
 							
 							if(!isNaN(enc_ang_vels[3])){		
 								//_store.dispatch('setCurrentAngularVelocity', enc_ang_vels[3]);
 								_store.dispatch('setCurrentAngularVelocityArray', enc_ang_vels);
-								series_omega.append(d_msgTime + thisDelay, enc_ang_vels[3]);	
+
+								series_omega.append(msgTimes[0] + thisDelay, enc_ang_vels[0]);
+								series_omega.append(msgTimes[1] + thisDelay, enc_ang_vels[1]);
+								series_omega.append(msgTimes[2] + thisDelay, enc_ang_vels[2]);
+								series_omega.append(msgTimes[3] + thisDelay, enc_ang_vels[3]);
+								//series_omega.append(d_msgTime + thisDelay, enc_ang_vels[3]);	
 								data_received = true;
 							}
 
