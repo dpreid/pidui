@@ -156,7 +156,7 @@ export default {
 			smoothie_y_min_vel: -400,
 			smoothie_y_max_vel: 400,
 			smoothie_y_min_pos: -1,
-			smoothie_y_max_pos: 6.28,
+			smoothie_y_max_pos: 10.0,
 			smoothie_millis_per_pixel: 10,
 			showInputType: false,				//don't show input types until a mode has been selected
         }
@@ -463,17 +463,17 @@ export default {
 			let responsiveSmoothie = true;
 			//let thisTime;
 			
-			var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:_this.smoothie_millis_per_pixel,grid:{fillStyle:'#000000'},maxValue:_this.smoothie_y_max_vel,minValue:_this.smoothie_y_min_vel, interpolation:"linear",labels:{fillStyle:'#00ff00',precision:2}});
+			var chart_omega = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:_this.smoothie_millis_per_pixel,grid:{fillStyle:'#eeeeee'},maxValue:_this.smoothie_y_max_vel,minValue:_this.smoothie_y_min_vel, interpolation:"linear",labels:{fillStyle:'#000000',precision:2}});
 			this.canvas_omega = document.getElementById("smoothie-chart_omega");
 			let series_omega = new TimeSeries();
-			chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#00ff00'});
+			chart_omega.addTimeSeries(series_omega, {lineWidth:2,strokeStyle:'#000000'});
 			chart_omega.streamTo(this.canvas_omega, 0);
 
 			//smoothie chart for displaying angle data
-			var chart_theta = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:_this.smoothie_millis_per_pixel,grid:{fillStyle:'#000000'}, maxValue:_this.smoothie_y_max_pos,minValue:_this.smoothie_y_min_pos, interpolation:"linear",labels:{fillStyle:'#00ff00',precision:2}});
+			var chart_theta = new SmoothieChart({responsive: responsiveSmoothie, millisPerPixel:_this.smoothie_millis_per_pixel,grid:{fillStyle:'#eeeeee'}, maxValue:_this.smoothie_y_max_pos,minValue:_this.smoothie_y_min_pos, interpolation:"linear",labels:{fillStyle:'#000000',precision:2}});
 			this.canvas_theta = document.getElementById("smoothie-chart_theta");
 			let series_theta = new TimeSeries();
-			chart_theta.addTimeSeries(series_theta, {lineWidth:2,strokeStyle:'#00ff00'});
+			chart_theta.addTimeSeries(series_theta, {lineWidth:2,strokeStyle:'#000000'});
 			chart_theta.streamTo(this.canvas_theta, 0);
 
 			//in order to update the charts
