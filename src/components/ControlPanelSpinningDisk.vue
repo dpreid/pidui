@@ -220,7 +220,7 @@ export default {
 		},
 		getMaxReached(reached){
 			if(reached){
-				this.error = 'Max graph points reached, graphing automatically stopped'
+				this.error = 'Max data points reached, recording automatically stopped'
 			} else{
 				this.error = '';
 			}
