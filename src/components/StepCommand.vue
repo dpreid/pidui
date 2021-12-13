@@ -8,6 +8,7 @@
                     <span class='input-group-text' for="step_raw">Step size (0 - {{max_voltage_step}}V)</span>
                     <input type="number" :max='max_voltage_step' :min='-max_voltage_step' :class="(parseFloat(step_size) >= -max_voltage_step && parseFloat(step_size) <= max_voltage_step) ? 'form-control' : 'form-control is-invalid'" id="step_raw" v-model="step_size">
                     <button class='btn btn-lg' id="run" @click="runStep(); this.$store.dispatch('setChecklistCompleted', 'speedRaw-step-input')">Run</button>
+                    <button class='btn btn-lg btn-danger' v-if='isStepRunning' id="wait" @click="stopStep">Stop</button>
                 </div>
             
 
@@ -15,13 +16,14 @@
                     <span class='input-group-text' for="step_speed">Step size (0 - {{max_speed_step}} rad/s)</span>
                     <input type="number" :max='max_speed_step' :min='-max_speed_step' :class="(parseFloat(step_size) >= -max_speed_step && parseFloat(step_size) <= max_speed_step) ? 'form-control' : 'form-control is-invalid'" id="step_speed" v-model="step_size">
                     <button class='btn btn-lg' id="run" @click="runStep">Run</button>
+                    <button class='btn btn-lg btn-danger' v-if='isStepRunning' id="wait" @click="stopStep">Stop</button>
                 </div>
 
                 <div class='input-group' v-else-if='mode == "positionPid"'>
                     <span class='input-group-text' for="step_speed">Step size (0 - {{max_position_step.toFixed(2)}} rad)</span>
                     <input type="number" step='0.01' :max='max_position_step.toFixed(2)' :min='-max_position_step.toFixed(2)' :class="(parseFloat(step_size) >= -max_position_step && parseFloat(step_size) <= max_position_step) ? 'form-control' : 'form-control is-invalid'" id="step_position" v-model="step_size" >
-                    <button class='btn btn-lg' v-if='!isPositionStepRunning' id="run" @click="runStep(); this.$store.dispatch('checkPIDControllerConditions')">Run</button>
-                    <button class='btn btn-lg btn-danger' v-else-if='isPositionStepRunning' id="wait" @click="stopStep">Stop</button>
+                    <button class='btn btn-lg' v-if='!isStepRunning' id="run" @click="runStep(); this.$store.dispatch('checkPIDControllerConditions')">Run</button>
+                    <button class='btn btn-lg btn-danger' v-else-if='isStepRunning' id="wait" @click="stopStep">Stop</button>
                 </div>
 
             </div>
@@ -45,7 +47,7 @@ export default {
         max_position_step: 6, 
         max_speed_step: 100,
         max_voltage_step: 10,
-        isPositionStepRunning: false,
+        isStepRunning: false,
     }
   },
   created(){
@@ -80,19 +82,19 @@ export default {
      sendCommand(){
          if(this.mode == 'speedRaw'){
              
-             this.isPositionStepRunning = false; 
+             this.isStepRunning = true; 
              let signal = parseFloat(this.step_size);
              this.$store.dispatch('setVoltage', signal);
 
          } else if(this.mode == 'positionPid'){
 
-             this.isPositionStepRunning = true;                      //NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+             this.isStepRunning = true;                      //NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              let new_ang_rad = this.$store.getters.getCurrentAngle + parseFloat(this.step_size);
              this.$store.dispatch('setPosition', new_ang_rad);
 
          } else if(this.mode == 'speedPid'){
 
-             this.isPositionStepRunning = false; 
+             this.isStepRunning = true; 
              let rad_s = this.$store.getters.getCurrentAngularVelocity + parseFloat(this.step_size);           //needs to be in rad/s
              this.$store.dispatch('setSpeed', rad_s);
 
@@ -103,7 +105,7 @@ export default {
      },
      stopStep(){
             //this is an internal mode in the firmware and does not need to be reflected in the UI.
-            this.isPositionStepRunning = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            this.isStepRunning = false;				//NEW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			
             this.$emit('showinputtype', true);
 
@@ -111,7 +113,14 @@ export default {
                  this.$store.dispatch('setIsRecording', false);
              }
 
-             this.$store.dispatch('wait');
+            if(this.mode == 'positionPid'){
+                this.$store.dispatch('wait');
+            } else if(this.mode == 'speedRaw'){
+                this.$store.dispatch('setVoltage', 0);
+            } else {
+                this.$store.dispatch('setSpeed', 0);
+            }
+             
 		},
      
   }
