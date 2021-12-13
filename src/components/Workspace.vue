@@ -3,8 +3,9 @@
 <template>
 <div>
     <canvas :class="workspace_canvas_clickable ? 'clickable' : 'unclickable'" id="workspace" @mousedown="checkClick" @mousemove="moveClicked" @mouseup="mouseUnclick"></canvas>
+    <img id="ruler-image" src="../../public/images/ruler.png" hidden>
     <img id="protractor" src="../../public/images/protractor.png" hidden>
-    <img id="ruler" src="../../public/images/ruler.png" hidden>
+    
 </div>
 </template>
 
@@ -40,6 +41,7 @@ export default {
     created(){
         
         let cam_type = this.$store.getters.getCamera;
+        console.log(cam_type);
         if(cam_type == 0){  //logitech
             this.ruler_video_width_ratio = 1.29;       //1.428
         } else{
@@ -121,18 +123,24 @@ export default {
             protractor.src = document.getElementById("protractor").src;
         },
         addRuler(){
-            ruler.onload = () => {
+            let _this = this;
+            ruler.onload = function() {
                 let x = 100;
-                let y= 300;
-                let w = this.ruler_width;
-                let h = this.ruler_height;
-                
+                let y= 100;
+                let w = _this.ruler_width;
+                let h = _this.ruler_height;
                 
                 shapes.push( {x:x, y:y, width:w, height:h, image:ruler, angle:0} );
                 ctx.drawImage(ruler, x, y, w, h);
                 
             };
-            ruler.src = document.getElementById("ruler").src;
+
+            ruler.onerror = function(){
+                console.log('no image');
+            }
+            
+            ruler.src = document.getElementById("ruler-image").src;
+        
         },
         updateMode(event){
             if(event.repeat){
@@ -247,7 +255,9 @@ export default {
         resizeRuler(){
             console.log('resizing');
             this.ruler_width = this.video_canvas.clientWidth * this.ruler_video_width_ratio;
+            
             this.ruler_height = this.ruler_ratio*this.ruler_width;
+             
             this.draw();
             
         },
