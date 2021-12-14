@@ -47,7 +47,7 @@ export default {
     ]),
   },
   mounted(){
-    // TEMP in mounted
+    //TEMP in mounted
     // let canvas = document.getElementById("video-canvas");
     //     //temporary static URL for video access
     //     let url = "wss://video.practable.io:443/in/dpr/video0";

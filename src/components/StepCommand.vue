@@ -118,7 +118,7 @@ export default {
             } else if(this.mode == 'speedRaw'){
                 this.$store.dispatch('setVoltage', 0);
             } else {
-                this.$store.dispatch('setSpeed', 0);
+                this.$store.dispatch('wait');
             }
              
 		},
