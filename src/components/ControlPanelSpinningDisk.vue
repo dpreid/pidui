@@ -33,10 +33,10 @@
 	</toolbar>
 	
 
-	<div class="panel panel-default">
+	<div class="panel panel-default m-2">
 		<div v-if='getCurrentMode != ""' class='panel-heading'><h3>Current mode: {{getModeName}}</h3></div>
 		<div class='panel-body'>{{message}}</div>
-		<div :class='getErrorClass'><h3>{{error}}</h3></div>
+		<div :class='getErrorClass'><h3>{{ error }}</h3></div>
 	</div>
 
 	<div id="buttons">
@@ -192,7 +192,7 @@ export default {
 			if(this.error == ''){
 				return ""
 			} else {
-				return "error-message border border-danger";
+				return "error-message panel-body border border-danger";
 			}
 		},
 		
@@ -233,7 +233,7 @@ export default {
 			'setDraggable'
 		]),
 		stop(){
-			this.clearMessages();
+			//this.clearMessages();
 			this.showInputType = false;	
 			this.speedParam = 0;
 			this.$store.dispatch('stop');
@@ -490,7 +490,7 @@ export default {
 					//console.log(obj);
 					
 					if(obj.error){
-						this.hasStopped(obj.error);
+						_this.hasStopped(obj.error);
 					}
 					else if(obj.t){
 
