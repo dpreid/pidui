@@ -90,6 +90,7 @@
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>p</sub></span>
 					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kpParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kp" aria-label="Kp" aria-describedby="basic-addon1" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<span v-if='getCurrentMode == "speedPid"' class="input-group-text" id="scale_text">x10<sup>-2</sup></span>
 				</div>	
 			</div>
 
@@ -97,6 +98,7 @@
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>i</sub></span>
 					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kiParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Ki" aria-label="Ki" aria-describedby="basic-addon1" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<span v-if='getCurrentMode == "speedPid"' class="input-group-text" id="scale_text">x10<sup>-2</sup></span>
 				</div>
 			</div>
 
@@ -104,6 +106,7 @@
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>d</sub></span>
 					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kdParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kd" aria-label="Kd" aria-describedby="basic-addon1" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<span v-if='getCurrentMode == "speedPid"' class="input-group-text" id="scale_text">x10<sup>-2</sup></span>
 				</div>	
 			</div>
 			<div class='col-md-3'>
@@ -147,6 +150,7 @@ export default {
 			kpParam: 1.00,
 			kiParam: 0.00,
 			kdParam: 0.00,
+			kspeed_scale: 0.01,
 			message: '',				//for sending user messages to screen
 			error:'',					//for sending errors to screen
 			chart_omega: null,
@@ -283,8 +287,14 @@ export default {
 		setParameters(){
 			this.clearMessages();
 			if(parseFloat(this.kpParam) >= 0 && parseFloat(this.kiParam) >= 0 && parseFloat(this.kdParam) >= 0){
-				let params = {kp: parseFloat(this.kpParam), ki: parseFloat(this.kiParam), kd: parseFloat(this.kdParam)};
-				this.$store.dispatch('setPidParameters', params);
+				if(this.getCurrentMode == 'speedPid'){
+					let params = {kp: parseFloat(this.kpParam*this.kspeed_scale), ki: parseFloat(this.kiParam*this.kspeed_scale), kd: parseFloat(this.kdParam*this.kspeed_scale)};
+					this.$store.dispatch('setPidParameters', params);
+				} else{
+					let params = {kp: parseFloat(this.kpParam), ki: parseFloat(this.kiParam), kd: parseFloat(this.kdParam)};
+					this.$store.dispatch('setPidParameters', params);
+				}
+				
 			} else{
 				this.error = 'Cannot parse PID parameters';
 			}
