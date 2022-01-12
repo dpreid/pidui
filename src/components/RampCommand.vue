@@ -91,7 +91,6 @@ export default {
 
         this.$store.dispatch('addMultipleAchievement','multiple-runs');
     },
-    //only accessible in positionPid mode
     stopRamp(){
         this.isRampRunning = false;
 
