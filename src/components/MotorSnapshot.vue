@@ -29,7 +29,7 @@
 
 
     <div class='d-grid gap-2 d-sm-block'>
-        <button id="snapshot" type='button' class="btn btn-sm" v-if='getIsRecording' @click="takeSnapshot">Record Snapshot</button>
+        <button id="snapshot" type='button' class="btn btn-sm" @click="takeSnapshot">Record Snapshot</button>
         <button id="reset_snaps" type='button' class="btn btn-sm" @click="toggleResetModal">Reset</button>
         <button id="download_snaps" type='button' class="btn btn-sm" @click="outputToCSV">Download Snapshots</button>
     </div>
