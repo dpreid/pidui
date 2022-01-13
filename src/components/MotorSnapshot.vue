@@ -39,8 +39,8 @@
             <div class='row mb-2'>
                 <div class='col'>
                     <h3> Snapshot tool </h3>
-                    <p> Once data is being recorded, press 'Take Snapshot' to save the current data. Every time you click a new data set will be added. Click 'Download Snapshots'
-                        to download all the snapshots as a .csv file
+                    <p> Click 'Record Snapshot' to save the current state to the snapshot table. Every time you click a new data set will be added. Click 'Download Snapshots'
+                        to download all the snapshots as a .csv file.
                     </p>
                 </div>
             </div>
