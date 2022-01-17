@@ -3,18 +3,20 @@
 <template>
   <div>
     <!-- A non-rendered component that sets up the streams -->
+    <logging-stream />
   </div>
 </template> 
 
 <script>
 
+import LoggingStream from './LoggingStream.vue'; 
 import dayjs from "dayjs";
 import { mapGetters } from 'vuex';
 
 export default {
   name: "Streams",
   components: {
-    
+    LoggingStream,
   },
   data(){
     return{
@@ -33,8 +35,8 @@ export default {
       //add the streams data to the store
       let streams = query.get('streams');
       let decodedStreams = JSON.parse(decodeURIComponent(String(streams)));
-
       this.$store.dispatch("setStreams", decodedStreams);
+
       //add expiry time data to store
       let expire_time = query.get('exp');
       this.$store.dispatch('setExpiryTime', expire_time);

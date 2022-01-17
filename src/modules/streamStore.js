@@ -15,6 +15,8 @@ const streamStore = {
         videoURLObtained: false,
         dataURL: "",
         dataURLObtained: false,
+        logURL: "",
+        logURLObtained: false,
         expiryTime: '',
         camera: '',
         sessionExpired: false,
@@ -55,6 +57,14 @@ const streamStore = {
           DELETE_DATA_URL(state){
             state.dataURL = "";
             state.dataURLObtained = false;
+          },
+          SET_LOG_URL(state, url){
+            state.logURL = url;
+            state.logURLObtained = true;
+          },
+          DELETE_LOG_URL(state){
+            state.logURL = "";
+            state.logURLObtained = false;
           },
           SET_EXPIRY_TIME(state, time){
             state.expiryTime = time;
@@ -97,6 +107,12 @@ const streamStore = {
            deleteDataURL(context){
                context.commit("DELETE_DATA_URL");
            },
+           setLogURL(context, url){
+            context.commit("SET_LOG_URL", url);
+           },
+           deleteLogURL(context){
+              context.commit("DELETE_LOG_URL");
+            },
             setExpiryTime(context, time){
                 context.commit("SET_EXPIRY_TIME", time);
             },
@@ -143,6 +159,12 @@ const streamStore = {
         },
         getDataURLObtained(state){
             return state.dataURLObtained;
+        },
+        getLogURL(state){
+          return state.logURL;
+        },
+        getLogURLObtained(state){
+            return state.logURLObtained;
         },
         getExpiryTime(state){
             return state.expiryTime;

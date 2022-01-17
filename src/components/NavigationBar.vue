@@ -58,7 +58,7 @@
               <ul class="navbar-nav dropstart">
                   
                   <prompts />
-                  <logging />
+                  <!-- <logging /> -->
                   <achievements />
                   <checklist />
 
@@ -85,7 +85,7 @@
 import Clock from "./Clock.vue";
 import Checklist from './Checklist.vue';
 import Achievements from './Achievements.vue';
-import Logging from './Logging.vue';
+//import Logging from './Logging.vue';
 import Prompts from './Prompts.vue';
 
 export default {
@@ -95,7 +95,7 @@ export default {
     Clock,
     Checklist,
     Achievements,
-    Logging,
+    //Logging,
     Prompts,
   },
   props:{
