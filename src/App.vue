@@ -125,7 +125,10 @@ export default {
   },
   data() {
    return {
+     //config the app for specific hardware or requirements
       remoteLabVersion: 'spinning_disk', //'robot_arm', //, //'variable_governor', //, //, 
+      isChatBotAvailable: true,
+
       isTableOn: false,
       isGraphOn: false,
       isStopwatchOn: false,
@@ -146,8 +149,9 @@ export default {
     }
   },
   created(){
-    this.$store.dispatch('setRemoteLabVersion', this.remoteLabVersion);     //NEW
-    this.$store.dispatch('setDataRecorder', this.isDataRecorderOn);     //NEW
+    this.$store.dispatch('setRemoteLabVersion', this.remoteLabVersion);    
+    this.$store.dispatch('setDataRecorder', this.isDataRecorderOn);    
+    this.$store.dispatch('setChatBotAvailable', this.isChatBotAvailable);     //NEW
   },
   mounted(){
     if(this.hasDataToLoad()){

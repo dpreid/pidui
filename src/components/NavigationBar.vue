@@ -57,10 +57,10 @@
           <div class='d-flex'>
               <ul class="navbar-nav dropstart">
                   
-                  <prompts />
+                  <rasa-bot v-if='getIsChatbotAvailable' />
                   <!-- <logging /> -->
-                  <achievements />
-                  <checklist />
+                  <achievements v-if='getIsChatbotAvailable' />
+                  <!-- <checklist /> -->
 
                   <li class="nav-item">
                     <clock class='nav-link' />
@@ -83,20 +83,23 @@
 <script>
 
 import Clock from "./Clock.vue";
-import Checklist from './Checklist.vue';
+//import Checklist from './Checklist.vue';
 import Achievements from './Achievements.vue';
 //import Logging from './Logging.vue';
-import Prompts from './Prompts.vue';
+//import Prompts from './Prompts.vue';
+import RasaBot from './RasaBot.vue';
+import { mapGetters } from 'vuex';
 
 export default {
 
   name: 'NavigationBar',
   components: {
     Clock,
-    Checklist,
+    //Checklist,
     Achievements,
     //Logging,
-    Prompts,
+    //Prompts,
+    RasaBot,
   },
   props:{
       
@@ -110,6 +113,9 @@ export default {
     }
   },
   computed:{
+    ...mapGetters([
+      'getIsChatbotAvailable',
+    ]),
       labName(){
         let lab = this.$store.getters.getRemoteLabVersion;
         if(lab == 'variable_governor'){

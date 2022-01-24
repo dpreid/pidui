@@ -1,3 +1,5 @@
+//Not currently used - merged with Achievements.
+
 <template>
     <li class="nav-item dropdown">
         <button type='button' class='btn btn-primary dropdown-toggle' id='checklist-button' data-bs-toggle="dropdown" aria-expanded="false" @click='setChecklistUpdate(false)'>

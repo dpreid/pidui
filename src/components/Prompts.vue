@@ -1,3 +1,6 @@
+//Not currently used - replaced by RasaBot component
+
+
 <template>
     <li class="nav-item dropdown">
         <button type='button' class='btn btn-primary dropdown-toggle' id='prompts-button' data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false" @click='setPromptUpdate(false)'>
