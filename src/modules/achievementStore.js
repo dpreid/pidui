@@ -4,6 +4,7 @@
 const achievementStore = {
     state: () => ({
         achievements: [
+            
             {name:'custom-ui', verbose:'Customise the UI', completed: false, hidden: false},
             {name:'velocity-mode', verbose:'Set the hardware to velocity PID mode', completed: false, hidden: true},
             {name:'ruler', verbose:'Used the ruler tool', completed: false, hidden: true}, 
@@ -16,6 +17,15 @@ const achievementStore = {
 
             ], required: 5, n: 0}, 
             {name:'multiple-runs', verbose:'Run a step or ramp 10 times', completed: false, hidden: true, required: 10, n: 0}, 
+            {name:'speedRaw-step-input', verbose:'Step input whilst in open loop mode', completed: false, hidden: false},
+            {name:'positionPid-ramp-input', verbose:'Ramp input whilst in position PID mode', completed: false, hidden: false},
+            {name:'p-controller', verbose:'Used a non-unity proportional controller in position, step mode', completed: false, hidden: false},
+            {name:'pd-controller', verbose:'Used a PD controller in position, step mode', completed: false, hidden: true},
+            {name:'pid-controller', verbose:'Used a full PID controller in position, step mode', completed: false, hidden: true},
+            {name:'download-data', verbose:'Downloaded a dataset with n > 100 data points', completed: false, hidden: false},
+            {name:'plot-linear', verbose:'Plot linear function', completed: false, hidden: false},
+            {name:'plot-1st-step', verbose:'Plot 1st order step function', completed: false, hidden: true},
+            {name:'plot-2nd-step', verbose:'Plot 2nd order step function', completed: false, hidden: true},
         ],
         new_achievement_update: false,
 
@@ -94,7 +104,17 @@ const achievementStore = {
          },
          setAchievementUpdate(context, set){
              context.commit('SET_ACHIEVEMENT_UPDATE', set);
-         }
+         },
+         checkPIDControllerConditions(context){
+            console.log(context.rootState.data.p);
+           if(context.rootState.data.p != 1 && context.rootState.data.i == 0 && context.rootState.data.d == 0){
+               context.dispatch('setAchievementCompleted', 'p-controller');
+           } else if(context.rootState.data.p > 0 && context.rootState.data.i == 0 && context.rootState.data.d > 0){
+               context.dispatch('setAchievementCompleted', 'pd-controller');
+           } else if(context.rootState.data.p > 0 && context.rootState.data.i > 0 && context.rootState.data.d > 0){
+               context.dispatch('setAchievementCompleted', 'pid-controller');
+           } 
+        }
 
 
        },

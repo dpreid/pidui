@@ -22,7 +22,7 @@
                 <div class='input-group' v-else-if='mode == "positionPid"'>
                     <span class='input-group-text' for="ramp_gradient"><b>Ramp gradient (rads<sup>-1</sup>)</b></span>
                     <input type="number" :max='max_position_ramp' :min='-max_position_ramp' :class="(parseFloat(ramp_gradient) >= -max_position_ramp && parseFloat(ramp_gradient) <= max_position_ramp) ? 'form-control' : 'form-control is-invalid'" id="ramp_gradient" v-model="ramp_gradient">
-                    <button class='btn btn-lg' id="run" v-if='!isRampRunning' @click="runRamp(); this.$store.dispatch('setChecklistCompleted', 'positionPid-ramp-input')">Run</button>
+                    <button class='btn btn-lg' id="run" v-if='!isRampRunning' @click="runRamp(); this.$store.dispatch('setAchievementCompleted', 'positionPid-ramp-input');">Run</button>
                     <button class='btn btn-lg btn-danger' v-else id="stop" @click="stopRamp">Stop</button>
                 </div>
 
@@ -88,7 +88,6 @@ export default {
             this.$store.dispatch('setIsRecording', false);
         }
     
-
         this.$store.dispatch('addMultipleAchievement','multiple-runs');
     },
     stopRamp(){

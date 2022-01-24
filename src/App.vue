@@ -240,7 +240,6 @@ export default {
           this.toggleDataRecorder();
         }
       }
-      this.$store.dispatch('setChecklistCompleted', 'open-graph');
       this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'graph'});
     },
     clearWorkspace(){

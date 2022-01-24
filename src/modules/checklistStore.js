@@ -1,5 +1,5 @@
 //Store for the checklist specific to this remote lab.
-
+//Checklist not currently implemented - merged with achievements
 
 const checklistStore = {
     state: () => ({

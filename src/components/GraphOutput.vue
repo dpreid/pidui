@@ -62,7 +62,7 @@
                        
 
                     <div class="row-sm justify-content-center">
-                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(linear); (this.getNumData > 0 && this.func_a != 0) ? this.$store.dispatch('setChecklistCompleted', 'plot-linear') : ''">Plot</button>
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(linear); (this.getNumData > 0 && this.func_a != 0) ? this.$store.dispatch('setAchievementCompleted', 'plot-linear') : ''">Plot</button>
                         <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                     </div>
                 </div>
@@ -217,7 +217,7 @@
                     </div>
             
                     <div class="row-sm justify-content-center">
-                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step); (this.getNumData > 0 && this.func_a != 0 && this.func_b != 0 && this.func_c != 0) ? this.$store.dispatch('setChecklistCompleted', 'plot-1st-step') : ''">Plot</button>
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step); (this.getNumData > 0 && this.func_a != 0 && this.func_b != 0 && this.func_c != 0) ? this.$store.dispatch('setAchievementCompleted', 'plot-1st-step') : ''">Plot</button>
                         <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                     </div>
                     
@@ -267,7 +267,7 @@
                     </div>
                 
                     <div class="row-sm justify-content-center">
-                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step2nd); (this.getNumData > 0 && this.func_a != 0 && this.func_b != 0 && this.func_c != 0) ? this.$store.dispatch('setChecklistCompleted', 'plot-2nd-step') : ''">Plot</button>
+                        <button class="btn btn-success btn-xs m-1" id="plotFunctionButton" @click="plotFunc(step2nd); (this.getNumData > 0 && this.func_a != 0 && this.func_b != 0 && this.func_c != 0) ? this.$store.dispatch('setAchievementCompleted', 'plot-2nd-step') : ''">Plot</button>
                         <button class="btn btn-danger btn-xs m-1" id="clearFunctionButton" @click="deleteFunctionDataset">Clear</button>
                     </div>
                     
@@ -293,7 +293,7 @@
                         <div class='col-auto'>
                             <div class='input-group'>
                                 <label class='input-group-text' for="func_a">K =</label>
-                                <input class='form-control' id="func_a" v-model="func_a" size='3'>
+                                <input class='fmessage_list: [],orm-control' id="func_a" v-model="func_a" size='3'>
                             </div>
                         </div>
                     </div>

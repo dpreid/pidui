@@ -150,7 +150,7 @@ export default {
       outputToCSV(){
 
         if(this.getNumData > 100){
-          this.$store.dispatch('setChecklistCompleted', 'download-data');
+          this.$store.dispatch('setAchievementCompleted', 'download-data');
         }
 
 
