@@ -20,7 +20,7 @@ describe('MotorSnapshot.vue tests', () => {
 
 
 
-  test('does it render', () => {
+  test('Renders', () => {
     const store = createVuexStore();
     store.dispatch('setCurrentAngleArray', [0,0,0,0]);
     store.dispatch('setCurrentAngularVelocityArray', [0,0,0,0]);
