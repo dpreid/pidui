@@ -231,6 +231,8 @@ export default {
     },
     addWorkspace(){
       this.isWorkspaceOn = true;
+
+      this.$store.dispatch('logComponent', {name: 'workspace', open: true});
     },
     toggleGraph(){
       this.isGraphOn = !this.isGraphOn;
@@ -240,12 +242,16 @@ export default {
           this.toggleDataRecorder();
         }
       }
+
+      this.$store.dispatch('logComponent', {name: 'graph', open: this.isGraphOn});
       this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'graph'});
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
       this.rulerAdded = false;
       this.protractorAdded = false;
+
+      this.$store.dispatch('logComponent', {name: 'workspace', open: false});
     },
     toggleDataRecorder(){
       this.isDataRecorderOn = !this.isDataRecorderOn;
@@ -258,6 +264,8 @@ export default {
     },
     toggleStopwatch(){
       this.isStopwatchOn = !this.isStopwatchOn;
+
+      this.$store.dispatch('logComponent', {name: 'stopwatch', open: this.isStopwatchOn});
       this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'stopwatch'});
     },
     toggleTable(){
@@ -267,6 +275,8 @@ export default {
             this.toggleDataRecorder();
         }
       }
+      
+      this.$store.dispatch('logComponent', {name: 'table', open: this.isTableOn});
       this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'table'});
     },
     toggleInputGraph(){
@@ -274,7 +284,10 @@ export default {
     },
     toggleSystemDiagrams(){
       this.isSystemDiagramsOn = !this.isSystemDiagramsOn;
+
+      this.$store.dispatch('logComponent', {name: 'system-diagrams', open: this.isSystemDiagramsOn});
       this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'diagrams'});
+
     },
     toggleSnapshot(){
       this.isSnapshotOn = !this.isSnapshotOn;
@@ -283,6 +296,7 @@ export default {
           this.toggleDataRecorder();
         }
       }
+      this.$store.dispatch('logComponent', {name: 'snapshot', open: this.isSnapshotOn});
       this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'snapshot'});
     },
     toggleLayout(ratio){
