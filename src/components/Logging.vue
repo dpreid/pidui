@@ -36,14 +36,7 @@ export default {
     },
     mounted(){
         
-        this.logStart();
-
-        window.onclick = (event) => {
-            let data = {target: event.target, screen_pos: {x: event.clientX, y: event.clientY}, time: Date.now()}
-            this.logClick(data);
-        }
-
-        window.addEventListener('pagehide', () => {this.logEnd});				//closing window
+        
     },
     watch:{
         url(){
@@ -56,15 +49,14 @@ export default {
 			} catch(e){
 				console.log(e);
 			}
-			
-			
 		},
     },
     computed:{
         ...mapGetters([
             'getLogURLObtained',
             'getLogStart',
-            'getLogClicks'
+            'getLogClicks',
+            'getLogParameters'
         ]),
 
     },
@@ -73,8 +65,17 @@ export default {
             'logClick',
             'logStart',
             'logEnd',
-            'logBrowser'
         ]),
+        initialLogging(){
+            this.logStart({log:'start', data: Date.now()});
+
+            window.onclick = (event) => {
+                let data = {target: event.target, screen_pos: {x: event.clientX, y: event.clientY}}
+                this.logClick({log:'click', data:data});
+            }
+
+            window.addEventListener('pagehide', () => {this.logEnd({log:'end', data: Date.now()})});				//closing window
+        },
         getNumClicks(){
             let num = this.getLogClicks.length;
             if(num == 100){
@@ -91,6 +92,7 @@ export default {
             
             this.logSocket.onopen = () => {
 				console.log('log connection opened at ', this.url);
+                this.initialLogging();
 			};
         }
     }

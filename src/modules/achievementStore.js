@@ -6,6 +6,11 @@ const achievementStore = {
         achievements: [
             
             {name:'custom-ui', verbose:'Customise the UI', completed: false, hidden: false},
+            {name:'speedRaw-step-input', verbose:'Step input whilst in open loop mode', completed: false, hidden: false},
+            {name:'positionPid-ramp-input', verbose:'Ramp input whilst in position PID mode', completed: false, hidden: false},
+            {name:'p-controller', verbose:'Used a non-unity proportional controller in position, step mode', completed: false, hidden: false},
+            {name:'download-data', verbose:'Downloaded a dataset with n > 100 data points', completed: false, hidden: false},
+            {name:'plot-linear', verbose:'Plot linear function', completed: false, hidden: false},
             {name:'velocity-mode', verbose:'Set the hardware to velocity PID mode', completed: false, hidden: true},
             {name:'ruler', verbose:'Used the ruler tool', completed: false, hidden: true}, 
             {name:'open-all', verbose:'Opened all the components', completed: false, hidden: true, fractional: [
@@ -17,13 +22,8 @@ const achievementStore = {
 
             ], required: 5, n: 0}, 
             {name:'multiple-runs', verbose:'Run a step or ramp 10 times', completed: false, hidden: true, required: 10, n: 0}, 
-            {name:'speedRaw-step-input', verbose:'Step input whilst in open loop mode', completed: false, hidden: false},
-            {name:'positionPid-ramp-input', verbose:'Ramp input whilst in position PID mode', completed: false, hidden: false},
-            {name:'p-controller', verbose:'Used a non-unity proportional controller in position, step mode', completed: false, hidden: false},
             {name:'pd-controller', verbose:'Used a PD controller in position, step mode', completed: false, hidden: true},
             {name:'pid-controller', verbose:'Used a full PID controller in position, step mode', completed: false, hidden: true},
-            {name:'download-data', verbose:'Downloaded a dataset with n > 100 data points', completed: false, hidden: false},
-            {name:'plot-linear', verbose:'Plot linear function', completed: false, hidden: false},
             {name:'plot-1st-step', verbose:'Plot 1st order step function', completed: false, hidden: true},
             {name:'plot-2nd-step', verbose:'Plot 2nd order step function', completed: false, hidden: true},
         ],
@@ -88,6 +88,8 @@ const achievementStore = {
              if(context.getters.getAchievementsUncompleted.includes(name)){
                 context.commit('SET_ACHIEVEMENT_COMPLETED', name);
                 context.commit('SET_ACHIEVEMENT_UPDATE', true);
+
+                context.dispatch('logAchievements', context.state.achievements, {root: true});        //log the achievements everytime an achievement is completed
              }
          },
          setFractionalAchievementCompleted(context, achievement){

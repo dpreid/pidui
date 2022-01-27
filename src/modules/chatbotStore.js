@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const promptsStore = {
     state: () => ({
-        url: 'http://13.40.119.70:80',
+        url: 'http://3.8.23.203:80',
         message_list: [], //{sender: 'you', time: '15:30', text: 'hello', buttons: [{title:'0'}, {title:'1'}]}
         previous_intent: '',
         prompts: [
@@ -63,6 +63,8 @@ const promptsStore = {
         setPromptResponse(context, payload){
              if(context.getters.getPromptsUncompleted.includes(payload.name)){
                 context.commit('SET_PROMPT_RESPONSE', payload);
+
+                context.dispatch('logPrompts', context.state.prompts, {root: true});        //log the prompts everytime a prompt is responded to
              }
          },
          showPrompt(context, name){

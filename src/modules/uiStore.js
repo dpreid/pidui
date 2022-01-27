@@ -7,10 +7,9 @@ const uiStore = {
        remoteLabVersion: '',
        isDataRecorderOn: false,    //is the Data Recorder element active
        isDraggable: true,
-       consent_given: false,
+       
        isChatBotAvailable: true,    //by default the chatbot is being used
-       //show_force: true,       //should force values be displayed on the UI
-       //show_theory: false,      //should the theoretical values component be available on the UI
+       
 
        }),
        mutations:{
@@ -23,9 +22,7 @@ const uiStore = {
          SET_DRAGGABLE(state, draggable){
             state.isDraggable = draggable;
          },
-         SET_CONSENT(state, consent){
-            state.consent_given = consent;
-         },
+         
          SET_CHATBOT_AVAILABLE(state, set){
             state.isChatBotAvailable = set;
          }
@@ -42,9 +39,7 @@ const uiStore = {
          setDraggable(context, draggable){
              context.commit('SET_DRAGGABLE', draggable);
          },
-         setConsent(context, consent){
-            context.commit('SET_CONSENT', consent);
-         },
+         
          setChatBotAvailable(context, set){
             context.commit('SET_CHATBOT_AVAILABLE', set);
          }
@@ -61,18 +56,11 @@ const uiStore = {
          getDraggable(state){
              return state.isDraggable;
          },
-         getConsent(state){
-            return state.consent_given;
-         },
+         
          getIsChatbotAvailable(state){
             return state.isChatBotAvailable;
          }
-         // getShowForce(state){
-         //    return state.show_force;
-         // },
-         // getShowTheory(state){
-         //    return state.show_theory;
-         // }
+         
           
          
        },  

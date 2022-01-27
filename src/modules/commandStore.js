@@ -116,21 +116,27 @@ const commandStore = {
         },
         setVoltage(context, value){
             context.commit('SET_VOLTAGE', value);
+            context.dispatch('logParameters', {log:'voltage', data: {set: value}});
         },
         setVoltageRamp(context, value){
             context.commit('SET_VOLTAGE_RAMP', value);
+            context.dispatch('logParameters', {log:'voltage_ramp', data: {set: value}});
         },
         setSpeed(context, value){
             context.commit('SET_SPEED', value);
+            context.dispatch('logParameters', {log:'speed', data: {set: value, kp: context.rootState.data.p, ki: context.rootState.data.i, kd: context.rootState.data.d}});
         },
         setSpeedRamp(context, value){
             context.commit('SET_SPEED_RAMP', value);
+            context.dispatch('logParameters', {log:'speed_ramp', data: {set: value, kp: context.rootState.data.p, ki: context.rootState.data.i, kd: context.rootState.data.d}});
         },
         setPosition(context, value){
             context.commit('SET_POSITION', value);
+            context.dispatch('logParameters', {log:'position', data: {set: value, kp: context.rootState.data.p, ki: context.rootState.data.i, kd: context.rootState.data.d}});
         },
         setPositionRamp(context, value){
             context.commit('SET_POSITION_RAMP', value);
+            context.dispatch('logParameters', {log:'position_ramp', data: {set: value, kp: context.rootState.data.p, ki: context.rootState.data.i, kd: context.rootState.data.d}});
         },
         setPidParameters(context, params){
             context.commit('SET_PID_PARAMETERS', params);
