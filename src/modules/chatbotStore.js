@@ -78,7 +78,7 @@ const promptsStore = {
             context.commit('ADD_MESSAGE', {sender:'you', time: new Date().toLocaleTimeString(), text:message});
 
             
-            context.commit('SET_PROMPT_RESPONSE', {name: context.getters.getPreviousIntent, response: message});    //the mutation checks whether the intent matches the prompt
+            context.dispatch('setPromptResponse', {name: context.getters.getPreviousIntent, response: message});    //the mutation checks whether the intent matches the prompt
             
 
             let received_message = {};
@@ -119,7 +119,7 @@ const promptsStore = {
             // });
           },
           triggerIntent(context, intent){
-            context.commit('SET_PROMPT_UPDATE', true);
+            context.dispatch('setPromptUpdate', true);
             axios({
               method: 'post',
               url: context.getters.getUrl + '/webhooks/rest/webhook',

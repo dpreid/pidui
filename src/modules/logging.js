@@ -14,14 +14,14 @@ const loggingStore = {
         consent_given: false,
         hardware: '',
 
-        clicks: [],
+        clicks: [],             //do I need to internally store this?
         session_time: {
             start: null,      //will be updated
             end: null          //will be updated
         },
-        browser: '',
-        components_opened: [],      //{t: time, name: 'graph'}
-        parameters: [],
+        browser: '',            //do I need to internally store this?
+        components_opened: [],      //{name: 'graph'} //do I need to internally store this?
+        parameters: [], //do I need to internally store this?
 
        }),
        mutations:{
