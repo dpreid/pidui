@@ -476,8 +476,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 50px;
-  background-color: rgba(161, 161, 161, 0.39);
+  margin-top: 60px;
+  background-color: rgba(110, 130, 238, 0.116);
 }
 
 
@@ -508,6 +508,10 @@ export default {
 #modal-show{
   display: block;
   
+}
+
+.primary-colour{
+  background-color: rgb(131, 129, 247);
 }
 
 </style>

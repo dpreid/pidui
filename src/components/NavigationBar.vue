@@ -2,7 +2,7 @@
 
 <template>
 
-  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light primary-colour">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Remote Lab: {{labName}}</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,7 +15,7 @@
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                    Menu
                   </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="#" @click='toggleComponent("datarecorder")'>Data Recorder</a></li>
                     <li><a class="dropdown-item" href="#" @click='toggleComponent("graph")'>Graph</a></li>
                     <li><a class="dropdown-item" href="#" @click='toggleComponent("snapshot")'>Data Snapshot</a></li>
@@ -30,7 +30,7 @@
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                    Tools
                   </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
                     <li><a class="dropdown-item" href="#" @click='addTool("ruler")'>Ruler</a></li>
                     <li><a class="dropdown-item" href="#" @click='addTool("protractor")'>Protractor</a></li>
                   </ul>
@@ -44,7 +44,7 @@
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                    Layout
                   </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
                     <li><a class="dropdown-item" href="#" @click='toggleLayout(1)'>Single Column</a></li>
                     <li><a class="dropdown-item" href="#" @click='toggleLayout(0.25)'>25%:75%</a></li>
                     <li><a class="dropdown-item" href="#" @click='toggleLayout(0.5)'>50%:50%</a></li>

@@ -1,7 +1,7 @@
 //Vue3 update
 
 <template>
-    <div id='sessionTime'> Session ends in: {{current_time_left}}</div>
+    <div class='text-dark' id='sessionTime'> Session ends in: {{current_time_left}}</div>
 </template>
 
 <script>

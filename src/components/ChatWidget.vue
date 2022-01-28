@@ -1,6 +1,6 @@
 <template>
     <div id='chat-widget'>
-        <div class="toast-container" id='message-container'>
+        <div class="toast-container text-dark" id='message-container'>
             
 
             <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide='false'>
