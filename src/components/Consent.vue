@@ -26,8 +26,8 @@
               <p> Are you happy to take part in the study?</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="consent(true)">Yes</button>
-              <button type="button" class="btn btn-danger" data-dismiss="modal" data-bs-dismiss="modal" @click='consent(false)'>No</button>
+              <button type="button" class="btn btn-primary" id='consent-yes-button' @click="consent(true)">Yes</button>
+              <button type="button" class="btn btn-danger" id='consent-no-button' data-dismiss="modal" data-bs-dismiss="modal" @click='consent(false)'>No</button>
             </div>
           </div>
         </div>
