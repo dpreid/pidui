@@ -10,8 +10,8 @@
     </button>
 
 
-    <transition name='fade'>
-        <div v-if='popup_showing' id='popup-div'>
+    <transition name='fade' >
+        <div v-if='popup_showing' id='popup-div' >
              <button type='button' class='btn-close btn-close-white' id='close-button' @click='toggleHelp'></button>
             <slot id='popup-text'></slot>
         </div>
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+
 
 export default {
 

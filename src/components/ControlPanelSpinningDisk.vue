@@ -10,7 +10,7 @@
 		</div>
 	</div>
 
-	<toolbar :showDownload="false" :showPopupHelp="false" :showOptions="true">
+	<toolbar :showDownload="false" :showPopupHelp="false" :showOptions="true" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
 		<template v-slot:options>
 			<h2>Live graph options</h2>
 			<div class='row'>
@@ -83,13 +83,13 @@
 </div>
 	
 
-	<div v-if='getCurrentMode == "speedPid" || getCurrentMode == "positionPid"' @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
-		<div class='row justify-content-center mb-2'>
+	<div v-if='getCurrentMode == "speedPid" || getCurrentMode == "positionPid" || getCurrentMode == "stopped"' @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">
+		<div class='d-flex row justify-content-center m-2'>
 		
 			<div class='col-md-3'>
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>p</sub></span>
-					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kpParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kp" aria-label="Kp" aria-describedby="basic-addon1" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kpParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kp" aria-label="Kp" aria-describedby="basic-addon1" id="kp" v-model="kpParam" @keyup.enter='setParameters' @blur='setParameters' :disabled='getCurrentMode == "stopped"'>
 					<span v-if='getCurrentMode == "speedPid"' class="input-group-text" id="scale_text">x10<sup>-2</sup></span>
 				</div>	
 			</div>
@@ -97,7 +97,7 @@
 			<div class='col-md-3'>
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>i</sub></span>
-					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kiParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Ki" aria-label="Ki" aria-describedby="basic-addon1" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kiParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Ki" aria-label="Ki" aria-describedby="basic-addon1" id="ki" v-model="kiParam" @keyup.enter='setParameters' @blur='setParameters' :disabled='getCurrentMode == "stopped"'>
 					<span v-if='getCurrentMode == "speedPid"' class="input-group-text" id="scale_text">x10<sup>-2</sup></span>
 				</div>
 			</div>
@@ -105,12 +105,12 @@
 			<div class='col-md-3'>
 				<div class="input-group">
 					<span class="input-group-text" id="basic-addon1">K<sub>d</sub></span>
-					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kdParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kd" aria-label="Kd" aria-describedby="basic-addon1" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters'>
+					<input type="number" max='10.00' min='0.00' step='0.01' :class="(parseFloat(kdParam) >= 0) ? 'form-control' : 'form-control is-invalid'" placeholder="Kd" aria-label="Kd" aria-describedby="basic-addon1" id="kd" v-model="kdParam" @keyup.enter='setParameters' @blur='setParameters' :disabled='getCurrentMode == "stopped"'>
 					<span v-if='getCurrentMode == "speedPid"' class="input-group-text" id="scale_text">x10<sup>-2</sup></span>
 				</div>	
 			</div>
-			<div class='col-md-3'>
-				<button id="reset" type='button' class="btn btn-danger btn-sm" @click="resetParameters">Reset</button>
+			<div class='col-md-1'>
+				<button v-if='getCurrentMode != "stopped"' id="reset" type='button' class="btn btn-danger btn-sm" @click="resetParameters">Reset</button>
 			</div>
 		
 		</div>
@@ -161,6 +161,8 @@ export default {
 			smoothie_y_max_vel: 400,
 			smoothie_y_min_pos: -1,
 			smoothie_y_max_pos: 10.0,
+			smoothie_y_speedmode_abs: 100,
+			smoothie_y_voltmode_abs: 400,
 			smoothie_millis_per_pixel: 10,
 			showInputType: false,				//don't show input types until a mode has been selected
         }
@@ -249,6 +251,9 @@ export default {
 		speedPid(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
+			this.smoothie_y_min_vel = -this.smoothie_y_speedmode_abs;
+			this.smoothie_y_max_vel = this.smoothie_y_speedmode_abs;
+			this.updateSmoothieChart();
 			this.showInputType = true;
 			this.$store.dispatch('speedPid');
 			setTimeout(this.setParameters, 100);					//when entering pid mode ensure parameters are set
@@ -263,6 +268,9 @@ export default {
 		speedRaw(){
 			this.clearMessages();
 			this.setGraphDataParameter('omega');
+			this.smoothie_y_min_vel = -this.smoothie_y_voltmode_abs;
+			this.smoothie_y_max_vel = this.smoothie_y_voltmode_abs;
+			this.updateSmoothieChart();
 			this.showInputType = true;
 			this.$store.dispatch('speedRaw');
 		},
@@ -320,8 +328,8 @@ export default {
 		},
 		updateSmoothieChart(){
 			if(this.getCurrentMode == 'positionPid'){
-				this.chart_omega.options.maxValue = this.smoothie_y_max_pos;
-				this.chart_omega.options.minValue = this.smoothie_y_min_pos;
+				this.chart_theta.options.maxValue = this.smoothie_y_max_pos;
+				this.chart_theta.options.minValue = this.smoothie_y_min_pos;
 			} 
 			else{
 				this.chart_omega.options.maxValue = this.smoothie_y_max_vel;
