@@ -9,7 +9,10 @@
                     @togglesystemdiagrams="toggleSystemDiagrams" @clearworkspace="clearWorkspace" @addruler="rulerAdded = true" @addprotractor="protractorAdded = true"
                     />
 
-      <div v-if='showLoadDataModal' class="modal" id='modal-show' tabindex="-1">
+      <consent v-if='showConsentModal' @consentSet="closeConsentModal"/>
+
+
+      <div v-if='showLoadDataModal && !showConsentModal' class="modal" id='modal-show' tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -104,8 +107,10 @@ import SystemDiagrams from "./components/SystemDiagrams.vue";
 import MotorSnapshot from "./components/MotorSnapshot.vue";
 import Instructions from "./components/Instructions.vue";
 import Streams from './components/Streams.vue';
+import Consent from './components/Consent.vue';
 
 import { mapGetters } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'App',
@@ -122,12 +127,13 @@ export default {
     Streams,
     MotorSnapshot,
     Instructions,
+    Consent,
   },
   data() {
    return {
      //config the app for specific hardware or requirements
       remoteLabVersion: 'spinning_disk', //'robot_arm', //, //'variable_governor', //, //, 
-      isChatBotAvailable: true,
+      
 
       isTableOn: false,
       isGraphOn: false,
@@ -141,6 +147,7 @@ export default {
       rulerAdded: false,
       disableTooltips: false,             //global tooltip setting
       showLoadDataModal: false,
+      showConsentModal: true,
       saved_date: '',
       selected_graph_point: null,
       leftClass: 'col-lg-6',
@@ -151,7 +158,16 @@ export default {
   created(){
     this.$store.dispatch('setRemoteLabVersion', this.remoteLabVersion);    
     this.$store.dispatch('setDataRecorder', this.isDataRecorderOn);    
-    this.$store.dispatch('setChatBotAvailable', this.isChatBotAvailable);     //NEW
+    
+    //check if the browser allows localStorage and set the UI store accordingly
+    this.$store.dispatch('setUsesLocalStorage', this.hasStorage());
+    //check if user has a UUID generated already and whether they have consented to take part in the study
+    this.updateUUID();
+    this.checkConsent();
+
+    console.log('local storage check');
+    console.log(this.getUsesLocalStorage);
+    
   },
   mounted(){
     if(this.hasDataToLoad()){
@@ -162,10 +178,13 @@ export default {
     }
       window.addEventListener('pagehide', () => {this.saveDataToLocalStorage()});				//closing window
       window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage()});			//refreshing page, changing URL
+
+      
   },
   computed:{
     ...mapGetters([
-			'getDraggable'
+			'getDraggable',
+      'getUsesLocalStorage'
 		]),
   },
   methods: {
@@ -340,7 +359,7 @@ export default {
         }
     },
      loadFromLocalStorage(){
-        if(this.hasStorage()){
+        if(this.getUsesLocalStorage){
           this.loadData();
           this.loadChecklist();
           this.loadAchievements();
@@ -379,7 +398,7 @@ export default {
         }
       },
       saveDataToLocalStorage(){
-         if(this.hasStorage()){
+         if(this.getUsesLocalStorage){
             
             this.saveData();
             this.saveChecklist();
@@ -407,6 +426,45 @@ export default {
       saveAchievements(){
         let data_json = JSON.stringify(this.$store.getters.getAchievements);
         window.localStorage.setItem('achievementsSpinningDisk', data_json);
+      },
+      //need to check on App mount that a UUID exists already or create a new one - this UUID is used in logging and rasa conversations
+      updateUUID(){
+        let stored_uuid;
+        if(this.getUsesLocalStorage){
+          stored_uuid = window.localStorage.getItem('remote-lab-uuid');
+        } else {
+          stored_uuid = null;
+        }
+        
+        if(stored_uuid){
+            this.$store.dispatch('setUUID', stored_uuid);
+        } else{
+            let uuid = uuidv4();
+            this.$store.dispatch('setUUID', uuid);
+            if(this.getUsesLocalStorage){
+              window.localStorage.setItem('remote-lab-uuid', uuid);
+            }
+            
+        }
+      },
+      checkConsent(){
+        let consent;
+        if(this.getUsesLocalStorage){
+          consent = window.localStorage.getItem('remote-lab-consent');
+        } else {
+          consent = null;
+        }
+        
+        if(consent == 'true'){
+          this.showConsentModal = false;
+          this.$store.dispatch('setConsent', true);
+        } else{
+          this.showConsentModal = true;
+        }
+        
+      },
+      closeConsentModal(){
+        this.showConsentModal = false;
       }
   },
 }

@@ -8,8 +8,8 @@ const uiStore = {
        isDataRecorderOn: false,    //is the Data Recorder element active
        isDraggable: true,
        
-       isChatBotAvailable: true,    //by default the chatbot is being used
-       
+       isChatBotAvailable: false,    //by default the chatbot is being used
+       usesLocalStorage: false,        //can only use localStorage if the browser allows it.
 
        }),
        mutations:{
@@ -25,6 +25,9 @@ const uiStore = {
          
          SET_CHATBOT_AVAILABLE(state, set){
             state.isChatBotAvailable = set;
+         },
+         SET_USES_LOCAL_STORAGE(state, set){
+            state.usesLocalStorage = set;
          }
          
 
@@ -42,6 +45,9 @@ const uiStore = {
          
          setChatBotAvailable(context, set){
             context.commit('SET_CHATBOT_AVAILABLE', set);
+         },
+         setUsesLocalStorage(context, set){
+            context.commit('SET_USES_LOCAL_STORAGE', set);
          }
 
 
@@ -59,6 +65,9 @@ const uiStore = {
          
          getIsChatbotAvailable(state){
             return state.isChatBotAvailable;
+         },
+         getUsesLocalStorage(state){
+            return state.usesLocalStorage;
          }
          
           

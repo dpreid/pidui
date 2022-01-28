@@ -10,7 +10,7 @@
 const loggingStore = {
     state: () => ({
         logSocket: null,
-        username: '',
+        uuid: '',
         consent_given: false,
         hardware: '',
 
@@ -31,19 +31,24 @@ const loggingStore = {
             SET_CONSENT(state, consent){
                 state.consent_given = consent;
             },
-            SET_USERNAME(state, username){
-                state.username = username;
+            SET_UUID(state, uuid){
+                state.uuid = uuid;
             },
             SET_HARDWARE(state, hardware){
                 state.hardware = hardware;
             },
             LOG(state, payload){
-                state.logSocket.send(JSON.stringify({
-                    user: state.username,
-                    t: Date.now(),          
-                    exp: state.hardware,        
-                    payload: payload
-                }));
+                //only log to server if user has given consent.
+                //Still may require logging internally for achievements etc.
+                if(state.consent_given){
+                    state.logSocket.send(JSON.stringify({
+                        user: state.uuid,
+                        t: Date.now(),          
+                        exp: state.hardware,        
+                        payload: payload
+                    }));
+                }
+                
             },
             LOG_CLICK(state, data){
                 state.clicks.push(data);
@@ -73,8 +78,8 @@ const loggingStore = {
             setConsent(context, consent){
                 context.commit('SET_CONSENT', consent);
             },
-            setUsername(context, username){
-                context.commit('SET_USERNAME', username);
+            setUUID(context, uuid){
+                context.commit('SET_UUID', uuid);
             },
             setHardware(context, hardware){
                 context.commit('SET_HARDWARE', hardware)
@@ -119,8 +124,8 @@ const loggingStore = {
            getLogConsent(state){
             return state.consent_given;
             },
-            getLogUsername(state){
-                return state.username;
+            getLogUUID(state){
+                return state.uuid;
             },
             getLogHardware(state){
                 return state.hardware;
