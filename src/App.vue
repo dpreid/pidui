@@ -11,7 +11,7 @@
 
       <consent v-if='showConsentModal' @consentSet="closeConsentModal"/>
 
-
+    <transition name='fade'>
       <div v-if='showLoadDataModal && !showConsentModal' class="modal" id='modal-show' tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -32,6 +32,7 @@
           </div>
         </div>
       </div>
+      </transition>
 
       <div v-if="isWorkspaceOn">
           <workspace :protractorAdded="protractorAdded" :rulerAdded="rulerAdded"/>
@@ -512,6 +513,16 @@ export default {
 
 .primary-colour{
   background-color: rgb(131, 129, 247);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 </style>

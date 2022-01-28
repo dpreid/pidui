@@ -77,7 +77,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #popup-help{
     position:relative;
     max-height:40px;
@@ -93,7 +93,7 @@ export default {
     width:50%;
     border: 5px solid #000000;
     z-index: 998;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     color: white;
     overflow: scroll;
     max-height: 50vh;
@@ -111,16 +111,6 @@ export default {
 
 #popup-text{
     z-index: 999;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 </style>

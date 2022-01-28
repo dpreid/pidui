@@ -18,7 +18,7 @@
       </div>
     </div>
 
-
+  <transition name='fade'>
     <div v-if='showResetConfirmModal' class="modal modal-show" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -38,7 +38,7 @@
           </div>
         </div>
       </div>
-    
+    </transition>
 </div>
 </template>
 

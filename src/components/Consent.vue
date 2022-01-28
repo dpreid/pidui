@@ -4,6 +4,7 @@
 //This will make the App.vue component no longer render the consent modal.
 
 <template>
+<transition name='fade'>
     <div class="modal" id='consent-modal' tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -32,6 +33,7 @@
           </div>
         </div>
       </div>
+</transition>
 </template>
 
 <script>
