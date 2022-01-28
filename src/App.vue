@@ -22,7 +22,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <p> Your Checklist and Achievement data has been stored from a previous session, as well as your last recorded run</p>
+              <p> Your last recorded run of data has been saved.</p>
               <p>Data was saved on {{ saved_date }}. Do you want to load this previous data?</p>
             </div>
             <div class="modal-footer">
@@ -164,13 +164,10 @@ export default {
     //check if user has a UUID generated already and whether they have consented to take part in the study
     this.updateUUID();
     this.checkConsent();
-
-    console.log('local storage check');
-    console.log(this.getUsesLocalStorage);
     
   },
   mounted(){
-    if(this.hasDataToLoad()){
+    if(this.hasDataToLoad() && this.getUsesLocalStorage){
       this.saved_date = JSON.parse(window.localStorage.getItem('dateSavedSpinningDisk'));
       this.showLoadDataModal = true;
     } else{
@@ -179,7 +176,8 @@ export default {
       window.addEventListener('pagehide', () => {this.saveDataToLocalStorage()});				//closing window
       window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage()});			//refreshing page, changing URL
 
-      
+      this.loadAchievements();  //load the already achieved achievements.
+
   },
   computed:{
     ...mapGetters([
@@ -348,7 +346,7 @@ export default {
           }
       },
     hasDataToLoad(){
-        if(window.localStorage.getItem('savedDataSpinningDisk') || window.localStorage.getItem('checklistSpinningDisk') || window.localStorage.getItem('achievementsSpinningDisk')){
+        if(window.localStorage.getItem('savedDataSpinningDisk')){
 
           return true;
 
@@ -361,8 +359,7 @@ export default {
      loadFromLocalStorage(){
         if(this.getUsesLocalStorage){
           this.loadData();
-          this.loadChecklist();
-          this.loadAchievements();
+          //this.loadChecklist();
 
           return true;
 
@@ -383,15 +380,15 @@ export default {
         }
         
       },
-      loadChecklist(){
-        if(window.localStorage.getItem('checklistSpinningDisk')){
-          let data = window.localStorage.getItem('checklistSpinningDisk');
-          data = JSON.parse(data);
-          this.$store.dispatch('loadChecklist', data);
-        }
-      },
+      // loadChecklist(){
+      //   if(window.localStorage.getItem('checklistSpinningDisk')){
+      //     let data = window.localStorage.getItem('checklistSpinningDisk');
+      //     data = JSON.parse(data);
+      //     this.$store.dispatch('loadChecklist', data);
+      //   }
+      // },
       loadAchievements(){
-        if(window.localStorage.getItem('achievementsSpinningDisk')){
+        if(this.getUsesLocalStorage && window.localStorage.getItem('achievementsSpinningDisk')){
           let data = window.localStorage.getItem('achievementsSpinningDisk');
           data = JSON.parse(data);
           this.$store.dispatch('loadAchievements', data);
@@ -401,7 +398,7 @@ export default {
          if(this.getUsesLocalStorage){
             
             this.saveData();
-            this.saveChecklist();
+            //this.saveChecklist();
             this.saveAchievements();
 
             return true;
@@ -419,10 +416,10 @@ export default {
           window.localStorage.setItem('dateSavedSpinningDisk', date);
         }
       },
-      saveChecklist(){
-        let data_json = JSON.stringify(this.$store.getters.getChecklist);
-        window.localStorage.setItem('checklistSpinningDisk', data_json);
-      },
+      // saveChecklist(){
+      //   let data_json = JSON.stringify(this.$store.getters.getChecklist);
+      //   window.localStorage.setItem('checklistSpinningDisk', data_json);
+      // },
       saveAchievements(){
         let data_json = JSON.stringify(this.$store.getters.getAchievements);
         window.localStorage.setItem('achievementsSpinningDisk', data_json);

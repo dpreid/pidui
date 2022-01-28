@@ -28,6 +28,7 @@ const achievementStore = {
             {name:'plot-2nd-step', verbose:'Plot 2nd order step function', completed: false, hidden: true},
         ],
         new_achievement_update: false,
+        new_achievement_count: 0,
 
        }),
        mutations:{
@@ -75,8 +76,14 @@ const achievementStore = {
             });
          },
          SET_ACHIEVEMENT_UPDATE(state, set){
+             if(set){
+                state.new_achievement_count += 1;
+             } else{
+                state.new_achievement_count = 0;
+             }
              state.new_achievement_update = set;
-         }
+             
+         },
          
 
        },
@@ -108,7 +115,7 @@ const achievementStore = {
              context.commit('SET_ACHIEVEMENT_UPDATE', set);
          },
          checkPIDControllerConditions(context){
-            console.log(context.rootState.data.p);
+            
            if(context.rootState.data.p != 1 && context.rootState.data.i == 0 && context.rootState.data.d == 0){
                context.dispatch('setAchievementCompleted', 'p-controller');
            } else if(context.rootState.data.p > 0 && context.rootState.data.i == 0 && context.rootState.data.d > 0){
@@ -116,7 +123,7 @@ const achievementStore = {
            } else if(context.rootState.data.p > 0 && context.rootState.data.i > 0 && context.rootState.data.d > 0){
                context.dispatch('setAchievementCompleted', 'pid-controller');
            } 
-        }
+        },
 
 
        },
@@ -144,6 +151,9 @@ const achievementStore = {
          },
          getAchievementUpdated(state){
              return state.new_achievement_update;
+         },
+         getNewAchievementCount(state){
+             return state.new_achievement_count;
          }
           
          

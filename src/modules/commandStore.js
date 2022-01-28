@@ -13,81 +13,106 @@ const commandStore = {
         },
         STOP(state){
             state.currentMode = 'stopped';
-            state.dataSocket.send(JSON.stringify({
-                set: "mode",
-                to: "stop"
-            }));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "mode",
+                    to: "stop"
+                }));
+            }
         },
         WAIT(state){
-            state.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "wait"
-			}));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "mode",
+                    to: "wait"
+                }));
+            }
         },
         SPEED_RAW(state){
-            state.currentMode = 'speedRaw';
-            state.dataSocket.send(JSON.stringify({
-                set: "mode",
-                to: "motor"
-            }));
+            if(state.dataSocket != null){
+                state.currentMode = 'speedRaw';
+                state.dataSocket.send(JSON.stringify({
+                    set: "mode",
+                    to: "motor"
+                }));
+            }
+            
         },
         SPEED_PID(state){
-            state.currentMode = 'speedPid';
-            state.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "velocity"
-			}));
+            if(state.dataSocket != null){
+                state.currentMode = 'speedPid';
+                state.dataSocket.send(JSON.stringify({
+                    set: "mode",
+                    to: "velocity"
+                }));
+            }
         },
         POSITION_PID(state){
-            state.currentMode = 'positionPid';
-            state.dataSocket.send(JSON.stringify({
-				set: "mode",
-				to: "position"
-			}));
+            if(state.dataSocket != null){
+                state.currentMode = 'positionPid';
+                state.dataSocket.send(JSON.stringify({
+                    set: "mode",
+                    to: "position"
+                }));
+            }
         },
         SET_VOLTAGE(state, value){
-            state.dataSocket.send(JSON.stringify({
-				set: "volts",
-				to: value
-			}));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "volts",
+                    to: value
+                }));
+            }
         },
         SET_VOLTAGE_RAMP(state, value){
-            state.dataSocket.send(JSON.stringify({
-				set: "volts_ramp",
-				to: value
-			}));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "volts_ramp",
+                    to: value
+                }));
+            }
         },
         SET_SPEED(state, value){
-            state.dataSocket.send(JSON.stringify({
-                set: "velocity",
-                to: value
-            }));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "velocity",
+                    to: value
+                }));
+            }
         },
         SET_SPEED_RAMP(state, value){
-            state.dataSocket.send(JSON.stringify({
-                set: "velocity_ramp",
-                to: value
-            }));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "velocity_ramp",
+                    to: value
+                }));
+            }
         },
         SET_POSITION(state, value){
-            state.dataSocket.send(JSON.stringify({
-                set: "position",
-                to: value
-            }));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "position",
+                    to: value
+                }));
+            }
         },
         SET_POSITION_RAMP(state, value){
-            state.dataSocket.send(JSON.stringify({
-                set: "position_ramp",
-                to: value
-            }));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    set: "position_ramp",
+                    to: value
+                }));
+            }
         },
         SET_PID_PARAMETERS(state, params){
-            state.dataSocket.send(JSON.stringify({
-                "set": "parameters",
-                "kp": params.kp,
-                "ki": params.ki,
-                "kd": params.kd
-            }));
+            if(state.dataSocket != null){
+                state.dataSocket.send(JSON.stringify({
+                    "set": "parameters",
+                    "kp": params.kp,
+                    "ki": params.ki,
+                    "kd": params.kd
+                }));
+            }
         },
         SET_CURRENT_MODE(state, mode){
             state.currentMode = mode;

@@ -8,7 +8,7 @@ const uiStore = {
        isDataRecorderOn: false,    //is the Data Recorder element active
        isDraggable: true,
        
-       isChatBotAvailable: false,    //by default the chatbot is being used
+       isChatBotAvailable: true,    //by default the chatbot is being used
        usesLocalStorage: false,        //can only use localStorage if the browser allows it.
 
        }),
