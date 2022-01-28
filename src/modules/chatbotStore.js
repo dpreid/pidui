@@ -119,28 +119,31 @@ const promptsStore = {
             // });
           },
           triggerIntent(context, intent){
-            context.dispatch('setPromptUpdate', true);
-            axios({
-              method: 'post',
-              url: context.getters.getUrl + '/webhooks/rest/webhook',
-              data: {
-                "sender": "user",  // sender ID of the user sending the message
-                "message": "/" + intent
+            if(context.rootState.ui.isChatBotAvailable){
+              context.dispatch('setPromptUpdate', true);
+              axios({
+                method: 'post',
+                url: context.getters.getUrl + '/webhooks/rest/webhook',
+                timeout: 5000,
+                data: {
+                  "sender": "user",  // sender ID of the user sending the message
+                  "message": "/" + intent
+                }
+              }).then((response) => {
+                console.log(response);
+                response.data.forEach(element => {
+                  if(element.text){
+                      context.commit('ADD_MESSAGE', {sender:'student_bot', time: new Date().toLocaleTimeString(), text:element.text, intent: intent})
+                      context.commit('SET_PREVIOUS_INTENT', intent);
+                    }
+                });
+    
+                }, (error) => {
+                  console.log(error);
+                  console.log('chatbot not responding');
+                  context.dispatch('setChatBotAvailable', false);
+                });
               }
-            }).then((response) => {
-              console.log(response);
-              response.data.forEach(element => {
-                if(element.text){
-                    context.commit('ADD_MESSAGE', {sender:'student_bot', time: new Date().toLocaleTimeString(), text:element.text, intent: intent})
-                    context.commit('SET_PREVIOUS_INTENT', intent);
-                  }
-              });
-  
-              
-              }, (error) => {
-                console.log(error);
-              });
-  
             },
        },
        getters:{

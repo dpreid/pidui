@@ -59,7 +59,7 @@
                   
                   <rasa-bot v-if='getIsChatbotAvailable' />
                   <!-- <logging /> -->
-                  <achievements v-if='getIsChatbotAvailable' />
+                  <achievements />
                   <!-- <checklist /> -->
 
                   <li class="nav-item">
