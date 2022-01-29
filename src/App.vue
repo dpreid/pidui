@@ -512,7 +512,7 @@ export default {
 }
 
 .primary-colour{
-  background-color: rgb(131, 129, 247);
+  background-color: rgb(131, 129, 247); /*#e3f2fd;*/
 }
 
 .fade-enter-active,

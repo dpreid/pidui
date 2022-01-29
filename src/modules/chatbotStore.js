@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const promptsStore = {
     state: () => ({
-        url: 'http://3.8.23.203:80',
+        url: 'http://18.133.195.224:80',
         message_list: [], //{sender: 'you', time: '15:30', text: 'hello', buttons: [{title:'0'}, {title:'1'}]}
         previous_intent: '',
         prompts: [
@@ -86,7 +86,7 @@ const promptsStore = {
               method: 'post',
               url: context.getters.getUrl + '/webhooks/rest/webhook',
               data: {
-                "sender": "user",  // sender ID of the user sending the message
+                "sender": context.rootState.logging.uuid,  // sender ID of the user sending the message
                 "message": message
               }
             }).then((response) => {
@@ -126,7 +126,7 @@ const promptsStore = {
                 url: context.getters.getUrl + '/webhooks/rest/webhook',
                 timeout: 5000,
                 data: {
-                  "sender": "user",  // sender ID of the user sending the message
+                  "sender": context.rootState.logging.uuid,  // sender ID of the user sending the message
                   "message": "/" + intent
                 }
               }).then((response) => {

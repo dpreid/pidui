@@ -2,7 +2,7 @@
 
 <template>
 
-  <nav class="navbar fixed-top navbar-expand-lg navbar-light primary-colour">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light primary-colour rounded">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Remote Lab: {{labName}}</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
