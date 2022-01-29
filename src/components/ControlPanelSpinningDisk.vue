@@ -509,6 +509,7 @@ export default {
 					
 					if(obj.error){
 						_this.hasStopped(obj.error);
+						_this.$store.dispatch('setAchievementCompleted', 'hardware-error');
 					}
 					else if(obj.t){
 

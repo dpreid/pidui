@@ -9,16 +9,16 @@ const promptsStore = {
         message_list: [], //{sender: 'you', time: '15:30', text: 'hello', buttons: [{title:'0'}, {title:'1'}]}
         previous_intent: '',
         prompts: [
-            {name:'rate_experience', response: '', completed: false, type: 'likert'}, 
-            {name:'inertia_calc', response: '', completed: false, type: 'calc', }, 
-            {name:'comment_improvements', response: '', completed: false, type: 'text', }, 
-            {name:'question_overshoot', response: '', completed: false, type: 'text', }, 
-            {name:'explore_components', response: '', completed: false, type: 'text', }, 
-            {name:'question_pid', response: '', completed: false, type: 'text', }, 
-            {name:'download_data', response: '', completed: false, type: 'text', }, 
-            {name:'layout_change', response: '', completed: false, type: 'text', }, 
-            {name:'achievements_attempted', response: '', completed: false, type: 'text', },
-            {name:'link_datasheet', response: '', completed: false, type: 'link', },
+            {name:'rate_experience', response: '', completed: false, type: 'likert', repeat: true}, 
+            {name:'comment_improvements', response: '', completed: false, type: 'text', repeat: true }, 
+            {name:'explore_components', response: '', completed: false, type: 'text', repeat: true }, 
+            {name:'layout_change', response: '', completed: false, type: 'text', repeat: true },
+            {name:'achievements_attempted', response: '', completed: false, type: 'text', repeat: true },
+            {name:'download_data', response: '', completed: false, type: 'text', repeat: true },
+            {name:'inertia_calc', response: '', completed: false, type: 'calc', repeat: false }, 
+            {name:'question_overshoot', response: '', completed: false, type: 'text', repeat: false }, 
+            {name:'question_pid', response: '', completed: false, type: 'text', repeat: false }, 
+            {name:'link_datasheet', response: '', completed: false, type: 'link', repeat: false },
 
             
         ],
@@ -94,7 +94,7 @@ const promptsStore = {
               response.data.forEach(element => {
                 if(element.text){
                     //context.commit('ADD_MESSAGE', {sender:'student_bot', time: new Date().toLocaleTimeString(), text:element.text, buttons:element.buttons})
-                    received_message = {sender:'student_bot', time: new Date().toLocaleTimeString(), text:element.text};
+                    received_message = {sender:'Box', time: new Date().toLocaleTimeString(), text:element.text};
                     context.commit('ADD_MESSAGE', received_message);
                 }
               });
@@ -133,7 +133,7 @@ const promptsStore = {
                 console.log(response);
                 response.data.forEach(element => {
                   if(element.text){
-                      context.commit('ADD_MESSAGE', {sender:'student_bot', time: new Date().toLocaleTimeString(), text:element.text, intent: intent})
+                      context.commit('ADD_MESSAGE', {sender:'Box', time: new Date().toLocaleTimeString(), text:element.text, intent: intent})
                       context.commit('SET_PREVIOUS_INTENT', intent);
                     }
                 });
@@ -192,6 +192,9 @@ const promptsStore = {
          },
          getPromptUpdated(state){
              return state.new_prompt_update;
+         },
+         getPromptByName: (state) => (name) => {
+            return state.prompts.find(prompt => prompt.name == name);
          }
           
          

@@ -179,6 +179,8 @@ export default {
 
       this.loadAchievements();  //load the already achieved achievements.
 
+      console.log(this.$store.getters.getPromptByName('rate_experience'));
+
   },
   computed:{
     ...mapGetters([

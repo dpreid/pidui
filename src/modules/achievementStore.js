@@ -26,6 +26,8 @@ const achievementStore = {
             {name:'pid-controller', verbose:'Used a full PID controller in position, step mode', completed: false, hidden: true},
             {name:'plot-1st-step', verbose:'Plot 1st order step function', completed: false, hidden: true},
             {name:'plot-2nd-step', verbose:'Plot 2nd order step function', completed: false, hidden: true},
+            {name:'hardware-error', verbose:'Caused the hardware to go out of limits!', completed: false, hidden: true},
+
         ],
         new_achievement_update: false,
         new_achievement_count: 0,
