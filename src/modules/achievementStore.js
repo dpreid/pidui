@@ -4,7 +4,7 @@
 const achievementStore = {
     state: () => ({
         achievements: [
-            
+            {name:'box-chat', verbose:'Send a message to Box.', completed: false, hidden: false},
             {name:'custom-ui', verbose:'Customise the UI', completed: false, hidden: false},
             {name:'speedRaw-step-input', verbose:'Step input whilst in open loop mode', completed: false, hidden: false},
             {name:'positionPid-ramp-input', verbose:'Ramp input whilst in position PID mode', completed: false, hidden: false},
@@ -156,7 +156,11 @@ const achievementStore = {
          },
          getNewAchievementCount(state){
              return state.new_achievement_count;
-         }
+         },
+         getAchievementByName: (state) => (name) => {
+            return state.achievements.find(achievement => achievement.name == name);
+         },
+         
           
          
        },  

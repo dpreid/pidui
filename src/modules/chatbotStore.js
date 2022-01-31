@@ -76,10 +76,9 @@ const promptsStore = {
          },
          sendToBot(context, message){
             context.commit('ADD_MESSAGE', {sender:'you', time: new Date().toLocaleTimeString(), text:message});
-
-            
             context.dispatch('setPromptResponse', {name: context.getters.getPreviousIntent, response: message});    //the mutation checks whether the intent matches the prompt
             
+            context.dispatch('setAchievementCompleted', 'box-chat');
 
             let received_message = {};
             axios({

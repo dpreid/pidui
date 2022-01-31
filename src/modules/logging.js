@@ -17,9 +17,9 @@ const loggingStore = {
         clicks: [],             //do I need to internally store this?
         session_time: {
             start: null,      //will be updated
-            end: null          //will be updated
+            end: null,          //will be updated
+            total: 0
         },
-        browser: '',            //do I need to internally store this?
         components_opened: [],      //{name: 'graph'} //do I need to internally store this?
         parameters: [], //do I need to internally store this?
 
@@ -36,6 +36,9 @@ const loggingStore = {
             },
             SET_HARDWARE(state, hardware){
                 state.hardware = hardware;
+            },
+            SET_TOTAL_TIME(state, total){
+                state.session_time.total = total;
             },
             LOG(state, payload){
                 //only log to server if user has given consent.
@@ -58,9 +61,8 @@ const loggingStore = {
             },
             LOG_END(state, time){
                 state.session_time.end = time;
-            },
-            LOG_BROWSER(state, browser){
-                state.browser = browser;
+                let delta = time - state.session_time.start;
+                state.session_time.total += delta;
             },
             LOG_COMPONENT(state, component){
                 state.components_opened.push(component);
@@ -81,8 +83,13 @@ const loggingStore = {
             setUUID(context, uuid){
                 context.commit('SET_UUID', uuid);
             },
-            setHardware(context, hardware){
+            setHardware(context, url){
+                let index = url.indexOf('spin');
+                let hardware = url.substr(index, 6);
                 context.commit('SET_HARDWARE', hardware)
+            },
+            setTotalTime(context, total){
+                context.commit('SET_TOTAL_TIME', total);
             },
             logClick(context, payload){
                 context.commit('LOG_CLICK', payload.data);
@@ -94,10 +101,6 @@ const loggingStore = {
             },
             logEnd(context, payload){
                 context.commit('LOG_END', payload.data);
-                context.commit('LOG', payload);
-            },
-            logBrowser(context, payload){
-                context.commit('LOG_BROWSER', payload.data);
                 context.commit('LOG', payload);
             },
             logComponent(context, payload){
@@ -130,6 +133,9 @@ const loggingStore = {
             getLogHardware(state){
                 return state.hardware;
             },
+            getLogTotalTime(state){
+                return state.session_time.total;
+            },
             getLogClicks(state){
                 return state.clicks;
             },
@@ -138,9 +144,6 @@ const loggingStore = {
             },
             getLogEnd(state){
                 return state.session_time.end;
-            },
-            getLogBrowser(state){
-                return state.browser;
             },
             getLogComponents(state){
                 return state.components_opened;

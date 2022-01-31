@@ -58,7 +58,8 @@ export default {
             'getAvailablePrompts',
             'getPromptUpdated',
             'getMessageList',
-            'getPrompts'
+            'getPrompts',
+            'getLogHardware'
         ]),
         messageCount(){
           return this.getMessageList.length;

@@ -64,7 +64,8 @@ export default {
 			var accessURL = this.stream.url;
 			var token = this.stream.token;
 			let _this = this;
-			this.$store.dispatch("deleteDataURL");		//NEWLY ADDED
+			this.$store.dispatch('setHardware', accessURL);		//NEWLY ADDED for setting the piece of kit being used
+			this.$store.dispatch("deleteDataURL");		
 			axios
 			.post(accessURL, {}, { headers: { Authorization: token } })
 			.then((response) => {

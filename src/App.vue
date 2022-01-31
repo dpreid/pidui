@@ -179,7 +179,7 @@ export default {
 
       this.loadAchievements();  //load the already achieved achievements.
 
-      console.log(this.$store.getters.getPromptByName('rate_experience'));
+      
 
   },
   computed:{
@@ -383,13 +383,6 @@ export default {
         }
         
       },
-      // loadChecklist(){
-      //   if(window.localStorage.getItem('checklistSpinningDisk')){
-      //     let data = window.localStorage.getItem('checklistSpinningDisk');
-      //     data = JSON.parse(data);
-      //     this.$store.dispatch('loadChecklist', data);
-      //   }
-      // },
       loadAchievements(){
         if(this.getUsesLocalStorage && window.localStorage.getItem('achievementsSpinningDisk')){
           let data = window.localStorage.getItem('achievementsSpinningDisk');
@@ -397,11 +390,18 @@ export default {
           this.$store.dispatch('loadAchievements', data);
         }
       },
+      loadLogging(){
+        if(this.getUsesLocalStorage && window.localStorage.getItem('loggingSpinningDisk')){
+          let data = window.localStorage.getItem('loggingSpinningDisk');
+          let data_json = JSON.parse(data);
+          this.$store.dispatch('setTotalTime', data_json.time);
+        }
+      },
       saveDataToLocalStorage(){
          if(this.getUsesLocalStorage){
             
             this.saveData();
-            //this.saveChecklist();
+            this.saveLogging();
             this.saveAchievements();
 
             return true;
@@ -419,10 +419,11 @@ export default {
           window.localStorage.setItem('dateSavedSpinningDisk', date);
         }
       },
-      // saveChecklist(){
-      //   let data_json = JSON.stringify(this.$store.getters.getChecklist);
-      //   window.localStorage.setItem('checklistSpinningDisk', data_json);
-      // },
+      saveLogging(){
+        let data = {time: this.$store.getters.getLogTotalTime};
+        let data_json = JSON.stringify(data);
+        window.localStorage.setItem('loggingSpinningDisk', data_json);
+      },
       saveAchievements(){
         let data_json = JSON.stringify(this.$store.getters.getAchievements);
         window.localStorage.setItem('achievementsSpinningDisk', data_json);
