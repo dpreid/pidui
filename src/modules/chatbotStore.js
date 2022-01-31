@@ -9,16 +9,23 @@ const promptsStore = {
         message_list: [], //{sender: 'you', time: '15:30', text: 'hello', buttons: [{title:'0'}, {title:'1'}]}
         previous_intent: '',
         prompts: [
-            {name:'rate_experience', response: '', completed: false, type: 'likert', repeat: true}, 
-            {name:'comment_improvements', response: '', completed: false, type: 'text', repeat: true }, 
-            {name:'explore_components', response: '', completed: false, type: 'text', repeat: true }, 
-            {name:'layout_change', response: '', completed: false, type: 'text', repeat: true },
-            {name:'achievements_attempted', response: '', completed: false, type: 'text', repeat: true },
-            {name:'download_data', response: '', completed: false, type: 'text', repeat: true },
-            {name:'inertia_calc', response: '', completed: false, type: 'calc', repeat: false }, 
-            {name:'question_overshoot', response: '', completed: false, type: 'text', repeat: false }, 
-            {name:'question_pid', response: '', completed: false, type: 'text', repeat: false }, 
-            {name:'link_datasheet', response: '', completed: false, type: 'link', repeat: false },
+            {name:'PROMPT_rate_experience', response: '', completed: false, type: 'likert'}, 
+            {name:'PROMPT_rate_ui', response: '', completed: false, type: 'likert'},
+            {name:'PROMPT_rate_box', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_comment_improvements', response: '', completed: false, type: 'text'}, 
+            {name:'PROMPT_complete_survey', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_useful_component', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_control_experiment', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_control_hardware', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_achievements_attempted', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_explore_components', response: '', completed: false, type: 'text'}, 
+            {name:'PROMPT_download_data', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_layout_change', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_move_components', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_graph_functions', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_inertia_check', response: '', completed: false, type: 'text'},
+            
+            
 
             
         ],

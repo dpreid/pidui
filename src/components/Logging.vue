@@ -75,6 +75,7 @@ export default {
             }
 
             window.addEventListener('pagehide', () => {this.logEnd({log:'end', data: Date.now()})});				//closing window
+            window.addEventListener('beforeunload', () => {this.logEnd({log:'end', data: Date.now()})});			//refreshing page, changing URL
         },
         getNumClicks(){
             let num = this.getLogClicks.length;

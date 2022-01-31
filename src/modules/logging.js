@@ -60,9 +60,11 @@ const loggingStore = {
                 state.session_time.start = time;
             },
             LOG_END(state, time){
+                let current_total = state.session_time.total;
                 state.session_time.end = time;
                 let delta = time - state.session_time.start;
-                state.session_time.total += delta;
+                //console.log(delta);
+                state.session_time.total = current_total + delta;
             },
             LOG_COMPONENT(state, component){
                 state.components_opened.push(component);

@@ -168,7 +168,7 @@ export default {
     
   },
   mounted(){
-    if(this.hasDataToLoad() && this.getUsesLocalStorage){
+    if(this.getUsesLocalStorage && this.hasDataToLoad()){
       this.saved_date = JSON.parse(window.localStorage.getItem('dateSavedSpinningDisk'));
       this.showLoadDataModal = true;
     } else{
@@ -178,7 +178,7 @@ export default {
       window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage()});			//refreshing page, changing URL
 
       this.loadAchievements();  //load the already achieved achievements.
-
+      this.loadLogging();
       
 
   },
@@ -362,7 +362,6 @@ export default {
      loadFromLocalStorage(){
         if(this.getUsesLocalStorage){
           this.loadData();
-          //this.loadChecklist();
 
           return true;
 
@@ -394,6 +393,7 @@ export default {
         if(this.getUsesLocalStorage && window.localStorage.getItem('loggingSpinningDisk')){
           let data = window.localStorage.getItem('loggingSpinningDisk');
           let data_json = JSON.parse(data);
+          console.log(data_json.time);
           this.$store.dispatch('setTotalTime', data_json.time);
         }
       },
