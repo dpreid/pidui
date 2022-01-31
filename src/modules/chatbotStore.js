@@ -9,21 +9,21 @@ const promptsStore = {
         message_list: [], //{sender: 'you', time: '15:30', text: 'hello', buttons: [{title:'0'}, {title:'1'}]}
         previous_intent: '',
         prompts: [
-            {name:'PROMPT_rate_experience', response: '', completed: false, type: 'likert'}, 
-            {name:'PROMPT_rate_ui', response: '', completed: false, type: 'likert'},
-            {name:'PROMPT_rate_box', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_comment_improvements', response: '', completed: false, type: 'text'}, 
-            {name:'PROMPT_complete_survey', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_useful_component', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_control_experiment', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_control_hardware', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_achievements_attempted', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_explore_components', response: '', completed: false, type: 'text'}, 
-            {name:'PROMPT_download_data', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_layout_change', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_move_components', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_graph_functions', response: '', completed: false, type: 'text'},
-            {name:'PROMPT_inertia_check', response: '', completed: false, type: 'text'},
+            {name:'PROMPT_rate_experience', response: '', completed: false, type: 'likert', count: 0}, 
+            {name:'PROMPT_rate_ui', response: '', completed: false, type: 'likert', count: 0},
+            {name:'PROMPT_rate_box', response: '', completed: false, type: 'likert', count: 0},
+            {name:'PROMPT_comment_improvements', response: '', completed: false, type: 'text', count: 0}, 
+            {name:'PROMPT_complete_survey', response: '', completed: false, type: 'text', count: 0},
+            {name:'PROMPT_useful_component', response: '', completed: false, type: 'text', count: 0},
+            {name:'PROMPT_control_experiment', response: '', completed: false, type: 'likert', count: 0},
+            {name:'PROMPT_control_hardware', response: '', completed: false, type: 'likert', count: 0},
+            {name:'PROMPT_achievements_attempted', response: '', completed: false, type: 'text', count: 0},
+            {name:'PROMPT_explore_components', response: '', completed: false, type: 'text', count: 0}, 
+            {name:'PROMPT_download_data', response: '', completed: false, type: 'text', count: 0},
+            {name:'PROMPT_layout_change', response: '', completed: false, type: 'text', count: 0},
+            {name:'PROMPT_move_components', response: '', completed: false, type: 'text', count: 0},
+            {name:'PROMPT_graph_functions', response: '', completed: false, type: 'text', count: 0},
+            {name:'PROMPT_inertia_check', response: '', completed: false, type: 'text', count: 0},
             
             
 
@@ -41,6 +41,7 @@ const promptsStore = {
                 if(item.name == payload.name && !item.completed){
                     item.response = payload.response;
                     item.completed = true;
+                    item.count += 1;
                 }
             });
          },
@@ -158,6 +159,9 @@ const promptsStore = {
         },
         getMessageList(state){
             return state.message_list;
+        },
+        getNumMessages(state){
+          return state.message_list.length;
         },
         getPromptResponseWaiting(state){
           return state.prompt_response_waiting;

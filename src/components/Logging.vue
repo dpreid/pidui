@@ -56,7 +56,12 @@ export default {
             'getLogURLObtained',
             'getLogStart',
             'getLogClicks',
-            'getLogParameters'
+            'getLogParameters',
+            'getLogTotalTime',
+            'getPromptByName',
+            'getPrompts',
+            'getAchievementByName'
+            
         ]),
 
     },
@@ -65,6 +70,7 @@ export default {
             'logClick',
             'logStart',
             'logEnd',
+            'triggerIntent'
         ]),
         initialLogging(){
             this.logStart({log:'start', data: Date.now()});
@@ -78,12 +84,7 @@ export default {
             window.addEventListener('beforeunload', () => {this.logEnd({log:'end', data: Date.now()})});			//refreshing page, changing URL
         },
         getNumClicks(){
-            let num = this.getLogClicks.length;
-            if(num == 100){
-                this.$store.dispatch('showPrompt', 'enjoy-likert');
-            }
-
-            return num;
+            return this.getLogClicks.length;
         },
         connect(){
             let _store = this.$store;

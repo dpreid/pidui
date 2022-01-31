@@ -142,7 +142,10 @@ export default {
       },
       clearData(){
           this.$store.dispatch('clearAllData');
-          //this.max_reached = false;
+          
+          if(this.$store.getters.getPromptByName('PROMPT_download_data').count < 2){
+            this.$store.dispatch('triggerIntent', 'PROMPT_download_data');
+          }
       },
       toggleResetModal(){
           this.showResetConfirmModal = !this.showResetConfirmModal;
@@ -151,6 +154,17 @@ export default {
 
         if(this.getNumData > 100){
           this.$store.dispatch('setAchievementCompleted', 'download-data');
+          
+          if(this.$store.getters.getPromptByName('PROMPT_graph_functions').count < 1){
+            this.$store.dispatch('triggerIntent', 'PROMPT_graph_functions');
+          }
+          else if(this.$store.getters.getPromptByName('PROMPT_control_experiment').count < 1 && this.$store.getters.getLogTotalTime > 1200000){
+            this.$store.dispatch('triggerIntent', 'PROMPT_control_experiment');
+          } 
+          else if(this.$store.getters.getPromptByName('PROMPT_control_hardware').count < 1 && this.$store.getters.getLogTotalTime > 1200000){
+            this.$store.dispatch('triggerIntent', 'PROMPT_control_hardware');
+          }
+          
         }
 
 

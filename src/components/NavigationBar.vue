@@ -131,9 +131,20 @@ export default {
       addTool(tool){
           this.toggleComponent('workspace');
           setTimeout(() => {this.$emit('add' + tool)}, 100);  //give the workspace time to initialise and then send tool event
+
+          if(tool == 'ruler'){
+            if(this.$store.getters.getPromptByName('PROMPT_inertia_check').count < 1){
+              this.$store.dispatch('triggerIntent', 'PROMPT_inertia_check');
+            }
+          }
       },
       toggleComponent(component){
           this.$emit('toggle' + component);
+
+          //prompt chatbot to ask about useful components
+          if(this.$store.getters.getAchievementByName('open-all').n > 2 && this.$store.getters.getLogTotalTime > 1800000){
+            this.$store.dispatch('triggerIntent', 'PROMPT_useful_component');
+          }
       },
       clearWorkspace(){
           this.$emit('clearworkspace');

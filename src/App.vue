@@ -178,6 +178,7 @@ export default {
       window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage()});			//refreshing page, changing URL
 
       this.loadAchievements();  //load the already achieved achievements.
+      this.loadPrompts();
       this.loadLogging();
       
 
@@ -389,11 +390,17 @@ export default {
           this.$store.dispatch('loadAchievements', data);
         }
       },
+      loadPrompts(){
+        if(this.getUsesLocalStorage && window.localStorage.getItem('promptsSpinningDisk')){
+          let data = window.localStorage.getItem('promptsSpinningDisk');
+          data = JSON.parse(data);
+          this.$store.dispatch('loadPrompts', data);
+        }
+      },
       loadLogging(){
         if(this.getUsesLocalStorage && window.localStorage.getItem('loggingSpinningDisk')){
           let data = window.localStorage.getItem('loggingSpinningDisk');
           let data_json = JSON.parse(data);
-          console.log(data_json.time);
           this.$store.dispatch('setTotalTime', data_json.time);
         }
       },
@@ -403,6 +410,7 @@ export default {
             this.saveData();
             this.saveLogging();
             this.saveAchievements();
+            this.savePrompts();
 
             return true;
             
@@ -427,6 +435,15 @@ export default {
       saveAchievements(){
         let data_json = JSON.stringify(this.$store.getters.getAchievements);
         window.localStorage.setItem('achievementsSpinningDisk', data_json);
+      },
+      savePrompts(){
+        let prompts = this.$store.getters.getPrompts;
+        prompts.forEach(prompt => {
+          prompt.completed = false;
+        })
+        let data_json = JSON.stringify(prompts);
+
+        window.localStorage.setItem('promptsSpinningDisk', data_json);
       },
       //need to check on App mount that a UUID exists already or create a new one - this UUID is used in logging and rasa conversations
       updateUUID(){
