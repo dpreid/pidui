@@ -13,14 +13,12 @@ const promptsStore = {
             {name:'PROMPT_rate_ui', response: '', completed: false, type: 'likert', count: 0},
             {name:'PROMPT_rate_box', response: '', completed: false, type: 'likert', count: 0},
             {name:'PROMPT_comment_improvements', response: '', completed: false, type: 'text', count: 0}, 
-            {name:'PROMPT_complete_survey', response: '', completed: false, type: 'text', count: 0},
             {name:'PROMPT_useful_component', response: '', completed: false, type: 'text', count: 0},
             {name:'PROMPT_control_experiment', response: '', completed: false, type: 'likert', count: 0},
             {name:'PROMPT_control_hardware', response: '', completed: false, type: 'likert', count: 0},
             {name:'PROMPT_achievements_attempted', response: '', completed: false, type: 'text', count: 0},
             {name:'PROMPT_explore_components', response: '', completed: false, type: 'text', count: 0}, 
             {name:'PROMPT_download_data', response: '', completed: false, type: 'text', count: 0},
-            {name:'PROMPT_layout_change', response: '', completed: false, type: 'text', count: 0},
             {name:'PROMPT_move_components', response: '', completed: false, type: 'text', count: 0},
             {name:'PROMPT_graph_functions', response: '', completed: false, type: 'text', count: 0},
             {name:'PROMPT_inertia_check', response: '', completed: false, type: 'text', count: 0},
@@ -30,6 +28,7 @@ const promptsStore = {
             
         ],
         new_prompt_update: false,
+        new_prompt_count: 0,
 
        }),
        mutations:{
@@ -53,7 +52,13 @@ const promptsStore = {
             });
          },
          SET_PROMPT_UPDATE(state, set){
-             state.new_prompt_update = set;
+            if(set){
+              state.new_prompt_count += 1;
+            } else{
+                state.new_prompt_count = 0;
+            }
+            
+            state.new_prompt_update = set;
          },
          ADD_MESSAGE(state, message){
             state.message_list.push(message);
@@ -205,7 +210,10 @@ const promptsStore = {
          },
          getPromptByName: (state) => (name) => {
             return state.prompts.find(prompt => prompt.name == name);
-         }
+         },
+         getNewPromptCount(state){
+          return state.new_prompt_count;
+      },
           
          
        },  
