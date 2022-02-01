@@ -60,7 +60,7 @@ export default {
             'getLogTotalTime',
             'getPromptByName',
             'getPrompts',
-            'getAchievementByName'
+            'getAchievementByName',
             
         ]),
 
