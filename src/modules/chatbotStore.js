@@ -32,8 +32,18 @@ const promptsStore = {
 
        }),
        mutations:{
-        LOAD_PROMPTS(state, prompts){
-            state.prompts = prompts;
+        LOAD_PROMPTS(state, prompts_to_load){
+          let updated_prompts = [];
+          state.prompts.forEach(prompt => {
+              let update_prompt = prompts_to_load.find(pro => pro.name == prompt.name);
+              if(update_prompt != undefined){
+                updated_prompts.push(update_prompt);
+              } else{
+                updated_prompts.push(prompt);
+              }
+          })
+
+          state.prompts = updated_prompts;
         },
          SET_PROMPT_RESPONSE(state, payload){
             state.prompts.forEach(item => {

@@ -34,8 +34,18 @@ const achievementStore = {
 
        }),
        mutations:{
-        LOAD_ACHIEVEMENTS(state, achievements){
-            state.achievements = achievements;
+        LOAD_ACHIEVEMENTS(state, achievements_to_load){
+            let updated_achievements = [];
+            state.achievements.forEach(achievement => {
+                let update_achievement = achievements_to_load.find(ach => ach.name == achievement.name);
+                if(update_achievement != undefined){
+                    updated_achievements.push(update_achievement);
+                } else{
+                    updated_achievements.push(achievement);
+                }
+            })
+
+            state.achievements = updated_achievements;
         },
          SET_ACHIEVEMENT_COMPLETED(state, name){
             state.achievements.forEach(item => {
