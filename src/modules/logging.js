@@ -12,7 +12,7 @@ const loggingStore = {
         logSocket: null,
         uuid: '',
         consent_given: false,
-        hardware: '',
+        //hardware: '',
 
         clicks: [],             //do I need to internally store this?
         session_time: {
@@ -34,9 +34,9 @@ const loggingStore = {
             SET_UUID(state, uuid){
                 state.uuid = uuid;
             },
-            SET_HARDWARE(state, hardware){
-                state.hardware = hardware;
-            },
+            // SET_HARDWARE(state, hardware){
+            //     state.hardware = hardware;
+            // },
             SET_TOTAL_TIME(state, total){
                 state.session_time.total = total;
             },
@@ -47,7 +47,7 @@ const loggingStore = {
                     state.logSocket.send(JSON.stringify({
                         user: state.uuid,
                         t: Date.now(),          
-                        exp: state.hardware,        
+                        //exp: state.hardware,        
                         payload: payload
                     }));
                 }
@@ -85,11 +85,11 @@ const loggingStore = {
             setUUID(context, uuid){
                 context.commit('SET_UUID', uuid);
             },
-            setHardware(context, url){
-                let index = url.indexOf('spin');
-                let hardware = url.substr(index, 6);
-                context.commit('SET_HARDWARE', hardware)
-            },
+            // setHardware(context, url){
+            //     let index = url.indexOf('spin');
+            //     let hardware = url.substr(index, 6);
+            //     context.commit('SET_HARDWARE', hardware)
+            // },
             setTotalTime(context, total){
                 context.commit('SET_TOTAL_TIME', total);
             },
@@ -132,9 +132,9 @@ const loggingStore = {
             getLogUUID(state){
                 return state.uuid;
             },
-            getLogHardware(state){
-                return state.hardware;
-            },
+            // getLogHardware(state){
+            //     return state.hardware;
+            // },
             getLogTotalTime(state){
                 return state.session_time.total;
             },

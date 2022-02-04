@@ -16,12 +16,12 @@
                    Menu
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("datarecorder")'>Data Recorder</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("graph")'>Graph</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("snapshot")'>Data Snapshot</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("table")'>Table</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("stopwatch")'>Stopwatch</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleComponent("systemdiagrams")'>System Diagrams</a></li>
+                    <li><a class="dropdown-item" id='datarecordermenu' href="#" @click='toggleComponent("datarecorder")'>Data Recorder</a></li>
+                    <li><a class="dropdown-item" id='graphmenu' href="#" @click='toggleComponent("graph")'>Graph</a></li>
+                    <li><a class="dropdown-item" id='snapshotmenu' href="#" @click='toggleComponent("snapshot")'>Data Snapshot</a></li>
+                    <li><a class="dropdown-item" id='tablemenu' href="#" @click='toggleComponent("table")'>Table</a></li>
+                    <li><a class="dropdown-item" id='stopwatchmenu' href="#" @click='toggleComponent("stopwatch")'>Stopwatch</a></li>
+                    <li><a class="dropdown-item" id='systemdiagramsmenu' href="#" @click='toggleComponent("systemdiagrams")'>System Diagrams</a></li>
                     
                   </ul>
               </li>
@@ -31,13 +31,13 @@
                    Tools
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
-                    <li><a class="dropdown-item" href="#" @click='addTool("ruler")'>Ruler</a></li>
-                    <li><a class="dropdown-item" href="#" @click='addTool("protractor")'>Protractor</a></li>
+                    <li><a class="dropdown-item" id='rulermenu' href="#" @click='addTool("ruler")'>Ruler</a></li>
+                    <li><a class="dropdown-item" id='protractormenu' href="#" @click='addTool("protractor")'>Protractor</a></li>
                   </ul>
               </li>
 
               <li class="nav-item">
-                  <a class="nav-link" href="#" tabindex="-1" @click='clearWorkspace'>Clear Workspace</a>
+                  <a class="nav-link" id='clearworkspacemenu' href="#" tabindex="-1" @click='clearWorkspace'>Clear Workspace</a>
               </li>
 
                <li class="nav-item dropdown">
@@ -45,10 +45,10 @@
                    Layout
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
-                    <li><a class="dropdown-item" href="#" @click='toggleLayout(1)'>Single Column</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleLayout(0.25)'>25%:75%</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleLayout(0.5)'>50%:50%</a></li>
-                    <li><a class="dropdown-item" href="#" @click='toggleLayout(0.75)'>75%:25%</a></li>
+                    <li><a class="dropdown-item" id='layoutsinglecolumn' href="#" @click='toggleLayout(1)'>Single Column</a></li>
+                    <li><a class="dropdown-item" id='layout25:75' href="#" @click='toggleLayout(0.25)'>25%:75%</a></li>
+                    <li><a class="dropdown-item" id='layout50:50' href="#" @click='toggleLayout(0.5)'>50%:50%</a></li>
+                    <li><a class="dropdown-item" id= 'layout75:25' href="#" @click='toggleLayout(0.75)'>75%:25%</a></li>
                   </ul>
               </li>
 
@@ -57,9 +57,9 @@
           <div class='d-flex'>
               <ul class="navbar-nav dropstart">
                   
-                  <rasa-bot v-if='getIsChatbotAvailable' />
+                  <rasa-bot id='rasabot' v-if='getIsChatbotAvailable' />
                   <!-- <logging /> -->
-                  <achievements />
+                  <achievements id='achievements' />
                   <!-- <checklist /> -->
 
                   <li class="nav-item">
