@@ -10,7 +10,7 @@
         
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
             <li><h4 class='text-muted text-center'>Achievements</h4></li>
-
+            <button class='btn btn-sm' @click="this.$store.dispatch('clearCompletedAchievements')">Clear</button>
             <div class='d-flex row m-2 justify-content-center'>
             
                 <div class='col-4 text-center'>

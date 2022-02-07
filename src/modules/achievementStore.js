@@ -96,6 +96,11 @@ const achievementStore = {
              state.new_achievement_update = set;
              
          },
+         CLEAR_COMPLETED_ACHIEVEMENTS(state){
+             state.achievements.forEach(achievement => {
+                 achievement.completed = false;
+             })
+         }
          
 
        },
@@ -136,6 +141,9 @@ const achievementStore = {
                context.dispatch('setAchievementCompleted', 'pid-controller');
            } 
         },
+        clearCompletedAchievements(context){
+            context.commit('CLEAR_COMPLETED_ACHIEVEMENTS');
+        }
 
 
        },

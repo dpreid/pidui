@@ -57,9 +57,9 @@
           <div class='d-flex'>
               <ul class="navbar-nav dropstart">
                   
-                  <rasa-bot id='rasabot' v-if='getIsChatbotAvailable' />
+                  <!-- <rasa-bot id='rasabot' v-if='getIsChatbotAvailable' /> -->
                   <!-- <logging /> -->
-                  <achievements id='achievements' />
+                  <!-- <achievements id='achievements' v-if='getIsAchievementsAvailable' /> -->
                   <!-- <checklist /> -->
 
                   <li class="nav-item">
@@ -84,10 +84,10 @@
 
 import Clock from "./Clock.vue";
 //import Checklist from './Checklist.vue';
-import Achievements from './Achievements.vue';
+//import Achievements from './Achievements.vue';
 //import Logging from './Logging.vue';
 //import Prompts from './Prompts.vue';
-import RasaBot from './RasaBot.vue';
+//import RasaBot from './RasaBot.vue';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -96,10 +96,10 @@ export default {
   components: {
     Clock,
     //Checklist,
-    Achievements,
+    //Achievements,
     //Logging,
     //Prompts,
-    RasaBot,
+    //RasaBot,
   },
   props:{
       
@@ -115,6 +115,7 @@ export default {
   computed:{
     ...mapGetters([
       'getIsChatbotAvailable',
+      'getIsAchievementsAvailable'
     ]),
       labName(){
         let lab = this.$store.getters.getRemoteLabVersion;

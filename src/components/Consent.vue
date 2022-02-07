@@ -7,24 +7,42 @@
 <transition name='fade'>
     <div class="modal" id='consent-modal' tabindex="-1">
         <div class="modal-dialog">
-          <div class="modal-content">
+          <div class="modal-content text-start">
             <div class="modal-header">
-              <h5 class="modal-title">Study participation</h5>
+              <h5 class="modal-title">Research participation consent</h5>
               <!-- <button type="button" class="btn btn-close" aria-label="Close">
                 
               </button> -->
             </div>
             <div class="modal-body">
-              <p> This remote laboratory is being used as part of a study on how we can better design remote lab experiences for students.</p>
-              <p> All interactions with the app are completely anonymous, but we store a randomly generated username in order to perform data analytics.</p>
-              <p> A lot of time and effort goes into developing these remote laboratories for your education, so we please ask that you participate in this study in order
-                  to help out the researchers.
-              </p>
-              <p>In order to function, the web app needs to store information in your local storage - if you do not consent then none of this data will be logged or available to the 
-                  researchers.
-              </p>
-              <p><a href=''>Here is a link to the project information sheet.</a></p>
-              <p> Are you happy to take part in the study?</p>
+              <div id='scroll-body'>
+                <p> This remote laboratory is being used as part of a study on how we can better design remote lab experiences for students.</p>
+                <p> All interactions with the app are anonymous, but we store a randomly generated username in order to perform data analytics.</p>
+                <p> A lot of time and effort goes into developing these remote laboratories for your education, so we please ask that you participate in this study in order
+                    to help out the researchers.
+                </p>
+
+                <h4>Essential data collection</h4>
+                <ul>
+                  <li>record and analyse commands to experiments sent from your user interface, and the data and video responses from the experiment, to monitor correct functioning of the system</li>
+                  <li>receive notifications from your user interface when you record and download data, so we can select that data for monitoring quality and functionality of the system, and checking data validity against work submitted for marking, if requested by the course staff</li>
+                  <li>record chatbot conversations for monitoring quality, and providing training data for improving its functionality</li>
+                  <li>record responses to questions posed in the app, relating to quality of experience provided</li>
+                </ul>
+
+                <h4>Consenting study participants</h4>
+                <ul>
+                  <li>Record additional click data in the user interface so we can attempt to understand time spent using each part of the interface (e.g. record "achievements," user interface customisations, graph tool interactions etc)</li>
+                  <li>Record responses to survey questions posed in the app, including quality of experience and educational aspects</li>
+                  <li>Transfer system monitoring data into research data set</li>
+                </ul>
+
+                <h2>Collected Data</h2>
+                <p>Please review the Project Information Sheet for this study before consenting</p>
+                <p><a href=''>Here is a link to the project information sheet.</a></p>
+          
+                <p> Are you happy to take part in the study?</p>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary" id='consent-yes-button' @click="consent(true)">Yes</button>
@@ -85,6 +103,19 @@ export default {
 #consent-modal{
   display: block;
   
+}
+
+#scroll-body{
+  max-height: 200px;
+}
+
+/* Important part */
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    height: 50vh;
+    overflow-y: auto;
 }
 
 </style>
