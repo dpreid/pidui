@@ -12,7 +12,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <a class="nav-link dropdown-toggle" href="#" id="menudropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                    Menu
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
@@ -27,7 +27,7 @@
               </li>
 
               <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <a class="nav-link dropdown-toggle" href="#" id="toolsdropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                    Tools
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
@@ -41,7 +41,7 @@
               </li>
 
                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <a class="nav-link dropdown-toggle" href="#" id="layoutdropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                    Layout
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
@@ -52,15 +52,26 @@
                   </ul>
               </li>
 
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="settingsdropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                   Settings
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
+                    <li><a class="dropdown-item" id='toggleconsentbutton' href="#" @click='this.$emit("toggleconsent")'>Change consent</a></li>
+                  </ul>
+              </li>
+
           </ul>
 
           <div class='d-flex'>
               <ul class="navbar-nav dropstart">
                   
+                  <prompts id='prompts' v-if='getSurveyConsent'/>
                   <!-- <rasa-bot id='rasabot' v-if='getIsChatbotAvailable' /> -->
                   <!-- <logging /> -->
                   <!-- <achievements id='achievements' v-if='getIsAchievementsAvailable' /> -->
                   <!-- <checklist /> -->
+
 
                   <li class="nav-item">
                     <clock class='nav-link' />
@@ -86,7 +97,7 @@ import Clock from "./Clock.vue";
 //import Checklist from './Checklist.vue';
 //import Achievements from './Achievements.vue';
 //import Logging from './Logging.vue';
-//import Prompts from './Prompts.vue';
+import Prompts from './Prompts.vue';
 //import RasaBot from './RasaBot.vue';
 import { mapGetters } from 'vuex';
 
@@ -98,14 +109,14 @@ export default {
     //Checklist,
     //Achievements,
     //Logging,
-    //Prompts,
+    Prompts,
     //RasaBot,
   },
   props:{
       
   },
   emits:[
-    'togglelayout', 'togglegraph', 'toggledatarecorder', 'togglestopwatch', 'toggletable', 'togglesystemdiagrams', 'togglesnapshot', 'toggleworkspace', 'clearworkspace', 'addruler', 'addprotractor'
+    'toggleconsent', 'togglelayout', 'togglegraph', 'toggledatarecorder', 'togglestopwatch', 'toggletable', 'togglesystemdiagrams', 'togglesnapshot', 'toggleworkspace', 'clearworkspace', 'addruler', 'addprotractor'
   ],
   data () {
     return {
@@ -115,7 +126,8 @@ export default {
   computed:{
     ...mapGetters([
       'getIsChatbotAvailable',
-      'getIsAchievementsAvailable'
+      'getIsAchievementsAvailable',
+      'getSurveyConsent'
     ]),
       labName(){
         let lab = this.$store.getters.getRemoteLabVersion;
@@ -134,8 +146,8 @@ export default {
           setTimeout(() => {this.$emit('add' + tool)}, 100);  //give the workspace time to initialise and then send tool event
 
           if(tool == 'ruler'){
-            if(this.$store.getters.getPromptByName('PROMPT_inertia_check').count < 1){
-              this.$store.dispatch('triggerIntent', 'PROMPT_inertia_check');
+            if(this.$store.getters.getPromptByName('inertia_check').count < 1){
+              this.$store.dispatch('showPrompt', 'inertia_check');
             }
           }
       },
@@ -143,8 +155,8 @@ export default {
           this.$emit('toggle' + component);
 
           //prompt chatbot to ask about useful components
-          if(this.$store.getters.getAchievementByName('open-all').n > 2 && this.$store.getters.getLogTotalTime > 1800000){
-            this.$store.dispatch('triggerIntent', 'PROMPT_useful_component');
+          if(this.$store.getters.getLogTotalTime > 1800000){
+            this.$store.dispatch('showPrompt', 'useful_component');
           }
       },
       clearWorkspace(){

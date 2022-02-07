@@ -61,6 +61,8 @@ export default {
             'getPromptByName',
             'getPrompts',
             'getAchievementByName',
+            'getLogConsent',
+            'getSurveyConsent'
             
         ]),
 

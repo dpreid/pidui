@@ -6,7 +6,7 @@ import commandStore from './modules/commandStore.js'
 //import checklistStore from './modules/checklistStore.js'
 //import achievementStore from './modules/achievementStore.js'
 import loggingStore from './modules/logging.js';
-//import promptsStore from './modules/prompts.js';
+import promptsStore from './modules/prompts.js';
 //import chatBotStore from './modules/chatbotStore.js';
 
 const store = createStore({
@@ -18,7 +18,7 @@ const store = createStore({
         //checklist: checklistStore,
         //achievement: achievementStore,
         logging: loggingStore,
-        //prompts: promptsStore,
+        prompts: promptsStore,
         //chatbot: chatBotStore
     }
 })

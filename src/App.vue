@@ -4,7 +4,7 @@
   <div id="app" class='container-fluid-sm m-0'>
 
     <!-- Components that do not conform to draggable grid -->
-    <navigation-bar @togglelayout="toggleLayout" @togglegraph="toggleGraph" @toggledatarecorder="toggleDataRecorder" 
+    <navigation-bar @toggleconsent="showConsentModal = true" @togglelayout="toggleLayout" @togglegraph="toggleGraph" @toggledatarecorder="toggleDataRecorder" 
             @togglesnapshot="toggleSnapshot" @togglestopwatch="toggleStopwatch" @toggleworkspace="addWorkspace" @toggletable="toggleTable" 
                     @togglesystemdiagrams="toggleSystemDiagrams" @clearworkspace="clearWorkspace" @addruler="rulerAdded = true" @addprotractor="protractorAdded = true"
                     />
@@ -177,8 +177,8 @@ export default {
       window.addEventListener('pagehide', () => {this.saveDataToLocalStorage()});				//closing window
       window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage()});			//refreshing page, changing URL
 
-      this.loadAchievements();  //load the already achieved achievements.
-      this.loadPrompts();
+      //this.loadAchievements();  //load the already achieved achievements.
+      //this.loadPrompts();
       this.loadLogging();
       
 
@@ -409,8 +409,8 @@ export default {
             
             this.saveData();
             this.saveLogging();
-            this.saveAchievements();
-            this.savePrompts();
+            //this.saveAchievements();
+            //this.savePrompts();
 
             return true;
             
@@ -466,18 +466,23 @@ export default {
         }
       },
       checkConsent(){
-        let consent;
+        let logging_consent;
+        let survey_consent;
         if(this.getUsesLocalStorage){
-          consent = window.localStorage.getItem('remote-lab-consent');
+          logging_consent = window.localStorage.getItem('remote-lab-logging-consent');
+          survey_consent = window.localStorage.getItem('remote-lab-survey-consent');
         } else {
-          consent = null;
+          logging_consent = null;
+          survey_consent = null;
         }
         
-        if(consent == 'true'){
-          this.showConsentModal = false;
-          this.$store.dispatch('setConsent', true);
-        } else{
+        if(logging_consent == null || survey_consent == null){
           this.showConsentModal = true;
+          
+        } else{
+          this.showConsentModal = false;
+          this.$store.dispatch('setLoggingConsent', (logging_consent === 'true'));
+          this.$store.dispatch('setSurveyConsent', (survey_consent === 'true'));
         }
         
       },

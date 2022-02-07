@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const promptsStore = {
     state: () => ({
-        url: 'https://rasa-box.co.uk',
+        url: '',
         message_list: [], //{sender: 'you', time: '15:30', text: 'hello', buttons: [{title:'0'}, {title:'1'}]}
         previous_intent: '',
         prompts: [

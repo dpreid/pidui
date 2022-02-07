@@ -3,14 +3,24 @@
 
 const promptsStore = {
     state: () => ({
+        survey_consent_given: false,
         prompts: [
-            {name:'enjoy-likert', response: '', hidden: true, completed: false, type: 'likert', verbose:'How are you enjoying the web app?', mainText: 'Please rate your enjoyment so far of the remote lab web app?', minScale:'Not at all', maxScale: 'Love it!'}, 
-            {name:'inertia-calc', response: '', hidden: true, completed: false, type: 'calc', verbose:'Inertia calculation', mainText: 'Calculate the inertia of your disk?'}, 
-            {name:'improve-text', response: '', hidden: true, completed: false, type: 'text', verbose:'Give us your feedback', mainText: 'Please tell us about any issues you had with the remote lab?'},
-            {name:'overshoot-calc', response: '', hidden: true, completed: false, type: 'calc', verbose:'Overshoot calculation', mainText: 'What is the percentage overshoot when you use Kp = 1 and a 3 rad step in position mode?'},
-            
+            {name:'rate_experience', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'likert', count: 0}, 
+            {name:'rate_ui', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'likert', count: 0},
+            {name:'rate_box', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'likert', count: 0},
+            {name:'comment_improvements', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0}, 
+            {name:'useful_component', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0},
+            {name:'control_experiment', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'likert', count: 0},
+            {name:'control_hardware', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'likert', count: 0},
+            {name:'achievements_attempted', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0},
+            {name:'explore_components', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0}, 
+            {name:'download_data', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0},
+            {name:'move_components', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0},
+            {name:'graph_functions', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0},
+            {name:'inertia_check', verbose:'', mainText:'', hidden: true, response: '', completed: false, type: 'text', count: 0},
         ],
         new_prompt_update: false,
+        new_prompt_count: 0,
 
        }),
        mutations:{
@@ -22,6 +32,7 @@ const promptsStore = {
                 if(item.name == payload.name){
                     item.response = payload.response;
                     item.completed = true;
+                    item.count += 1;
                 }
             });
          },
@@ -33,7 +44,16 @@ const promptsStore = {
             });
          },
          SET_PROMPT_UPDATE(state, set){
-             state.new_prompt_update = set;
+            if(set){
+              state.new_prompt_count += 1;
+            } else{
+                state.new_prompt_count = 0;
+            }
+            
+            state.new_prompt_update = set;
+         },
+         SET_SURVEY_CONSENT(state, set){
+             state.survey_consent_given = set;
          }
          
 
@@ -45,15 +65,23 @@ const promptsStore = {
         setPromptResponse(context, payload){
              if(context.getters.getPromptsUncompleted.includes(payload.name)){
                 context.commit('SET_PROMPT_RESPONSE', payload);
+
+                context.dispatch('logPrompts', context.state.prompts, {root: true});
              }
          },
          showPrompt(context, name){
-            context.commit('SHOW_PROMPT', name);
-            context.commit('SET_PROMPT_UPDATE', true);
+             if(context.state.prompt_consent_given){
+                context.commit('SHOW_PROMPT', name);
+                context.commit('SET_PROMPT_UPDATE', true);
+             }
+            
          },
          setPromptUpdate(context, set){
              context.commit('SET_PROMPT_UPDATE', set);
          },
+         setSurveyConsent(context, set){
+             context.commit('SET_SURVEY_CONSENT', set);
+         }
 
        },
        getters:{
@@ -90,7 +118,16 @@ const promptsStore = {
          },
          getPromptUpdated(state){
              return state.new_prompt_update;
-         }
+         },
+         getSurveyConsent(state){
+             return state.survey_consent_given;
+         },
+         getPromptByName: (state) => (name) => {
+            return state.prompts.find(prompt => prompt.name == name);
+         },
+         getNewPromptCount(state){
+          return state.new_prompt_count;
+      },
           
          
        },  

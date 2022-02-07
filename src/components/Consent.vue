@@ -16,37 +16,36 @@
             </div>
             <div class="modal-body">
               <div id='scroll-body'>
-                <p> This remote laboratory is being used as part of a study on how we can better design remote lab experiences for students.</p>
-                <p> All interactions with the app are anonymous, but we store a randomly generated username in order to perform data analytics.</p>
+                <p> This remote laboratory is being used as part of a research study in the School of Engineering on how we can better design remote lab experiences for students.</p>
                 <p> A lot of time and effort goes into developing these remote laboratories for your education, so we please ask that you participate in this study in order
                     to help out the researchers.
                 </p>
 
-                <h4>Essential data collection</h4>
-                <ul>
-                  <li>record and analyse commands to experiments sent from your user interface, and the data and video responses from the experiment, to monitor correct functioning of the system</li>
-                  <li>receive notifications from your user interface when you record and download data, so we can select that data for monitoring quality and functionality of the system, and checking data validity against work submitted for marking, if requested by the course staff</li>
-                  <li>record chatbot conversations for monitoring quality, and providing training data for improving its functionality</li>
-                  <li>record responses to questions posed in the app, relating to quality of experience provided</li>
-                </ul>
-
-                <h4>Consenting study participants</h4>
-                <ul>
-                  <li>Record additional click data in the user interface so we can attempt to understand time spent using each part of the interface (e.g. record "achievements," user interface customisations, graph tool interactions etc)</li>
-                  <li>Record responses to survey questions posed in the app, including quality of experience and educational aspects</li>
-                  <li>Transfer system monitoring data into research data set</li>
-                </ul>
-
                 <h2>Collected Data</h2>
-                <p>Please review the Project Information Sheet for this study before consenting</p>
+                <p>No personal data will be collected as part of this study. All data will be collected anonymously. Data is limited to your interaction with the remote lab UI and hardware 
+                  and your responses to any survey questions that you answer.
+                </p>
+                <p>Please review the Project Information Sheet for this study before giving your consent.</p>
                 <p><a href=''>Here is a link to the project information sheet.</a></p>
-          
-                <p> Are you happy to take part in the study?</p>
+
+                <h4>Interaction Data</h4>
+                <p>I am happy for my interaction data (clicks, components used, input values) to be logged for hardware quality control and research purposes.</p>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="loggingConsentRadio" v-model='logging'>
+                  <label class="form-check-label" for="loggingRadio">Interaction data</label>
+                </div>
+
+                <h4>Survey Data</h4>
+                <p>I am happy to answer questions on my experience with the remote laboratory. </p>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="surveyConsentRadio" v-model='survey'>
+                  <label class="form-check-label" for="surveyConsentRadio">Survey data</label>
+                </div>
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id='consent-yes-button' @click="consent(true)">Yes</button>
-              <button type="button" class="btn btn-danger" id='consent-no-button' data-dismiss="modal" data-bs-dismiss="modal" @click='consent(false)'>No</button>
+              <button type="button" class="btn btn-primary" id='consent-yes-button' @click="consent">Confirm choices</button>
+              <!-- <button type="button" class="btn btn-danger" id='consent-no-button' data-dismiss="modal" data-bs-dismiss="modal" @click='consent({logging: false, survey: false})'>Cancel</button> -->
             </div>
           </div>
         </div>
@@ -62,7 +61,8 @@ export default {
   emits:['consentSet'],
   data () {
     return {
-        
+        logging: false,
+        survey: false,
     }
   },
   components: {
@@ -84,10 +84,13 @@ export default {
 
   },
   methods: {
-      consent(set){
-          this.$store.dispatch('setConsent', set);
+      consent(){
+        //consent has two aspects: logging and survey
+          this.$store.dispatch('setLoggingConsent', this.logging);
+          this.$store.dispatch('setSurveyConsent', this.survey);
           if(this.getUsesLocalStorage){
-              window.localStorage.setItem('remote-lab-consent', set);
+              window.localStorage.setItem('remote-lab-logging-consent', this.logging);
+              window.localStorage.setItem('remote-lab-survey-consent', this.survey);
           }
           
 

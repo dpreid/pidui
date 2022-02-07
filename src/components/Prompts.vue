@@ -3,15 +3,16 @@
 
 <template>
     <li class="nav-item dropdown">
-        <button type='button' class='btn btn-primary dropdown-toggle' id='prompts-button' data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false" @click='setPromptUpdate(false)'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-briefcase" viewBox="0 0 16 16">
-                <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"/>
-            </svg>
-            <span v-if='getPromptUpdated' class="spinner-grow spinner-grow-sm text-danger position-absolute top-10 start-80 translate-middle" role="status" aria-hidden="true"></span>
-        </button>
+        <button type='button' class='btn primary-colour dropdown-toggle' id='prompts-button' data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false" @click='setPromptUpdate(false)'>
+                <svg xmlns="http://www.w3.org/2000/svg" id='promptsmenubutton' width="32" height="32" fill="currentColor" class="bi bi-chat-left-dots" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                    <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+                <span v-if='getPromptUpdated' class="badge rounded-pill bg-danger" id='prompt-notification' role="status" aria-hidden="false">{{ getNewPromptCount }}<span class="visually-hidden">unread messages</span></span>
+            </button>
         
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuClickable">
-            <li><h4 class='text-muted text-center'>Tasks</h4></li>
+            <li><h4 class='text-muted text-center'>Survey questions</h4></li>
             <div v-if='getAvailablePrompts.length > 0'>
                 <li v-for='item in getAvailablePrompts' :key='item.verbose' class='dropdown-item' @click.stop>
                     
@@ -91,21 +92,53 @@ export default {
     computed:{
         ...mapGetters([
             'getAvailablePrompts',
-            'getPromptUpdated'
+            'getPromptUpdated',
+            'getNewPromptCount',
+            'getLogTotalTime',
+            'getPromptByName',
         ]),
         
     },
     methods:{
         ...mapActions([
             'setPromptUpdate',
-            'setPromptResponse'
+            'setPromptResponse',
+            'showPrompt'
         ]),
         updateResponse(prompt, input_id){
             let payload = {name: prompt.name, response: document.getElementById(input_id).value}
             this.setPromptResponse(payload);
-            // this.setPromptCompleted(prompt.name);
             
-        }
+        },
+        triggerPrompts(){
+            let total_session_time = this.getLogTotalTime;
+            let prompt_rate = this.getPromptByName('rate_experience');
+            let prompt_ui = this.getPromptByName('rate_ui');
+            let prompt_box = this.getPromptByName('rate_box');
+            let prompt_improvements = this.getPromptByName('comment_improvements');
+            let prompt_explore = this.getPromptByName('explore_components');
+            let prompt_layout = this.getPromptByName('move_components');
+
+            if((prompt_rate.count == 0 && total_session_time > 1800000) || (prompt_rate.count == 1 && total_session_time > 3600000) || (prompt_rate.count == 2 && total_session_time > 5400000)){
+              this.showPrompt('rate_experience');
+            } 
+            else if(prompt_ui.count < 2 && total_session_time > 600000){
+              this.showPrompt('rate_ui');
+            } 
+            else if(prompt_box.count < 2 && total_session_time > 1200000){
+              this.showPrompt('rate_box');
+            }
+            else if(prompt_improvements.count < 2 && total_session_time > 2400000){
+              this.showPrompt('comment_improvements');
+            }
+            else if(prompt_explore.count < 2 && total_session_time > 300000){
+              this.showPrompt('explore_components');
+            }
+            else if(prompt_layout.count < 2 && total_session_time > 480000){
+              this.showPrompt('move_components');
+            }
+            
+        },
     }
 }
 </script>

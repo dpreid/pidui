@@ -11,7 +11,7 @@ const loggingStore = {
     state: () => ({
         logSocket: null,
         uuid: '',
-        consent_given: false,
+        logging_consent_given: false,
         //hardware: '',
 
         clicks: [],             //do I need to internally store this?
@@ -28,8 +28,8 @@ const loggingStore = {
             SET_LOG_SOCKET(state, socket){
                 state.logSocket = socket;
             },
-            SET_CONSENT(state, consent){
-                state.consent_given = consent;
+            SET_LOGGING_CONSENT(state, consent){
+                state.logging_consent_given = consent;
             },
             SET_UUID(state, uuid){
                 state.uuid = uuid;
@@ -43,7 +43,7 @@ const loggingStore = {
             LOG(state, payload){
                 //only log to server if user has given consent.
                 //Still may require logging internally for achievements etc.
-                if(state.consent_given){
+                if(state.logging_consent_given && state.logSocket != null){
                     state.logSocket.send(JSON.stringify({
                         user: state.uuid,
                         t: Date.now(),          
@@ -79,8 +79,8 @@ const loggingStore = {
             setLogSocket(context, socket){
                 context.commit('SET_LOG_SOCKET', socket);
             },
-            setConsent(context, consent){
-                context.commit('SET_CONSENT', consent);
+            setLoggingConsent(context, consent){
+                context.commit('SET_LOGGING_CONSENT', consent);
             },
             setUUID(context, uuid){
                 context.commit('SET_UUID', uuid);
@@ -127,7 +127,7 @@ const loggingStore = {
                 return state.logSocket;
            },
            getLogConsent(state){
-            return state.consent_given;
+            return state.logging_consent_given;
             },
             getLogUUID(state){
                 return state.uuid;
