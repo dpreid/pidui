@@ -143,6 +143,10 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+#prompt-notification{
+  position: absolute;
+  top: 100;
+  right: 0;
+}
 </style>

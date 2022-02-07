@@ -70,7 +70,7 @@ const promptsStore = {
              }
          },
          showPrompt(context, name){
-             if(context.state.prompt_consent_given){
+             if(context.state.survey_consent_given){
                 context.commit('SHOW_PROMPT', name);
                 context.commit('SET_PROMPT_UPDATE', true);
              }

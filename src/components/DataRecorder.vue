@@ -153,7 +153,7 @@ export default {
       outputToCSV(){
 
         if(this.getNumData > 100){
-          this.$store.dispatch('setAchievementCompleted', 'download-data');
+          //this.$store.dispatch('setAchievementCompleted', 'download-data');
           
           if(this.$store.getters.getPromptByName('graph_functions').count < 1){
             this.$store.dispatch('showPrompt', 'graph_functions');

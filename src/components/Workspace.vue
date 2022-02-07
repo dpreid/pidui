@@ -72,7 +72,7 @@ export default {
         rulerAdded(set) {
             if(set){
                 this.addRuler();
-                this.$store.dispatch('setAchievementCompleted', 'ruler');
+                //this.$store.dispatch('setAchievementCompleted', 'ruler');
             }
         },
     },

@@ -238,9 +238,9 @@ export default {
             console.log(element.childNodes[0]);
             draggedZone.appendChild(element.childNodes[0]);
             element.appendChild(document.getElementById(draggedID));
-            if(draggedZone != droppedElement){
-              this.$store.dispatch('setAchievementCompleted', 'custom-ui');
-            }
+            // if(draggedZone != droppedElement){
+            //   this.$store.dispatch('setAchievementCompleted', 'custom-ui');
+            // }
             break;
           }
         }
@@ -265,7 +265,7 @@ export default {
       }
 
       this.$store.dispatch('logComponent', {name: 'graph', open: this.isGraphOn});
-      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'graph'});
+      //this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'graph'});
     },
     clearWorkspace(){
       this.isWorkspaceOn = false;
@@ -287,7 +287,7 @@ export default {
       this.isStopwatchOn = !this.isStopwatchOn;
 
       this.$store.dispatch('logComponent', {name: 'stopwatch', open: this.isStopwatchOn});
-      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'stopwatch'});
+      //this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'stopwatch'});
     },
     toggleTable(){
       this.isTableOn = !this.isTableOn;
@@ -298,7 +298,7 @@ export default {
       }
       
       this.$store.dispatch('logComponent', {name: 'table', open: this.isTableOn});
-      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'table'});
+      //this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'table'});
     },
     toggleInputGraph(){
       this.isInputGraphOn = !this.isInputGraphOn;
@@ -307,7 +307,7 @@ export default {
       this.isSystemDiagramsOn = !this.isSystemDiagramsOn;
 
       this.$store.dispatch('logComponent', {name: 'system-diagrams', open: this.isSystemDiagramsOn});
-      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'diagrams'});
+      //this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'diagrams'});
 
     },
     toggleSnapshot(){
@@ -318,7 +318,7 @@ export default {
         }
       }
       this.$store.dispatch('logComponent', {name: 'snapshot', open: this.isSnapshotOn});
-      this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'snapshot'});
+      //this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'snapshot'});
     },
     toggleLayout(ratio){
       if(ratio == 0.25){
