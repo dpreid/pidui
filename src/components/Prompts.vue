@@ -13,6 +13,9 @@
         
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuClickable">
             <li><h4 class='text-muted text-center'>Survey questions</h4></li>
+
+            <button class='btn btn-sm' @click="this.$store.dispatch('clearCompletedPrompts')">Clear</button>
+
             <div v-if='getAvailablePrompts.length > 0'>
                 <li v-for='item in getAvailablePrompts' :key='item.verbose' class='dropdown-item' @click.stop>
                     
@@ -20,10 +23,14 @@
                         {{item.verbose}}
                     </button>
                     <div class="collapse" :id="'collapse' + item.name">
-                        <div class="card bg-secondary m-2" style="min-width: 20rem">
+                        <div class="card bg-secondary m-2" style="min-width: 30rem">
                             
                             <div class='card-header'>
                                 <h5>{{item.mainText}}</h5>
+                                <!-- Prompt statements -->
+                                <div v-if='item.type == "prompt"'>
+                                    <button type='button' :id='item.name + "button"' class='btn btn-primary ms-2 me-2' value='cleared' @click='updateResponse(item, item.name + "button")'>Clear</button>
+                                </div>
                             </div>
                             <!-- Likert style prompt questions -->
                             <div v-if='item.type == "likert"' class="card-body text-center row m-2">
@@ -36,6 +43,21 @@
                                     <input type='radio' :id='item.name + "check5"' class='form-check-input radio-inline ms-2 me-2' value='2' @change='updateResponse(item, item.name + "check5")'>
                                 </div>
                                 <p class='col-3'>{{item.maxScale}}</p>
+                            </div>
+                            <!-- Likert style prompt questions with multiple questions-->
+                            <div v-if='item.type == "likert_multiple"' class="card-body text-center m-2">
+                                <div class='row' v-for='(scale, index) in item.minScale' :key='scale'>
+                                    <p class='col-3'>{{scale}}</p>
+                                    <div class='col-6 text-center form-check'>
+                                        <input type='radio' :id='scale + "check1"' class='form-check-input radio-inline ms-2 me-2' value='-2' @change='temp_multiple_response[index] = -2'>
+                                        <input type='radio' :id='scale + "check2"' class='form-check-input radio-inline ms-2 me-2' value='-1' @change='temp_multiple_response[index] = -1'>
+                                        <input type='radio' :id='scale + "check3"' class='form-check-input radio-inline ms-2 me-2' value='0' @change='temp_multiple_response[index] = 0'>
+                                        <input type='radio' :id='scale + "check4"' class='form-check-input radio-inline ms-2 me-2' value='1' @change='temp_multiple_response[index] = 1'>
+                                        <input type='radio' :id='scale + "check5"' class='form-check-input radio-inline ms-2 me-2' value='2' @change='temp_multiple_response[index] = 2'>
+                                    </div>
+                                    <p class='col-3'>{{item.maxScale[index]}}</p>
+                                </div>
+                                <button type='button' class='btn btn-primary' @click='updateMultipleResponse(item, temp_multiple_response)'>Submit</button>
                             </div>
                             <!-- Open text response -->
                             <div v-if='item.type == "text"' class="card-body text-center row m-2">
@@ -57,6 +79,16 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Select question -->
+                            <div v-if='item.type == "select"' class="card-body text-center row m-2">
+                                <div class='col-6 text-center form-check'>
+                                    <div v-for='option in item.options' :key='option'>
+                                        <input type='radio' :id='option + "select"' class='form-check-input radio-inline ms-2 me-2' :value='option' @change='updateResponse(item, option + "select")'>
+                                        <label class='form-check-label' :for='option'>{{ option }}</label>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -65,9 +97,9 @@
                 </li>
             </div>
             <div v-else>
-                <div class="card" style="min-width: 20rem">
+                <div class="card bg-secondary m-2" style="min-width: 30rem">
                     <div class='card-header'>
-                        <h5>No tasks to complete.</h5>
+                        <h5>No questions to complete at the moment.</h5>
                     </div>
                 </div>
             </div>
@@ -86,7 +118,7 @@ export default {
     name: 'Prompts',
     data () {
         return {
-            
+            temp_multiple_response: [],
         }
     },
     computed:{
@@ -96,8 +128,22 @@ export default {
             'getNewPromptCount',
             'getLogTotalTime',
             'getPromptByName',
+            'getAchievementByName',
+            'getPrompts',
+            'getPromptsLoaded'
         ]),
         
+    },
+    mounted(){
+        //this.triggerPrompts();
+    },
+    watch:{
+        getPromptsLoaded(loaded){
+            if(loaded){
+                console.log('triggering prompts');
+                this.triggerPrompts();
+            }
+        }
     },
     methods:{
         ...mapActions([
@@ -110,33 +156,45 @@ export default {
             this.setPromptResponse(payload);
             
         },
+        updateMultipleResponse(prompt, response){
+            let payload = {name: prompt.name, response: response}
+            this.setPromptResponse(payload);
+            this.temp_multiple_response = [];
+            
+        },
         triggerPrompts(){
             let total_session_time = this.getLogTotalTime;
             let prompt_rate = this.getPromptByName('rate_experience');
             let prompt_ui = this.getPromptByName('rate_ui');
-            let prompt_box = this.getPromptByName('rate_box');
             let prompt_improvements = this.getPromptByName('comment_improvements');
             let prompt_explore = this.getPromptByName('explore_components');
             let prompt_layout = this.getPromptByName('move_components');
+            //let prompt_90 = this.getPromptByName('session_time_90');
+            //let prompt_180 = this.getPromptByName('session_time_180');
+            //let prompt_dep = this.getPromptByName('ueq_dependability');
 
             if((prompt_rate.count == 0 && total_session_time > 1800000) || (prompt_rate.count == 1 && total_session_time > 3600000) || (prompt_rate.count == 2 && total_session_time > 5400000)){
-              this.showPrompt('rate_experience');
+              //this.showPrompt('rate_experience');
             } 
-            else if(prompt_ui.count < 2 && total_session_time > 600000){
+            if(this.getAchievementByName('positionPid-ramp-input').completed && prompt_ui.count < 2 && total_session_time > 600000){
               this.showPrompt('rate_ui');
             } 
-            else if(prompt_box.count < 2 && total_session_time > 1200000){
-              this.showPrompt('rate_box');
-            }
-            else if(prompt_improvements.count < 2 && total_session_time > 2400000){
+            if(this.getAchievementByName('custom-ui').completed && prompt_improvements.count < 2 && total_session_time > 2400000){
               this.showPrompt('comment_improvements');
             }
-            else if(prompt_explore.count < 2 && total_session_time > 300000){
+            if(this.getAchievementByName('open-all').completed == false && prompt_explore.count < 2 && total_session_time > 300000){
               this.showPrompt('explore_components');
             }
-            else if(prompt_layout.count < 2 && total_session_time > 480000){
+            if(this.getAchievementByName('custom-ui').completed == false && prompt_layout.count < 2 && total_session_time > 480000){
               this.showPrompt('move_components');
             }
+            if(total_session_time > 5400000 && total_session_time < 10800000){
+                this.showPrompt('session_90');
+            }
+            if(total_session_time > 10800000){
+                this.showPrompt('session_180');
+            }
+            this.showPrompt('ueq_dependability');
             
         },
     }

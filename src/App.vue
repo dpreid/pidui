@@ -177,8 +177,8 @@ export default {
       window.addEventListener('pagehide', () => {this.saveDataToLocalStorage()});				//closing window
       window.addEventListener('beforeunload', () => {this.saveDataToLocalStorage()});			//refreshing page, changing URL
 
-      //this.loadAchievements();  //load the already achieved achievements.
-      //this.loadPrompts();
+      this.loadAchievements();  //load the already achieved achievements.
+      this.loadPrompts();
       this.loadLogging();
       
 
@@ -409,8 +409,8 @@ export default {
             
             this.saveData();
             this.saveLogging();
-            //this.saveAchievements();
-            //this.savePrompts();
+            this.saveAchievements();
+            this.savePrompts();
 
             return true;
             

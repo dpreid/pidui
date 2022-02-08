@@ -95,7 +95,7 @@
 
 import Clock from "./Clock.vue";
 //import Checklist from './Checklist.vue';
-//import Achievements from './Achievements.vue';
+import Achievements from './Achievements.vue';
 //import Logging from './Logging.vue';
 import Prompts from './Prompts.vue';
 //import RasaBot from './RasaBot.vue';
@@ -107,7 +107,7 @@ export default {
   components: {
     Clock,
     //Checklist,
-    //Achievements,
+    Achievements,
     //Logging,
     Prompts,
     //RasaBot,
