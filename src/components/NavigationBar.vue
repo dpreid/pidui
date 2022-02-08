@@ -69,7 +69,7 @@
                   <prompts id='prompts' v-if='getSurveyConsent'/>
                   <!-- <rasa-bot id='rasabot' v-if='getIsChatbotAvailable' /> -->
                   <!-- <logging /> -->
-                  <!-- <achievements id='achievements' v-if='getIsAchievementsAvailable' /> -->
+                  <achievements id='achievements' v-if='getIsAchievementsAvailable' />
                   <!-- <checklist /> -->
 
 
