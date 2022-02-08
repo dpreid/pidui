@@ -26,7 +26,7 @@
                   </ul>
               </li>
 
-              <li class="nav-item dropdown">
+              <!-- <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="toolsdropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                    Tools
                   </a>
@@ -34,7 +34,7 @@
                     <li><a class="dropdown-item" id='rulermenu' href="#" @click='addTool("ruler")'>Ruler</a></li>
                     <li><a class="dropdown-item" id='protractormenu' href="#" @click='addTool("protractor")'>Protractor</a></li>
                   </ul>
-              </li>
+              </li> -->
 
               <li class="nav-item">
                   <a class="nav-link" id='clearworkspacemenu' href="#" tabindex="-1" @click='clearWorkspace'>Clear Workspace</a>
@@ -145,11 +145,11 @@ export default {
           this.toggleComponent('workspace');
           setTimeout(() => {this.$emit('add' + tool)}, 100);  //give the workspace time to initialise and then send tool event
 
-          if(tool == 'ruler'){
-            if(this.$store.getters.getPromptByName('inertia_check').count < 1){
-              this.$store.dispatch('showPrompt', 'inertia_check');
-            }
-          }
+          // if(tool == 'ruler'){
+          //   if(this.$store.getters.getPromptByName('inertia_check').count < 1){
+          //     this.$store.dispatch('showPrompt', 'inertia_check');
+          //   }
+          // }
       },
       toggleComponent(component){
           this.$emit('toggle' + component);

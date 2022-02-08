@@ -53,6 +53,17 @@ const loggingStore = {
                 }
                 
             },
+            LOG_SURVEY(state, payload){
+                //can only be called if survey_consent has already been given
+                if(state.logSocket != null){
+                    state.logSocket.send(JSON.stringify({
+                        user: state.uuid,
+                        t: Date.now(),          
+                        //exp: state.hardware,        
+                        payload: payload
+                    }));
+                }
+            },
             LOG_CLICK(state, data){
                 state.clicks.push(data);
             },
@@ -117,7 +128,7 @@ const loggingStore = {
                 context.commit('LOG', {log:'achievements', data: achievements});
             },
             logPrompts(context, prompts){
-                context.commit('LOG', {log:'prompts', data: prompts});
+                context.commit('LOG_SURVEY', {log:'survey', data: prompts});
             }
 
 
