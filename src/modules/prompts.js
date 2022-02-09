@@ -19,6 +19,10 @@ const promptsStore = {
             {name:'session_time_90', verbose:'Session time', mainText:'Your total session time is now longer than 90 minutes.', hidden: true, response: '', completed: false, type: 'prompt', count: 0},
             {name:'session_time_180', verbose:'Session time', mainText:'Your total session time is now longer than 180 minutes', hidden: true, response: '', completed: false, type: 'prompt', count: 0},
             {name:'ueq_dependability', verbose:'Dependability rating', mainText:'Please rate your experience on the following scales:', minScale:['unpredictable', 'obstructive', 'not secure', 'does not meet expectations'], maxScale:['predictable', 'supportive', 'secure', 'meets expectations'], hidden: true, response: [], completed: false, type: 'likert_multiple', count: 0},
+            {name:'ueq_attractiveness', verbose:'Attractiveness rating', mainText:'Please rate your experience on the following scales:', minScale:['annoying', 'bad', 'unlikeable', 'unpleasant', 'unattractive', 'unfriendly'], maxScale:['enjoyable', 'good', 'pleasing', 'pleasant', 'attractive', 'friendly'], hidden: true, response: [], completed: false, type: 'likert_multiple', count: 0},
+            {name:'ueq_efficiency', verbose:'Efficiency rating', mainText:'Please rate your experience on the following scales:', minScale:['slow', 'inefficient', 'impractical', 'cluttered'], maxScale:['fast', 'efficient', 'practical', 'organized'], hidden: true, response: [], completed: false, type: 'likert_multiple', count: 0},
+            {name:'ueq_perspicuity', verbose:'Ease of use rating', mainText:'Please rate your experience on the following scales:', minScale:['not understandable', 'difficult to learn', 'complicated', 'confusing'], maxScale:['understandable', 'easy to learn', 'easy', 'clear'], hidden: true, response: [], completed: false, type: 'likert_multiple', count: 0},
+            {name:'report_issues', verbose:'Have you had any problems with the remote lab?', mainText:'Please provide details about any issues you have experienced with the remote lab.', hidden: true, response: '', completed: false, type: 'text', count: 0}, 
         ],
         new_prompt_update: false,
         new_prompt_count: 0,
@@ -93,7 +97,7 @@ const promptsStore = {
              }
          },
          showPrompt(context, name){
-             if(context.state.survey_consent_given){
+             if(context.state.survey_consent_given && context.getters.getPromptsUncompleted.includes(name)){
                 context.commit('SHOW_PROMPT', name);
                 context.commit('SET_PROMPT_UPDATE', true);
              }

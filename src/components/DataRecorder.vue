@@ -143,7 +143,7 @@ export default {
       clearData(){
           this.$store.dispatch('clearAllData');
           
-          if(this.$store.getters.getPromptByName('download_data').count < 2){
+          if(this.$store.getters.getPromptByName('download_data').count < 1){
             this.$store.dispatch('showPrompt', 'download_data');
           }
       },
@@ -158,11 +158,27 @@ export default {
           if(this.$store.getters.getPromptByName('graph_functions').count < 1){
             this.$store.dispatch('showPrompt', 'graph_functions');
           }
-          else if(this.$store.getters.getPromptByName('control_experiment').count < 1 && this.$store.getters.getLogTotalTime > 1200000){
+          if((this.$store.getters.getPromptByName('control_experiment').count == 0 && this.$store.getters.getLogTotalTime > 1800000) || (this.$store.getters.getPromptByName('control_experiment').count == 1 && this.$store.getters.getLogTotalTime > 3600000)){
             this.$store.dispatch('showPrompt', 'control_experiment');
           } 
-          else if(this.$store.getters.getPromptByName('control_hardware').count < 1 && this.$store.getters.getLogTotalTime > 1200000){
+          if((this.$store.getters.getPromptByName('control_hardware').count == 0 && this.$store.getters.getLogTotalTime > 1200000) || (this.$store.getters.getPromptByName('control_hardware').count == 1 && this.$store.getters.getLogTotalTime > 2400000)){
             this.$store.dispatch('showPrompt', 'control_hardware');
+          }
+
+          if((this.$store.getters.getPromptByName('ueq_attractiveness').count == 0 && this.$store.getters.getLogTotalTime > 1800000) || (this.$store.getters.getPromptByName('ueq_attractiveness').count == 1 && this.$store.getters.getLogTotalTime > 3600000)){
+            this.$store.dispatch('showPrompt', 'ueq_attractiveness');
+          }
+
+          if((this.$store.getters.getPromptByName('ueq_dependability').count == 0 && this.$store.getters.getLogTotalTime > 1800000) || (this.$store.getters.getPromptByName('ueq_dependability').count == 1 && this.$store.getters.getLogTotalTime > 3600000)){
+            this.$store.dispatch('showPrompt', 'ueq_dependability');
+          }
+
+          if((this.$store.getters.getPromptByName('ueq_efficiency').count == 0 && this.$store.getters.getLogTotalTime > 1800000) || (this.$store.getters.getPromptByName('ueq_efficiency').count == 1 && this.$store.getters.getLogTotalTime > 3600000)){
+            this.$store.dispatch('showPrompt', 'ueq_efficiency');
+          }
+
+          if((this.$store.getters.getPromptByName('ueq_perspicuity').count == 0 && this.$store.getters.getLogTotalTime > 1800000) || (this.$store.getters.getPromptByName('ueq_perspicuity').count == 1 && this.$store.getters.getLogTotalTime > 3600000)){
+            this.$store.dispatch('showPrompt', 'ueq_perspicuity');
           }
           
         }

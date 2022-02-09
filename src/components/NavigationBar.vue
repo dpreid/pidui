@@ -155,7 +155,7 @@ export default {
           this.$emit('toggle' + component);
 
           //prompt chatbot to ask about useful components
-          if(this.$store.getters.getLogTotalTime > 1800000){
+          if((this.$store.dispatch('getPromptByName', 'useful_component').count == 0 && this.$store.getters.getLogTotalTime > 1800000) || (this.$store.dispatch('getPromptByName', 'useful_component').count == 1 && this.$store.getters.getLogTotalTime > 3600000)){
             this.$store.dispatch('showPrompt', 'useful_component');
           }
       },
