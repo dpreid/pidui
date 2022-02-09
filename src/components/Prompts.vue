@@ -168,11 +168,8 @@ export default {
             let prompt_ui = this.getPromptByName('rate_ui');
             let prompt_improvements = this.getPromptByName('comment_improvements');
             let prompt_data = this.getPromptByName('data_analysis');
-            let prompt_layout = this.getPromptByName('move_components');
-            let prompt_achievements = this.getPromptByName('rate_achievements');
+            let prompt_achievements = this.getPromptByName('rate-ach');
             let prompt_90 = this.getPromptByName('session_time_90');
-            //let prompt_180 = this.getPromptByName('session_time_180');
-            //let prompt_dep = this.getPromptByName('ueq_dependability');
 
             if((prompt_rate.count == 0 && total_session_time > 1800000) || (prompt_rate.count == 1 && total_session_time > 3600000) || (prompt_rate.count == 2 && total_session_time > 5400000)){
               this.showPrompt('rate_experience');
@@ -189,15 +186,13 @@ export default {
             if(this.getAchievementByName('speedRaw-step-input').completed == true && this.getAchievementByName('download-data').completed == true && prompt_data.count < 2){
               this.showPrompt('data_analysis');
             }
-            if(this.getAchievementByName('custom-ui').completed == false && prompt_layout.count < 2 && total_session_time > 480000){
-              this.showPrompt('move_components');
-            }
             if(total_session_time > 5400000 && total_session_time < 10800000 && prompt_90.count < 1){
                 this.showPrompt('session_90');
             }
             if(total_session_time > 10800000){
                 this.showPrompt('session_180');
             }
+            
             this.showPrompt('report_issues');
             
         },
