@@ -25,8 +25,8 @@
                 <p>No personal data will be collected as part of this study. All data will be collected anonymously. Data is limited to your interaction with the remote lab UI and hardware 
                   and your responses to any survey questions that you answer.
                 </p>
-                <p>Please review the Project Information Sheet for this study before giving your consent.</p>
-                <p><a href=''>Here is a link to the project information sheet.</a></p>
+                <p>Please review the Participant Information Sheet for this study before giving your consent.</p>
+                <p><a href='https://dev-static.practable.io/info/spinner-1.0/files/Project_Information_Sheet_RemoteLabs.pdf'>Participant Information Sheet</a></p>
 
                 <h4>Interaction Data</h4>
                 <p>I am happy for my interaction data (clicks, components used, input values) to be logged for hardware quality control and research purposes.</p>
@@ -45,7 +45,6 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary" id='consent-yes-button' @click="consent">Confirm choices</button>
-              <!-- <button type="button" class="btn btn-danger" id='consent-no-button' data-dismiss="modal" data-bs-dismiss="modal" @click='consent({logging: false, survey: false})'>Cancel</button> -->
             </div>
           </div>
         </div>
@@ -117,7 +116,7 @@ export default {
     overflow-y: initial !important
 }
 .modal-body{
-    height: 50vh;
+    height: 80vh;
     overflow-y: auto;
 }
 

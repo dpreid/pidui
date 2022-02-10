@@ -58,6 +58,9 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
                     <li><a class="dropdown-item" id='toggleconsentbutton' href="#" @click='this.$emit("toggleconsent")'>Change consent</a></li>
+                    <li><a class="dropdown-item" id='clearsessiontime' href="#" @click='this.$store.dispatch("clearLoggedTime")'>Clear Logged time</a></li>
+                    <li><a class="dropdown-item" id='clearprompts' href="#" @click='this.$store.dispatch("clearCompletedPrompts")'>Clear Prompts</a></li>
+                    <li><a class="dropdown-item" id='clearachievements' href="#" @click='this.$store.dispatch("clearCompletedAchievements")'>Clear Achievements</a></li>
                   </ul>
               </li>
 

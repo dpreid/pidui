@@ -82,6 +82,11 @@ const loggingStore = {
             },
             LOG_PARAMETERS(state, parameters){
                 state.parameters.push(parameters);
+            },
+            CLEAR_LOGGED_TIME(state){
+                state.session_time.start = Date.now();
+                state.session_time.end = 0;
+                state.session_time.total = 0;
             }
          
 
@@ -129,6 +134,9 @@ const loggingStore = {
             },
             logPrompts(context, prompts){
                 context.commit('LOG_SURVEY', {log:'survey', data: prompts});
+            },
+            clearLoggedTime(context){
+                context.commit('CLEAR_LOGGED_TIME');
             }
 
 
