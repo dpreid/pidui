@@ -32,7 +32,7 @@
               <p>Are you sure you want to Reset? This will clear all stored data.</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="clearData(); toggleResetModal();">Reset</button>
+              <button type="button" class="btn btn-primary" id='resetmodalclear' @click="clearData(); toggleResetModal();">Reset</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal" @click="toggleResetModal">Cancel</button>
             </div>
           </div>

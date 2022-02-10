@@ -75,7 +75,7 @@ const createVuexStore = () =>
         }
     });
 
-describe('RasaBot.vue tests', () => {
+describe.skip('RasaBot.vue tests', () => {
 
 
 

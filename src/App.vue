@@ -395,6 +395,8 @@ export default {
           let data = window.localStorage.getItem('promptsSpinningDisk');
           data = JSON.parse(data);
           this.$store.dispatch('loadPrompts', data);
+        } else{
+          this.$store.dispatch('setPromptsLoaded');
         }
       },
       loadLogging(){

@@ -105,7 +105,7 @@ export default {
     },
     watch:{
         getAchievementUpdated(){
-            if(this.getAchievementByName('custom-ui').completed && this.getAchievementByName('custom-ui').count == 0){
+            if(this.getAchievementByName('custom-ui').completed && this.$store.getters.getPromptByName('rate_customise').count == 0){
                 this.$store.dispatch('showPrompt', 'rate_customise');
             }
         }

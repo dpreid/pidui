@@ -14,16 +14,14 @@
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuClickable">
             <li><h4 class='text-muted text-center'>Survey questions</h4></li>
 
-            <button class='btn btn-sm' @click="this.$store.dispatch('clearCompletedPrompts')">Clear</button>
-
-            <div v-if='getAvailablePrompts.length > 0'>
+            <div v-if='getAvailablePrompts.length > 0' style='max-height: 90vh; overflow: scroll;'>
                 <li v-for='item in getAvailablePrompts' :key='item.verbose' class='dropdown-item' @click.stop>
                     
                     <button class="btn btn-primary m-2" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapse' + item.name" aria-expanded="false" aria-controls="collapseExample">
                         {{item.verbose}}
                     </button>
                     <div class="collapse" :id="'collapse' + item.name">
-                        <div class="card bg-secondary m-2" style="min-width: 30rem">
+                        <div class="card bg-secondary m-2" style="min-width: 30vw">
                             
                             <div class='card-header'>
                                 <h5>{{item.mainText}}</h5>
@@ -33,29 +31,29 @@
                                 </div>
                             </div>
                             <!-- Likert style prompt questions -->
-                            <div v-if='item.type == "likert"' class="card-body text-center row m-2">
-                                <p class='col-3'>{{item.minScale}}</p>
-                                <div class='col-6 text-center form-check'>
-                                    <input type='radio' :id='item.name + "check1"' class='form-check-input radio-inline ms-2 me-2' value='-2' @change='updateResponse(item, item.name + "check1")'>
-                                    <input type='radio' :id='item.name + "check2"' class='form-check-input radio-inline ms-2 me-2' value='-1' @change='updateResponse(item, item.name + "check2")'>
-                                    <input type='radio' :id='item.name + "check3"' class='form-check-input radio-inline ms-2 me-2' value='0' @change='updateResponse(item, item.name + "check3")'>
-                                    <input type='radio' :id='item.name + "check4"' class='form-check-input radio-inline ms-2 me-2' value='1' @change='updateResponse(item, item.name + "check4")'>
-                                    <input type='radio' :id='item.name + "check5"' class='form-check-input radio-inline ms-2 me-2' value='2' @change='updateResponse(item, item.name + "check5")'>
+                            <div v-if='item.type == "likert"' class="d-flex card-body row justify-content-center">
+                                <p class='col-2 text-end'>{{item.minScale}}</p>
+                                <div class='d-flex col-6 form-check justify-content-center'>
+                                    <input type='radio' :id='item.name + "check1"' class='form-check-input radio-inline ms-3 me-3' value='-2' @change='updateResponse(item, item.name + "check1")'>
+                                    <input type='radio' :id='item.name + "check2"' class='form-check-input radio-inline ms-3 me-3' value='-1' @change='updateResponse(item, item.name + "check2")'>
+                                    <input type='radio' :id='item.name + "check3"' class='form-check-input radio-inline ms-3 me-3' value='0' @change='updateResponse(item, item.name + "check3")'>
+                                    <input type='radio' :id='item.name + "check4"' class='form-check-input radio-inline ms-3 me-3' value='1' @change='updateResponse(item, item.name + "check4")'>
+                                    <input type='radio' :id='item.name + "check5"' class='form-check-input radio-inline ms-3 me-3' value='2' @change='updateResponse(item, item.name + "check5")'>
                                 </div>
-                                <p class='col-3'>{{item.maxScale}}</p>
+                                <p class='col-2 text-start'>{{item.maxScale}}</p>
                             </div>
                             <!-- Likert style prompt questions with multiple questions-->
                             <div v-if='item.type == "likert_multiple"' class="card-body text-center m-2">
                                 <div class='row' v-for='(scale, index) in item.minScale' :key='scale'>
-                                    <p class='col-3'>{{scale}}</p>
-                                    <div class='col-6 text-center form-check'>
+                                    <p class='col-3 text-wrap'>{{scale}}</p>
+                                    <div class='d-flex col-6 justify-content-center form-check'>
                                         <input type='radio' :id='scale + "check1"' class='form-check-input radio-inline ms-2 me-2' value='-2' @change='temp_multiple_response[index] = -2'>
                                         <input type='radio' :id='scale + "check2"' class='form-check-input radio-inline ms-2 me-2' value='-1' @change='temp_multiple_response[index] = -1'>
                                         <input type='radio' :id='scale + "check3"' class='form-check-input radio-inline ms-2 me-2' value='0' @change='temp_multiple_response[index] = 0'>
                                         <input type='radio' :id='scale + "check4"' class='form-check-input radio-inline ms-2 me-2' value='1' @change='temp_multiple_response[index] = 1'>
                                         <input type='radio' :id='scale + "check5"' class='form-check-input radio-inline ms-2 me-2' value='2' @change='temp_multiple_response[index] = 2'>
                                     </div>
-                                    <p class='col-3'>{{item.maxScale[index]}}</p>
+                                    <p class='col-3 text-wrap'>{{item.maxScale[index]}}</p>
                                 </div>
                                 <button type='button' class='btn btn-primary' @click='updateMultipleResponse(item, temp_multiple_response)'>Submit</button>
                             </div>
@@ -140,7 +138,6 @@ export default {
     watch:{
         getPromptsLoaded(loaded){
             if(loaded){
-                console.log('triggering prompts');
                 this.triggerPrompts();
             }
         }
@@ -181,16 +178,16 @@ export default {
               this.showPrompt('comment_improvements');
             }
             if((prompt_achievements.count == 0 && total_session_time > 1800000) || (prompt_achievements.count == 1 && total_session_time > 3600000) || (prompt_achievements.count == 2 && total_session_time > 5400000)){
-              this.showPrompt('rate_achievements');
+              this.showPrompt('rate-ach');
             }
             if(this.getAchievementByName('speedRaw-step-input').completed == true && this.getAchievementByName('download-data').completed == true && prompt_data.count < 2){
               this.showPrompt('data_analysis');
             }
             if(total_session_time > 5400000 && total_session_time < 10800000 && prompt_90.count < 1){
-                this.showPrompt('session_90');
+                this.showPrompt('session_time_90');
             }
             if(total_session_time > 10800000){
-                this.showPrompt('session_180');
+                this.showPrompt('session_time_180');
             }
             
             this.showPrompt('report_issues');

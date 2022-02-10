@@ -41,7 +41,6 @@ const promptsStore = {
                     updated_prompts.push(prompt);
                 }
             })
-            console.log('loading prompts');
             state.prompts = updated_prompts;
             state.prompts_loaded = true;
         },
@@ -58,7 +57,6 @@ const promptsStore = {
              
             state.prompts.forEach(item => {
                 if(item.name == name){
-                    console.log(item);
                     item.hidden = false;
                 }
             });
@@ -81,6 +79,9 @@ const promptsStore = {
                 prompt.response = '';
                 prompt.count = 0;
             })
+         },
+         SET_PROMPTS_LOADED(state){
+             state.prompts_loaded = true;
          }
          
 
@@ -111,6 +112,9 @@ const promptsStore = {
          },
          clearCompletedPrompts(context){
              context.commit('CLEAR_COMPLETED_PROMPTS');
+         },
+         setPromptsLoaded(context){
+             context.commit('SET_PROMPTS_LOADED');
          }
 
        },
@@ -122,7 +126,6 @@ const promptsStore = {
              let a_p = [];
             state.prompts.forEach(prompt => {
                 if(!prompt.hidden && !prompt.completed){
-                    console.log(prompt.name);
                     a_p.push(prompt);
                 }
             })
