@@ -77,7 +77,6 @@ const loggingStore = {
             UPDATE_SESSION_TIME(state, now){
                 let current_total = state.session_time.total;
                 let delta = now - state.session_time.previous;
-                console.log(delta);
                 state.session_time.total = current_total + delta;
 
                 state.session_time.previous = now;

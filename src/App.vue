@@ -192,16 +192,16 @@ export default {
   methods: {
     dragComponent(event){
         event.dataTransfer.effectAllowed = 'move';
-         console.log(event.target.id);
+         //console.log(event.target.id);
          let element = event.target;
          if(element.classList.contains('drop-area')){
-           console.log(element.id);
+           //console.log(element.id);
             event.dataTransfer.setData("text/html", element.id + "|" + element.childNodes[0].id);
-            console.log(element.childNodes[0]);
+            //console.log(element.childNodes[0]);
          } else{
            while(element.parentNode){
               element = element.parentNode;
-              console.log(element.id);
+              //console.log(element.id);
               if(element.classList.contains('drop-area')){
                 event.dataTransfer.setData("text/html", element.id + "|" + element.childNodes[0].id);
                 console.log(element.childNodes[0]);
@@ -223,7 +223,7 @@ export default {
         if(event.target.childNodes.length > 0){
           draggedZone.appendChild(event.target.childNodes[0]);
         }
-        console.log(draggedID);
+        //console.log(draggedID);
         droppedElement.appendChild(document.getElementById(draggedID));
         if(draggedZone != droppedElement){
           this.$store.dispatch('setAchievementCompleted', 'custom-ui');
@@ -235,7 +235,7 @@ export default {
         while(element.parentNode){
           element = element.parentNode;
           if(element.classList.contains('drop-area')){
-            console.log(element.childNodes[0]);
+            //console.log(element.childNodes[0]);
             draggedZone.appendChild(element.childNodes[0]);
             element.appendChild(document.getElementById(draggedID));
             if(draggedZone != droppedElement){

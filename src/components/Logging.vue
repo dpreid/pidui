@@ -84,7 +84,6 @@ export default {
             this.logStart({log:'start', data: Date.now()});
 
             window.onclick = (event) => {
-                console.log(event.target.id);
                 let data = {target: event.target.id, screen_pos: {x: event.clientX, y: event.clientY}}
                 this.logClick({log:'click', data:data});
             }
