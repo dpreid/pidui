@@ -14,13 +14,14 @@ const loggingStore = {
         logging_consent_given: false,
         //hardware: '',
 
-        clicks: [],             //do I need to internally store this?
+        //clicks: [],             //do I need to internally store this?
         session_time: {
-            start: null,      //will be updated
-            end: null,          //will be updated
+            start: Date.now(),      //will be updated
+            end: Date.now(),
+            previous: Date.now(),
             total: 0
         },
-        components_opened: [],      //{name: 'graph'} //do I need to internally store this?
+        //components_opened: [],      //{name: 'graph'} //do I need to internally store this?
         parameters: [], //do I need to internally store this?
 
        }),
@@ -64,25 +65,29 @@ const loggingStore = {
                     }));
                 }
             },
-            LOG_CLICK(state, data){
-                state.clicks.push(data);
-            },
+            // LOG_CLICK(state, data){
+            //     state.clicks.push(data);
+            // },
             LOG_START(state, time){
                 state.session_time.start = time;
             },
             LOG_END(state, time){
-                let current_total = state.session_time.total;
                 state.session_time.end = time;
-                let delta = time - state.session_time.start;
-                //console.log(delta);
+            },
+            UPDATE_SESSION_TIME(state, now){
+                let current_total = state.session_time.total;
+                let delta = now - state.session_time.previous;
+                console.log(delta);
                 state.session_time.total = current_total + delta;
+
+                state.session_time.previous = now;
             },
-            LOG_COMPONENT(state, component){
-                state.components_opened.push(component);
-            },
-            LOG_PARAMETERS(state, parameters){
-                state.parameters.push(parameters);
-            },
+            // LOG_COMPONENT(state, component){
+            //     state.components_opened.push(component);
+            // },
+            // LOG_PARAMETERS(state, parameters){
+            //     state.parameters.push(parameters);
+            // },
             CLEAR_LOGGED_TIME(state){
                 state.session_time.start = Date.now();
                 state.session_time.end = 0;
@@ -110,8 +115,14 @@ const loggingStore = {
                 context.commit('SET_TOTAL_TIME', total);
             },
             logClick(context, payload){
-                context.commit('LOG_CLICK', payload.data);
+                //context.commit('LOG_CLICK', payload.data);
                 context.commit('LOG', payload);
+
+                //session time should only increase if still connected to the hardware
+                if(!context.getters.getSessionExpired){
+                    context.commit('UPDATE_SESSION_TIME', Date.now());
+                }
+                
             },
             logStart(context, payload){
                 context.commit('LOG_START', payload.data);
@@ -119,14 +130,15 @@ const loggingStore = {
             },
             logEnd(context, payload){
                 context.commit('LOG_END', payload.data);
+                context.commit('UPDATE_SESSION_TIME', payload.data);
                 context.commit('LOG', payload);
             },
             logComponent(context, payload){
-                context.commit('LOG_COMPONENT', payload.data);
+                //context.commit('LOG_COMPONENT', payload.data);
                 context.commit('LOG', payload);
             },
             logParameters(context, payload){
-                context.commit('LOG_PARAMETERS', payload.data);
+                //context.commit('LOG_PARAMETERS', payload.data);
                 context.commit('LOG', payload);
             },
             logAchievements(context, achievements){
@@ -157,21 +169,21 @@ const loggingStore = {
             getLogTotalTime(state){
                 return state.session_time.total;
             },
-            getLogClicks(state){
-                return state.clicks;
-            },
+            // getLogClicks(state){
+            //     return state.clicks;
+            // },
             getLogStart(state){
                 return state.session_time.start;
             },
             getLogEnd(state){
                 return state.session_time.end;
             },
-            getLogComponents(state){
-                return state.components_opened;
-            },
-            getLogParameters(state){
-                return state.parameters;
-            }
+            // getLogComponents(state){
+            //     return state.components_opened;
+            // },
+            // getLogParameters(state){
+            //     return state.parameters;
+            // }
           
          
        },  

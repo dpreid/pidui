@@ -50,19 +50,25 @@ export default {
 				console.log(e);
 			}
 		},
+        getSessionExpired(expired){
+            if(expired){
+                this.logEnd({log:'end', type:'session-exp', data: Date.now()});
+            }
+        }
     },
     computed:{
         ...mapGetters([
             'getLogURLObtained',
             'getLogStart',
-            'getLogClicks',
-            'getLogParameters',
+            //'getLogClicks',
+            //'getLogParameters',
             'getLogTotalTime',
             'getPromptByName',
             'getPrompts',
             'getAchievementByName',
             'getLogConsent',
-            'getSurveyConsent'
+            'getSurveyConsent',
+            'getSessionExpired',
             
         ]),
 
@@ -83,12 +89,12 @@ export default {
                 this.logClick({log:'click', data:data});
             }
 
-            window.addEventListener('pagehide', () => {this.logEnd({log:'end', data: Date.now()})});				//closing window
-            window.addEventListener('beforeunload', () => {this.logEnd({log:'end', data: Date.now()})});			//refreshing page, changing URL
+            window.addEventListener('pagehide', () => {this.logEnd({log:'end', type:'close', data: Date.now()})});				//closing window
+            window.addEventListener('beforeunload', () => {this.logEnd({log:'end', type:'refresh', data: Date.now()})});			//refreshing page, changing URL
         },
-        getNumClicks(){
-            return this.getLogClicks.length;
-        },
+        // getNumClicks(){
+        //     return this.getLogClicks.length;
+        // },
         connect(){
             let _store = this.$store;
 
