@@ -146,12 +146,13 @@ export default {
         ...mapActions([
             'setPromptUpdate',
             'setPromptResponse',
-            'showPrompt'
+            'showPrompt',
         ]),
         updateResponse(prompt, input_id){
             let payload = {name: prompt.name, response: document.getElementById(input_id).value}
             this.setPromptResponse(payload);
             
+            this.$store.dispatch('setAchievementCompleted', 'survey-response');
         },
         updateMultipleResponse(prompt, response){
             let payload = {name: prompt.name, response: response}

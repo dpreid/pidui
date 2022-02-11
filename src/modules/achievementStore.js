@@ -4,7 +4,7 @@
 const achievementStore = {
     state: () => ({
         achievements: [
-            {name:'box-chat', verbose:'Send a message to Box.', completed: false, hidden: false},
+            {name:'survey-response', verbose:'Respond to a survey question', completed: false, hidden: false},
             {name:'custom-ui', verbose:'Customise the UI', completed: false, hidden: false},
             {name:'speedRaw-step-input', verbose:'Step input whilst in open loop mode', completed: false, hidden: false},
             {name:'positionPid-ramp-input', verbose:'Ramp input whilst in position PID mode', completed: false, hidden: false},
@@ -12,7 +12,7 @@ const achievementStore = {
             {name:'download-data', verbose:'Downloaded a dataset with n > 100 data points', completed: false, hidden: false},
             {name:'plot-linear', verbose:'Plot linear function', completed: false, hidden: false},
             {name:'velocity-mode', verbose:'Set the hardware to velocity PID mode', completed: false, hidden: true},
-            {name:'ruler', verbose:'Used the ruler tool', completed: false, hidden: true}, 
+            // {name:'ruler', verbose:'Used the ruler tool', completed: false, hidden: true}, 
             {name:'open-all', verbose:'Opened all the components', completed: false, hidden: true, fractional: [
                 {name:'graph', completed: false},
                 {name:'snapshot', completed: false},
