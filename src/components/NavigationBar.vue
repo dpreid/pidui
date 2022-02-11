@@ -58,14 +58,14 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown2">
                     <li><a class="dropdown-item" id='toggleconsentbutton' href="#" @click='this.$emit("toggleconsent")'>Change consent</a></li>
-                    <li><a class="dropdown-item" id='clearsessiontime' href="#" @click='this.$store.dispatch("clearLoggedTime")'>Clear Logged time</a></li>
+                    <!-- <li><a class="dropdown-item" id='clearsessiontime' href="#" @click='this.$store.dispatch("clearLoggedTime")'>Clear Logged time</a></li>
                     <li><a class="dropdown-item" id='setloggedtime30' href="#" @click='this.$store.dispatch("setTotalTime", 1800001)'>Set time 30min</a></li>
                     <li><a class="dropdown-item" id='setloggedtime60' href="#" @click='this.$store.dispatch("setTotalTime", 3600001)'>Set time 60min</a></li>
                     <li><a class="dropdown-item" id='setloggedtime90' href="#" @click='this.$store.dispatch("setTotalTime", 5400001)'>Set time 90min</a></li>
                     <li><a class="dropdown-item" id='setloggedtime120' href="#" @click='this.$store.dispatch("setTotalTime", 7200001)'>Set time 120min</a></li>
                     <li><a class="dropdown-item" id='setloggedtime180' href="#" @click='this.$store.dispatch("setTotalTime", 10800001)'>Set time 180min</a></li>
                     <li><a class="dropdown-item" id='clearprompts' href="#" @click='this.$store.dispatch("clearCompletedPrompts")'>Clear Prompts</a></li>
-                    <li><a class="dropdown-item" id='clearachievements' href="#" @click='this.$store.dispatch("clearCompletedAchievements")'>Clear Achievements</a></li>
+                    <li><a class="dropdown-item" id='clearachievements' href="#" @click='this.$store.dispatch("clearCompletedAchievements")'>Clear Achievements</a></li> -->
                   </ul>
               </li>
 
