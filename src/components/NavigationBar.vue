@@ -69,6 +69,12 @@
                   </ul>
               </li>
 
+              <li class="nav-item">
+                  <a class="nav-link" href="#" id="helpbutton" role="button" data-bs-toggle="dropdown" aria-expanded="false" @click='this.$emit("togglehelp")'>
+                   Help
+                  </a>
+              </li>
+
           </ul>
 
           <div class='d-flex'>
@@ -79,7 +85,6 @@
                   <!-- <logging /> -->
                   <achievements id='achievements' v-if='getIsAchievementsAvailable' />
                   <!-- <checklist /> -->
-
 
                   <li class="nav-item">
                     <clock class='nav-link' />
@@ -109,6 +114,7 @@ import Prompts from './Prompts.vue';
 //import RasaBot from './RasaBot.vue';
 import { mapGetters } from 'vuex';
 
+
 export default {
 
   name: 'NavigationBar',
@@ -124,7 +130,7 @@ export default {
       
   },
   emits:[
-    'toggleconsent', 'togglelayout', 'togglegraph', 'toggledatarecorder', 'togglestopwatch', 'toggletable', 'togglesystemdiagrams', 'togglesnapshot', 'toggleworkspace', 'clearworkspace', 'addruler', 'addprotractor'
+    'togglehelp', 'toggleconsent', 'togglelayout', 'togglegraph', 'toggledatarecorder', 'togglestopwatch', 'toggletable', 'togglesystemdiagrams', 'togglesnapshot', 'toggleworkspace', 'clearworkspace', 'addruler', 'addprotractor'
   ],
   data () {
     return {
