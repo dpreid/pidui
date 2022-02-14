@@ -64,7 +64,7 @@ const achievementStore = {
                                 frac.completed = true;
                                 item.n++;
     
-                                if(item.n == item.required){
+                                if(item.n >= item.required){
                                     item.completed = true;
                                 }
                             }
@@ -77,7 +77,7 @@ const achievementStore = {
             state.achievements.forEach(item => {
                 if(item.name == name){
                     if('n' in item){
-                        if(item.n == item.required - 1){
+                        if(item.n >= item.required - 1){
                             item.n++;
                             item.completed = true;
                         } else {
