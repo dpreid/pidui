@@ -3,34 +3,17 @@ import { createStore } from 'vuex';
 import Achievements from '../../src/components/Achievements.vue';
 
 import achievementStore from '../../src/modules/achievementStore.js'
+import loggingStore from '../../src/modules/logging.js';
+import promptStore from '../../src/modules/prompts.js';
 
-//mock logging store since do not want to actually send websocket commands whilst testing
-const loggingStore = {
-    state: () => ({
-
-    }),
-    mutations:{
-        LOG({}, payload){
-            //console.log(payload);
-        }
-        
-    }, 
-    actions:{
-        logAchievements(context, payload){
-            context.commit('LOG', payload);
-        }
-    },
-    getters:{
-
-    }
-}
 
 const createVuexStore = () => 
 
     createStore({
         modules:{
             achievements: achievementStore,
-            logging: loggingStore
+            logging: loggingStore,
+            prompts: promptStore
         }
     });
 
@@ -64,7 +47,8 @@ describe('Achievements.vue tests', () => {
         await store.dispatch('setAchievementCompleted', 'custom-ui');
 
         expect(wrapper.find('#achievement-notification').exists()).toBe(true);
-        expect(store.getters.getAchievementsCompleted == 'custom-ui').toBe(true);
+        //expect(store.getters.getAchievementsCompleted == 'custom-ui').toBe(true);
+        expect(store.getters.getAchievementsCompleted).toContainEqual('custom-ui');
         //console.log(store.getters.getAchievementsCompleted);
     })
 
@@ -75,6 +59,7 @@ describe('Achievements.vue tests', () => {
             plugins: [store]
             }
         });
+
 
         await store.dispatch('setAchievementCompleted', 'custom-ui');
 

@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { Vue3Mq } from "vue3-mq";
 import store from "./store.js";
 import App from './App.vue'
 
@@ -9,6 +10,8 @@ import 'es6-promise/auto'
 
 
 const app = createApp(App)
-
+app.use(Vue3Mq, {
+    preset: 'bootstrap5'
+});
 app.use(store)
 app.mount('#app')

@@ -23,7 +23,7 @@
         
       </div>
 
-      <div class='col-4 d-flex flex-row-reverse'>
+      <!-- <div class='col-4 d-flex flex-row-reverse'>
        
         <button :class='getMutedClass' @click='toggleMute'>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-volume-mute" viewBox="0 0 16 16">
@@ -45,7 +45,7 @@
 
         <span class='pt-2 pe-2'>Volume: {{ current_volume.toFixed(1)*10 }}</span>
         
-      </div>  
+      </div>   -->
         
     </div>
 </div>    
