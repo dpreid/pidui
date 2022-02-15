@@ -420,7 +420,7 @@ const createVuexStore = () =>
                 }
             });
 
-            const prompt = {name:'data_analysis', verbose:'Data analysis', mainText:'Which component is best for analysing data?', options:['graph', 'snapshot', 'table', 'download'], hidden: true, response: '', completed: false, type: 'select', count: 0}
+            const prompt = {name:'data_analysis', verbose:'Data analysis', mainText:'Which component is best for analysing data?', options:['Graph', 'Snapshot', 'Table', 'Download'], hidden: true, response: '', completed: false, type: 'select', count: 0}
             await store.dispatch('setSurveyConsent', true);
             await store.dispatch('setAchievementCompleted', 'speedRaw-step-input');
             await store.dispatch('setAchievementCompleted', 'download-data');

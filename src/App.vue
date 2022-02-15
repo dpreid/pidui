@@ -195,13 +195,15 @@ export default {
   methods: {
     dragComponent(event){
         event.dataTransfer.effectAllowed = 'move';
-         //console.log(event.target.id);
+         console.log(event.target.id);
          let element = event.target;
-         if(element.classList.contains('drop-area')){
+         if(element.classList.contains('drop-area') && element.childNodes[0].id != undefined){
+           console.log(element.childNodes[0].id)
            //console.log(element.id);
             event.dataTransfer.setData("text/html", element.id + "|" + element.childNodes[0].id);
             //console.log(element.childNodes[0]);
-         } else{
+         } else if(element.childNodes[0].id != undefined){
+           console.log(element.childNodes[0].id)
            while(element.parentNode){
               element = element.parentNode;
               //console.log(element.id);
@@ -214,6 +216,7 @@ export default {
          }
     },
     dropComponent(event){
+      console.log(event.target.id);
       event.preventDefault();
       event.stopPropagation();
       let dropData = event.dataTransfer.getData('text/html');
@@ -222,7 +225,7 @@ export default {
       let droppedElement = document.getElementById(event.target.id);
       let draggedID = dropItems[1];
       
-      if(droppedElement != null && droppedElement.classList.contains('drop-area')){
+      if(droppedElement != null && droppedElement.classList.contains('drop-area') && draggedZone != null){
         if(event.target.childNodes.length > 0){
           draggedZone.appendChild(event.target.childNodes[0]);
         }
@@ -233,7 +236,7 @@ export default {
         }
         
       } 
-      else if(droppedElement){
+      else if(droppedElement && draggedZone != null){
         let element = droppedElement;
         while(element.parentNode){
           element = element.parentNode;
