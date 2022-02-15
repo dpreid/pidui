@@ -207,7 +207,7 @@ export default {
               //console.log(element.id);
               if(element.classList.contains('drop-area')){
                 event.dataTransfer.setData("text/html", element.id + "|" + element.childNodes[0].id);
-                console.log(element.childNodes[0]);
+                //console.log(element.childNodes[0]);
                 break;
               }
             }
