@@ -70,7 +70,7 @@
               </li>
 
               <li class="nav-item">
-                  <a class="nav-link" href="#" id="helpbutton" role="button" data-bs-toggle="dropdown" aria-expanded="false" @click='this.$emit("togglehelp")'>
+                  <a class="nav-link" href="#" id="helpbutton" role="button" aria-expanded="false" @click='this.$emit("togglehelp")'>
                    Help
                   </a>
               </li>
@@ -80,7 +80,7 @@
           <div class='d-flex'>
               <ul class="navbar-nav dropstart">
                   
-                  <prompts id='prompts' v-if='getSurveyConsent'/>
+                  <prompts id='prompts' v-if='getSurveyConsent && getIsPromptsAvailable'/>
                   <!-- <rasa-bot id='rasabot' v-if='getIsChatbotAvailable' /> -->
                   <!-- <logging /> -->
                   <achievements id='achievements' v-if='getIsAchievementsAvailable' />
@@ -142,7 +142,8 @@ export default {
       'getIsChatbotAvailable',
       'getIsAchievementsAvailable',
       'getSurveyConsent',
-      'getPromptByName'
+      'getPromptByName',
+      'getIsPromptsAvailable'
     ]),
       labName(){
         let lab = this.$store.getters.getRemoteLabVersion;

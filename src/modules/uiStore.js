@@ -10,6 +10,7 @@ const uiStore = {
        
        isChatBotAvailable: false,    //by default the chatbot is NOT BEING USED
        isAchievementsAvailable: true,
+       isPromptsAvailable: true,
        usesLocalStorage: false,        //can only use localStorage if the browser allows it.
 
        }),
@@ -29,6 +30,9 @@ const uiStore = {
          },
          SET_USES_LOCAL_STORAGE(state, set){
             state.usesLocalStorage = set;
+         },
+         SET_PROMPTS_AVAILABLE(state, set){
+            state.isPromptsAvailable = set;
          }
          
 
@@ -49,6 +53,9 @@ const uiStore = {
          },
          setUsesLocalStorage(context, set){
             context.commit('SET_USES_LOCAL_STORAGE', set);
+         },
+         setPromptsAvailable(context, set){
+            context.commit('SET_PROMPTS_AVAILABLE', set);
          }
 
 
@@ -72,6 +79,9 @@ const uiStore = {
          },
          getUsesLocalStorage(state){
             return state.usesLocalStorage;
+         },
+         getIsPromptsAvailable(state){
+            return state.isPromptsAvailable;
          }
          
           

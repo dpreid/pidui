@@ -21,7 +21,7 @@
                     to help out the researchers.
                 </p>
 
-                <h2>Collected Data</h2>
+                <h4>Collected Data</h4>
                 <p>No personal data will be collected as part of this study. All data will be collected anonymously. Data is limited to your interaction with the remote lab UI and hardware 
                   and your responses to any survey questions that you answer.
                 </p>
@@ -29,17 +29,25 @@
                 <p><a href='https://dev-static.practable.io/info/spinner-1.0/files/Project_Information_Sheet_RemoteLabs.pdf'>Participant Information Sheet</a></p>
 
                 <h4>Interaction Data</h4>
-                <p>I am happy for my interaction data (clicks, components used, input values) to be logged for hardware quality control and research purposes.</p>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="loggingConsentRadio" v-model='logging'>
-                  <label class="form-check-label" for="loggingRadio">Interaction data</label>
+                <div class='row'>
+                  <div class='col-8'>
+                    <p>I am happy for my interaction data (clicks, components used, input values) to be logged for hardware quality control and research purposes.</p>
+                  </div>
+                  <div class="form-check form-switch col-4">
+                    <input class="form-check-input" type="checkbox" id="loggingConsentRadio" v-model='logging'>
+                    <label class="form-check-label" for="loggingRadio">Consent</label>
+                  </div>
                 </div>
 
                 <h4>Survey Data</h4>
-                <p>I am happy to answer questions on my experience with the remote laboratory. </p>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="surveyConsentRadio" v-model='survey'>
-                  <label class="form-check-label" for="surveyConsentRadio">Survey data</label>
+                <div class='row'>
+                  <div class='col-8'>
+                    <p>I am happy to answer questions on my experience with the remote laboratory. </p>
+                  </div>
+                  <div class="form-check form-switch col-4">
+                    <input class="form-check-input" type="checkbox" id="surveyConsentRadio" v-model='survey'>
+                    <label class="form-check-label" for="surveyConsentRadio">Consent</label>
+                  </div>
                 </div>
               </div>
             </div>

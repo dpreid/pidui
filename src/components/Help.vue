@@ -15,7 +15,7 @@
               
                 <h4>Customise the UI</h4>
                 <p>Dashed borders represent the slots for components. You can drag a component from one slot to another to switch their positions. You are best 
-                    to click and drag just inside the border of the component you want to move.
+                    to click and drag just inside the border of the component you want to move and drop just inside the border of the slot you want to move to.
                 </p>
 
                 <h4>Add UI tools</h4>
@@ -23,8 +23,8 @@
                 </p>
 
                 <h4>Recording more than 5000 data points</h4>
-                <p>For smooth running of the web app there is a limit of 5000 recorded data points. Please download this dataset or perform the necessary analysis
-                    and then reset the data and run again in order to collect more data.
+                <p>For smooth running of the web app there is a limit of 5000 recorded data points and 1200 data points on the Graph tool. Please download this dataset or perform the necessary analysis
+                    and then reset the data and run again in order to collect more data. For collecting single data points over a long time you may be best to use the Snapshot tool.
                 </p>
 
                 <h4>Report issues</h4>

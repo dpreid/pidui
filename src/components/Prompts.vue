@@ -128,7 +128,8 @@ export default {
             'getPromptByName',
             'getAchievementByName',
             'getPrompts',
-            'getPromptsLoaded'
+            'getPromptsLoaded',
+            'getSessionExpired'
         ]),
         
     },
@@ -139,6 +140,11 @@ export default {
         getPromptsLoaded(loaded){
             if(loaded){
                 this.triggerPrompts();
+            }
+        },
+        getSessionExpired(expired){
+            if(expired){
+                this.$store.dispatch('setPromptsAvailable', false);
             }
         }
     },
