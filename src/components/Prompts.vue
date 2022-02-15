@@ -178,7 +178,7 @@ export default {
             if((prompt_rate.count == 0 && total_session_time > 1800000) || (prompt_rate.count == 1 && total_session_time > 3600000) || (prompt_rate.count == 2 && total_session_time > 5400000)){
               this.showPrompt('rate_experience');
             } 
-            if(this.getAchievementByName('positionPid-ramp-input').completed && ((prompt_ui.count == 0 && total_session_time > 600000) || (prompt_ui.count == 1 && total_session_time > 1800000))){
+            if(this.getAchievementByName('speedRaw-step-input').completed && ((prompt_ui.count == 0 && total_session_time > 600000) || (prompt_ui.count == 1 && total_session_time > 1800000))){
               this.showPrompt('rate_ui');
             } 
             if((prompt_improvements.count == 0 && total_session_time > 1800000) || (prompt_improvements.count == 1 && total_session_time > 3600000) || (prompt_improvements.count == 2 && total_session_time > 5400000)){

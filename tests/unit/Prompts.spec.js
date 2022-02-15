@@ -9,7 +9,7 @@ import uiStore from '../../src/modules/uiStore.js';
 import promptStore from '../../src/modules/prompts.js';
 import achievementStore from '../../src/modules/achievementStore.js';
 import dataStore from '../../src/modules/dataStore.js';
-import { nextTick } from 'vue';
+import streamStore from '../../src/modules/streamStore.js'
 
 
 const createVuexStore = () => 
@@ -20,7 +20,8 @@ const createVuexStore = () =>
             logging: loggingStore,
             prompts: promptStore,
             achievements: achievementStore,
-            data: dataStore
+            data: dataStore,
+            stream: streamStore
         }
     });
 
@@ -171,7 +172,7 @@ const createVuexStore = () =>
 
             const prompt = {name:'rate_ui', verbose:'Please rate your experience of the USER INTERFACE so far.', mainText:'Rate your agreement with the statement: it is easy to navigate the user interface', minScale:'Strongly disagree', maxScale:'Strongly agree', hidden: true, response: '', completed: false, type: 'likert', count: 0}
             await store.dispatch('setSurveyConsent', true);
-            await store.dispatch('setAchievementCompleted', 'positionPid-ramp-input');
+            await store.dispatch('setAchievementCompleted', 'speedRaw-step-input');
             await store.dispatch('setTotalTime', 600001);
             await store.dispatch('loadPrompts', []);
 
@@ -192,7 +193,7 @@ const createVuexStore = () =>
 
             const prompt = {name:'rate_ui', verbose:'Please rate your experience of the USER INTERFACE so far.', mainText:'Rate your agreement with the statement: it is easy to navigate the user interface', minScale:'Strongly disagree', maxScale:'Strongly agree', hidden: true, response: '', completed: false, type: 'likert', count: 1}
             await store.dispatch('setSurveyConsent', true);
-            await store.dispatch('setAchievementCompleted', 'positionPid-ramp-input');
+            await store.dispatch('setAchievementCompleted', 'speedRaw-step-input');
             await store.dispatch('setTotalTime', 600001);
             await store.dispatch('loadPrompts', []);
 
@@ -213,7 +214,7 @@ const createVuexStore = () =>
 
             const prompt = {name:'rate_ui', verbose:'Please rate your experience of the USER INTERFACE so far.', mainText:'Rate your agreement with the statement: it is easy to navigate the user interface', minScale:'Strongly disagree', maxScale:'Strongly agree', hidden: true, response: '', completed: false, type: 'likert', count: 0}
             await store.dispatch('setSurveyConsent', true);
-            //await store.dispatch('setAchievementCompleted', 'positionPid-ramp-input');
+            await store.dispatch('setAchievementCompleted', 'positionPid-ramp-input');
             await store.dispatch('setTotalTime', 600001);
             await store.dispatch('loadPrompts', []);
 
