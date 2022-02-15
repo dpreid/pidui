@@ -14,7 +14,7 @@
                 <td v-for='key in Object.keys(row)' :key="key">{{row[key]}}</td>
             </tr>
 
-            <tr class='current border'>
+            <tr class='current'>
                 <td>{{getTime.toFixed(2)}}</td>
                 <td>{{getCurrentAngle.toFixed(2)}}</td>
                 <td>{{getCurrentAngularVelocity.toFixed(2)}}</td>
