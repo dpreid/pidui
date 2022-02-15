@@ -47,8 +47,8 @@
         <div class='col drop-area' id='fixed_drop' draggable='true' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent></div>
       </div> -->
 <!-- Have a layout for desktop -->
-<MqResponsive target="md+">
-      <div class='row' id='component-grid'>
+
+      <div v-if='getDesktopWindow' class='row' id='component-grid'>
 
           <div :class='leftClass' id='left-screen'>
             <div class='col drop-area' id='drop_0_0' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><webcam-stream id='webcam-stream' /></div>
@@ -67,11 +67,11 @@
           </div>
 
       </div>
-</MqResponsive>
+
 
 <!-- and a layout for mobile -->
-<MqResponsive target="sm-">
-      <div class='' id='component-grid'>
+
+      <div v-else class='' id='component-grid'>
 
           
             <div class='col drop-area' id='drop_0_0' :draggable='getDraggable' @dragstart="dragComponent" @drop='dropComponent' @dragover.prevent @dragenter.prevent><webcam-stream id='webcam-stream' /></div>
@@ -86,7 +86,7 @@
           
 
       </div>
-</MqResponsive>
+
 
         
       </div>
@@ -110,7 +110,7 @@ import Consent from './components/Consent.vue';
 import { mapGetters } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 
-import { MqResponsive } from "vue3-mq";
+
 import Help from './components/Help.vue';
 
 export default {
@@ -129,7 +129,6 @@ export default {
     MotorSnapshot,
     Instructions,
     Consent,
-    MqResponsive,
     Help
   },
   data() {
@@ -191,6 +190,14 @@ export default {
 			'getDraggable',
       'getUsesLocalStorage'
 		]),
+    getDesktopWindow(){
+      let window_width = window.innerWidth;
+      if(window_width >= 640){
+        return true;
+      } else{
+        return false;
+      }
+    }
   },
   methods: {
     dragComponent(event){
