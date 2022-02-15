@@ -410,7 +410,7 @@ export default {
         }
       },
       saveDataToLocalStorage(){
-         if(this.getUsesLocalStorage){
+         if(this.getUsesLocalStorage && window.localStorage.getItem('remote-lab-uuid')){
             
             this.saveData();
             this.saveLogging();
@@ -420,7 +420,7 @@ export default {
             return true;
             
          } else{
-            console.log('no localStorage allowed');
+            console.log('no localStorage allowed or uuid has been cleared');
             return false;
          }
       },
