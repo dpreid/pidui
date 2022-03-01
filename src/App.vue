@@ -310,7 +310,7 @@ export default {
         }
       }
       
-      this.$store.dispatch('logComponent', {name: 'table', open: this.isTableOn});
+      this.$store.dispatch('logComponent', {log:'component', name: 'table', open: this.isTableOn});
       this.$store.dispatch('setFractionalAchievementCompleted', {name:'open-all', fractional:'table'});
     },
     toggleInputGraph(){
