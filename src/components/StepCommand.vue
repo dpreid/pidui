@@ -5,7 +5,7 @@
         <div class="row d-flex justify-content-center m-4" @mousedown="setDraggable(false)" @mouseup="setDraggable(true)">  
             <div class='col-auto'>
                 <div class='input-group' v-if='mode == "speedRaw"'>
-                    <span class='input-group-text' for="step_raw">Step size (0 - {{max_voltage_step}}V)</span>
+                    <span class='input-group-text' for="step_raw">Step size ({{-max_voltage_step}} to {{max_voltage_step}}V)</span>
                     <input type="number" :max='max_voltage_step' :min='-max_voltage_step' :class="(parseFloat(step_size) >= -max_voltage_step && parseFloat(step_size) <= max_voltage_step) ? 'form-control' : 'form-control is-invalid'" id="step_raw" v-model="step_size">
                     <button class='btn btn-lg' id="run" @click="runStep(); this.$store.dispatch('setAchievementCompleted', 'speedRaw-step-input')">Run</button>
                     <button class='btn btn-lg btn-danger' v-if='isStepRunning' id="wait" @click="stopStep">Stop</button>
