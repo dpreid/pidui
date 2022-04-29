@@ -1,4 +1,7 @@
-# pidui
+# Spinning Disk Remote Lab UI
+
+This is the user interface for the spinning disk remote laboratory developed at the University of Edinburgh. The full repo, containing hardware and software for the remote lab, can be found [here](https://github.com/practable/spinner-amax).
+
 
 ## Project setup
 ```
