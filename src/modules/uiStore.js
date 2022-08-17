@@ -9,8 +9,8 @@ const uiStore = {
        isDraggable: true,
        
        isChatBotAvailable: false,    //by default the chatbot is NOT BEING USED
-       isAchievementsAvailable: true,
-       isPromptsAvailable: true,
+       isAchievementsAvailable: false,
+       isPromptsAvailable: false,
        usesLocalStorage: false,        //can only use localStorage if the browser allows it.
 
        }),

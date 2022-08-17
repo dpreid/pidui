@@ -1,3 +1,7 @@
+# Archived
+
+This respository is no longer updated. The supported and developed version can be found [here](https://github.com/practable/spinner-amax).
+
 # Spinning Disk Remote Lab UI
 
 This is the user interface for the spinning disk remote laboratory developed at the University of Edinburgh. The full repo, containing hardware and software for the remote lab, can be found [here](https://github.com/practable/spinner-amax).

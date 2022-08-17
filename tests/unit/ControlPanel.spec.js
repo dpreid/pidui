@@ -253,6 +253,40 @@ describe('ControlPanel.vue tests', () => {
     
     })
 
+    test('Change input mode to ramp and run', async () => {
+
+        const store = createVuexStore();
+        const server = new WS("ws://localhost:1234", { jsonProtocol: true });
+        const wrapper = mount(ControlPanel, {
+            props: {
+                url: ""
+              },
+            global:{
+                plugins: [store]
+                }
+        });
+
+        await wrapper.setData({ chart_omega: new SmoothieChart() })
+        await store.dispatch('setDataURL', 'ws://localhost:1234');
+        await wrapper.setProps({url: 'ws://localhost:1234'});
+        //await store.dispatch('setCurrentMode', 'stopped');
+        
+        await wrapper.get('#pidspeed').trigger('click');
+        await expect(server).toReceiveMessage({set: "mode", to: "velocity"});
+        expect(server).toHaveReceivedMessages([{set: "mode", to: "velocity"},]);
+        expect(store.getters.getCurrentMode == 'speedPid').toBe(true);
+
+        await wrapper.get('#step_speed').setValue(50);
+        await wrapper.get('#run').trigger('click');
+        await expect(server).toReceiveMessage({set: "velocity", to: 50});
+        expect(server).toHaveReceivedMessages([{set: "mode", to: "velocity"},{set: "velocity", to: 50}]);
+
+        server.close();
+    
+    })
+
+    
+
     
 
     
